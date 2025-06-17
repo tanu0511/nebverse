@@ -121,6 +121,7 @@ const TableRow: FC<ITableRowProps> = ({
 				<span>{stock}</span>
 			</td>
 			<td>
+				console.log(price);
 				<span>
 					{
 						// @ts-ignore

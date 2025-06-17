@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import qrcode from "qrcode.react";
+import { Dashboard } from "./components/icon/material-icons";
 
 export const summaryPageTopMenu = {
 	intro: { id: 'intro', text: 'Intro', path: '#intro', icon: 'Vrpano', subMenu: null },
@@ -41,7 +44,7 @@ export const dashboardPagesMenu = {
 			privatedashboard: {
 				id: 'privatedashboard',
 				text: 'Private Dashboard',
-				path: '/',
+				path: '/privatedashboard',
 			},
 			advanceddashboard: {
 				id: 'advanceddashboard',
@@ -66,7 +69,14 @@ export const dashboardPagesMenu = {
 				text: 'Deals',
 				path: '/leads/deals',
 			},
+		
 		},
+	},
+	Client:{
+		id:'client',
+		text:'Client',
+		icon: 'Business',
+	    path:'/client'
 	},
 	hr: {
 		id: 'hr',
@@ -183,6 +193,14 @@ export const dashboardPagesMenu = {
 		icon: 'Message',
 		subMenu: null,
 	},
+	Assets: {
+       id: 'assets',
+	   text: 'Assets',
+	   icon:'Computer',
+	   path:'/assets'
+	   
+	},
+	
 	Payroll: {
 		id: 'Payroll',
 		text: 'Payroll',
@@ -249,6 +267,79 @@ export const dashboardPagesMenu = {
 			},
 		},
 	},
+	Letter:{
+         id:'letter',
+		 text:'Letter',
+		 path:'letter',
+		 icon:'LocalPostOffice',
+		 subMenu:{
+			Generate:{
+				id:'Generate',
+				text:'Generate',
+				path:'letter/generate'
+
+			},
+			Template:{
+				id:'Template',
+				text: 'Template',
+				path:'letter/template'
+			}
+		 }
+	},
+	Recruit:{
+       id:'recruit',
+	   text:'Recruit',
+	   path:'recruit',
+	   icon:'AssignmentInd',
+	   subMenu:{
+		Dashboard:{
+			id:'Dashboard',
+			text:'Dashboard',
+			path:'recruit/dashboard'
+		},
+	   
+	   Jobs:{
+		id:'Jobs',
+		text:'Jobs',
+		path:'recruit/jobs'
+	   },
+	   JobApplication:{
+		id:'JobApplication',
+		text:'Job Application',
+		path: 'recruit/job-application'
+	   },
+	   InterviewSchedule:{
+		id:'InterviewSchedule',
+		text:'Interview Schedule',
+		path:'recruit/interview-schedule'
+	   },
+	   OfferLetters:{
+		id:'OfferLetters',
+		text:'Offer Letters',
+		path:'recruit/offerletters'
+	   },
+	   Skills:{
+		id:'Skills',
+		text:'Skills',
+		path:'recruit/skills'
+	   },
+	   CandidateDatabase:{
+		id:'CandidateDatabase',
+		text:'Candidate Database',
+		path:'recruit/candidate-database'
+	   },
+	   Reports:{
+		id:'Reports',
+		text:'Reports',
+		path:'recruit/reports'
+	   },
+	   CareerSite:{
+		id:'CareerSite',
+		text:'Career Site',
+		path: 'recruit/career-site'
+	   }
+	   },
+	},
 	Purchase: {
 		id: 'Purchase',
 		text: 'Purchase',
@@ -297,12 +388,26 @@ export const dashboardPagesMenu = {
 			},
 		},
 	},
+	Ticket:{
+     		id: 'ticket',
+		text: 'Ticket',
+		path: 'ticket',
+		icon:'HeadsetMic'
+	},
+	
 	Order: {
 		id: 'order',
 		text: 'Order',
 		path: '/order',
 		icon: 'ShoppingBag',
 		subMenu: null,
+	},
+	QrCode:{
+      id:'qrCode',
+	  text:'QR Code',
+	  path:'/qr-code',
+	  icon:'QrCode',
+	  subMenu:null
 	},
 	Event:{
 		id:'event',
@@ -311,6 +416,7 @@ export const dashboardPagesMenu = {
 		icon:'EventNote',
 		subMenu:null,
 	},
+	
 };
 
 export const demoPagesMenu = {

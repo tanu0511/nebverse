@@ -1,4 +1,3 @@
-
 /* eslint-disable prefer-template */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/self-closing-comp */
@@ -9,6 +8,10 @@ import CreateOrderModal from './CreateOrderModal';
 import Icon from '../../../components/icon/Icon';
 import PaginationButtons from '../../../components/PaginationButtons';
 import ViewOrderModal from './ViewOrderModal';
+import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
+import Input from '../../../components/bootstrap/forms/Input';
+import Card, { CardBody } from '../../../components/bootstrap/Card';
+import Page from '../../../layout/Page/Page';
 
 const formatDateTime = (date: string | Date | null | undefined) => date ? new Date(date).toLocaleDateString() : '';
 const formatCurrency = (amount: number) => `₹${amount?.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
@@ -75,6 +78,7 @@ const Order = () => {
   const [showBankModal, setShowBankModal] = useState(false);
   const [selectedBank, setSelectedBank] = useState('');
   const [editOrder, setEditOrder] = useState<OrderRow | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const bankAccounts = [
     { value: '', label: 'Select bank account' },
     { value: 'hdfc', label: 'HDFC Bank' },
@@ -82,8 +86,17 @@ const Order = () => {
     { value: 'icici', label: 'ICICI Bank' },
   ];
 
-  // Pagination logic
-  const paginatedData = tableData.slice((currentPage - 1) * perPage, currentPage * perPage);
+  // Filter data dynamically based on searchTerm
+  const filteredData = tableData.filter(
+    (row) =>
+      row.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.client?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.clientCompany?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.status?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Paginate filtered data
+  const paginatedData = filteredData.slice((currentPage - 1) * perPage, currentPage * perPage);
 
   // Handle new order from modal
   const handleOrderCreate = (order: OrderRow) => {
@@ -122,288 +135,325 @@ const Order = () => {
 
   return (
     <div className="container-fluid py-4">
-      <div className="d-flex align-items-center mb-3 gap-2">
-        <Button color="primary" className="px-4" onClick={() => setShowCreateOrder(true)}>
-          <i className="fa fa-plus me-2" /> Add New Order
-        </Button>
-        <Button color="secondary" className="px-4">
-          <i className="fa fa-file-export me-2" /> Export
-        </Button>
-      </div>
-      <div className="card p-3">
-        <table className="table mb-0">
-          <thead>
-            <tr>
-              <th>Order Number</th>
-              <th>Client</th>
-              <th>Total</th>
-              <th>Order Date</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-  {paginatedData.length === 0 ? (
-    <tr>
-      <td colSpan={10} className="text-center text-muted">
-        No record found.
-      </td>
-    </tr>
-  ) : (
-    paginatedData.map((row) => (
-      <tr key={row.id}>
-        <td>{row.orderNumber}</td>
-        <td>
-          <div className="d-flex align-items-center gap-2">
-            <img
-              src="https://via.placeholder.com/32"
-              alt="avatar"
-              className="rounded-circle"
-            />
-            <div>
-              <div>{row.client}</div>
-              <div className="text-muted small">{row.clientCompany}</div>
-            </div>
+      <SubHeader>
+        <SubHeaderLeft>
+          <label className="border-0 bg-transparent cursor-pointer me-0" htmlFor="searchInput">
+            <Icon icon="Search" size="2x" color="primary" />
+          </label>
+          <Input
+            id="searchInput"
+            type="search"
+            className="border-0 shadow-none bg-transparent"
+            placeholder="Search order..."
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+          />
+        </SubHeaderLeft>
+        <SubHeaderRight>
+          <Button
+            color="primary"
+            icon="Add"
+            isLight
+            onClick={() => setShowCreateOrder(true)}
+          >
+            Add Order
+          </Button>
+          <Button
+            color="info"
+            icon="CloudDownload"
+            isLight
+            tag="a"
+            to="/orders-export.txt"
+            target="_blank"
+            download
+          >
+            Export
+          </Button>
+        </SubHeaderRight>
+      </SubHeader>
+
+      <Page>
+        <div className="row h-100">
+          <div className="col-12">
+            <Card stretch>
+              <CardBody className='table-responsive' style={{ overflow: 'visible' }}>
+                <table className="table table-modern table-hover">
+                  <thead>
+                    <tr>
+                      <th>Order Number</th>
+                      <th>Client</th>
+                      <th>Total</th>
+                      <th>Order Date</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedData.length === 0 ? (
+                      <tr>
+                        <td colSpan={10} className="text-center text-muted">
+                          No record found.
+                        </td>
+                      </tr>
+                    ) : (
+                      paginatedData.map((row) => (
+                        <tr key={row.id}>
+                          <td>{row.orderNumber}</td>
+                          <td>
+                            <div className="d-flex align-items-center gap-2">
+                              <img
+                                src="https://via.placeholder.com/32"
+                                alt="avatar"
+                                className="rounded-circle"
+                              />
+                              <div>
+                                <div>{row.client}</div>
+                                <div className="text-muted small">{row.clientCompany}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td>{formatCurrency(row.total)}</td>
+                          <td>{formatDateTime(row.date)}</td>
+                          <td style={{ position: "relative" }}>
+                            <Button
+                              color="light"
+                              size="sm"
+                              className="d-flex align-items-center"
+                              isDisable={row.status === "Canceled" || row.status === "Refunded"}
+                              style={{
+                                minWidth: 120,
+                                borderRadius: 12,
+                                background: "#f1f5fb",
+                                opacity:
+                                  row.status === "Canceled" || row.status === "Refunded" ? 0.6 : 1,
+                                pointerEvents:
+                                  row.status === "Canceled" || row.status === "Refunded"
+                                    ? "none"
+                                    : "auto",
+                              }}
+                              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                                e.stopPropagation();
+                                if (
+                                  row.status !== "Canceled" &&
+                                  row.status !== "Refunded" &&
+                                  row.id !== undefined
+                                ) {
+                                  setStatusDropdownIdx(row.id);
+                                }
+                              }}
+                            >
+                              <span
+                                className="me-2 rounded-circle"
+                                style={{
+                                  width: 10,
+                                  height: 10,
+                                  display: "inline-block",
+                                  background:
+                                    statusOptions.find((opt) => opt.label === row.status)?.color ||
+                                    "gray",
+                                }}
+                              ></span>
+                              <span style={{ fontWeight: 500 }}>{row.status}</span>
+                              <i className="fa fa-caret-down ms-1" />
+                            </Button>
+                            {statusDropdownIdx === row.id &&
+                              row.status !== "Canceled" &&
+                              row.status !== "Refunded" && (
+                                <div
+                                  className="shadow border rounded bg-white position-absolute"
+                                  style={{ zIndex: 10, minWidth: 160, left: 0, top: "110%" }}
+                                  onClick={(e) =>
+                                    (e as React.MouseEvent<HTMLDivElement>).stopPropagation()
+                                  }
+                                >
+                                  {(row.status === "Completed"
+                                    ? statusOptions.filter(
+                                        (opt) =>
+                                          opt.label === "Completed" || opt.label === "Refunded"
+                                      )
+                                    : statusOptions.filter((opt) => opt.label !== "Refunded")
+                                  ).map((opt) => (
+                                    <div
+                                      key={opt.label}
+                                      className="dropdown-item d-flex align-items-center"
+                                      style={{
+                                        cursor: row.status === "Refunded" ? "not-allowed" : "pointer",
+                                        padding: "10px 16px",
+                                        background:
+                                          row.status === opt.label ? "#e9f3ff" : undefined,
+                                        fontWeight: row.status === opt.label ? 600 : 400,
+                                        opacity:
+                                          row.status === "Refunded" && opt.label === "Refunded"
+                                            ? 0.6
+                                            : 1,
+                                      }}
+                                      onClick={() => {
+                                        if (row.status === "Refunded") return;
+                                        setPendingStatus(opt.label);
+                                        setPendingStatusRowId(row.id ?? null);
+                                        setShowStatusAlert(true);
+                                        setStatusDropdownIdx(null);
+                                      }}
+                                    >
+                                      <span
+                                        className="me-2 rounded-circle"
+                                        style={{
+                                          width: 14,
+                                          height: 14,
+                                          display: "inline-block",
+                                          background: opt.color,
+                                        }}
+                                      ></span>
+                                      {opt.label}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                          </td>
+                          <td style={{ position: "relative" }}>
+                            <Button
+                              color="secondary"
+                              size="sm"
+                              onClick={() => {
+                                setViewOrder(row);
+                                setShowViewModal(true);
+                              }}
+                              style={{
+                                borderTopRightRadius: 0,
+                                borderBottomRightRadius: 0,
+                              }}
+                              title="View"
+                            >
+                              View
+                            </Button>
+                            <Button
+                              color="light"
+                              size="sm"
+                              className="border-start-0"
+                              style={{
+                                borderTopLeftRadius: 0,
+                                borderBottomLeftRadius: 0,
+                              }}
+                              onClick={(eve: React.MouseEvent<HTMLButtonElement>) => {
+                                eve.stopPropagation();
+                                setActionDropdownIdx(
+                                  row.id !== undefined && row.id === actionDropdownIdx
+                                    ? null
+                                    : row.id ?? null
+                                );
+                              }}
+                              title="Action"
+                            >
+                              <Icon icon="MoreVert" />
+                            </Button>
+                            {actionDropdownIdx === row.id && (
+                              <div
+                                className="shadow border rounded bg-white position-absolute"
+                                style={{ zIndex: 20, minWidth: 180, right: 0, top: "110%" }}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {(row.status === "Canceled" || row.status === "Refunded") ? (
+                                  <>
+                                    <div
+                                      className="dropdown-item d-flex align-items-center"
+                                      style={{ cursor: "pointer", padding: "10px 16px" }}
+                                      onClick={() => {
+                                        handleDownload(row);
+                                        setActionDropdownIdx(null);
+                                      }}
+                                    >
+                                      <Icon icon="Download" />
+                                      Download
+                                    </div>
+                                    <div
+                                      className="dropdown-item d-flex align-items-center text-danger"
+                                      style={{ cursor: "pointer", padding: "10px 16px" }}
+                                      onClick={() => {
+                                        setTableData((data) =>
+                                          data.filter((r) => r.id !== row.id)
+                                        );
+                                        setActionDropdownIdx(null);
+                                      }}
+                                    >
+                                      <Icon icon="Delete" /> Delete
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div
+                                      className="dropdown-item d-flex align-items-center"
+                                      style={{ cursor: "pointer", padding: "10px 16px" }}
+                                      onClick={() => {
+                                        setTableData((data) =>
+                                          data.map((r) =>
+                                            r.id === row.id ? { ...r, status: "Completed" } : r
+                                          )
+                                        );
+                                        setActionDropdownIdx(null);
+                                      }}
+                                    >
+                                      <Icon icon="Check" />
+                                      Mark as complete
+                                    </div>
+                                    <div
+                                      className="dropdown-item d-flex align-items-center"
+                                      style={{ cursor: "pointer", padding: "10px 16px" }}
+                                      onClick={() => {
+                                        handleDownload(row);
+                                        setActionDropdownIdx(null);
+                                      }}
+                                    >
+                                      <Icon icon="Download" />
+                                      Download
+                                    </div>
+                                    <div
+                                      className="dropdown-item d-flex align-items-center"
+                                      style={{ cursor: "pointer", padding: "10px 16px" }}
+                                      onClick={() => {
+                                        setEditOrder(row);
+                                        setShowCreateOrder(true);
+                                        setActionDropdownIdx(null);
+                                      }}
+                                    >
+                                      <Icon icon="Edit" />
+                                      Edit
+                                    </div>
+                                    <div
+                                      className="dropdown-item d-flex align-items-center text-danger"
+                                      style={{ cursor: "pointer", padding: "10px 16px" }}
+                                      onClick={() => {
+                                        setTableData((data) =>
+                                          data.filter((r) => r.id !== row.id)
+                                        );
+                                        setActionDropdownIdx(null);
+                                      }}
+                                    >
+                                      <Icon icon="Delete" /> Delete
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </CardBody>
+              <PaginationButtons
+                data={filteredData}
+                label="Orders"
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+                perPage={perPage}
+                setPerPage={setPerPage}
+              />
+            </Card>
           </div>
-        </td>
-        <td>{formatCurrency(row.total)}</td>
-        <td>{formatDateTime(row.date)}</td>
-        <td style={{ position: "relative" }}>
-          <Button
-            color="light"
-            size="sm"
-            className="d-flex align-items-center"
-            isDisable={row.status === "Canceled" || row.status === "Refunded"}
-            style={{
-              minWidth: 120,
-              borderRadius: 12,
-              background: "#f1f5fb",
-              opacity:
-                row.status === "Canceled" || row.status === "Refunded" ? 0.6 : 1,
-              pointerEvents:
-                row.status === "Canceled" || row.status === "Refunded"
-                  ? "none"
-                  : "auto",
-            }}
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.stopPropagation();
-              if (
-                row.status !== "Canceled" &&
-                row.status !== "Refunded" &&
-                row.id !== undefined
-              ) {
-                setStatusDropdownIdx(row.id);
-              }
-            }}
-          >
-            <span
-              className="me-2 rounded-circle"
-              style={{
-                width: 10,
-                height: 10,
-                display: "inline-block",
-                background:
-                  statusOptions.find((opt) => opt.label === row.status)?.color ||
-                  "gray",
-              }}
-            ></span>
-            <span style={{ fontWeight: 500 }}>{row.status}</span>
-            <i className="fa fa-caret-down ms-1" />
-          </Button>
-          {statusDropdownIdx === row.id &&
-            row.status !== "Canceled" &&
-            row.status !== "Refunded" && (
-              <div
-                className="shadow border rounded bg-white position-absolute"
-                style={{ zIndex: 10, minWidth: 160, left: 0, top: "110%" }}
-                onClick={(e) =>
-                  (e as React.MouseEvent<HTMLDivElement>).stopPropagation()
-                }
-              >
-                {(row.status === "Completed"
-                  ? statusOptions.filter(
-                      (opt) =>
-                        opt.label === "Completed" || opt.label === "Refunded"
-                    )
-                  : statusOptions.filter((opt) => opt.label !== "Refunded")
-                ).map((opt) => (
-                  <div
-                    key={opt.label}
-                    className="dropdown-item d-flex align-items-center"
-                    style={{
-                      cursor: row.status === "Refunded" ? "not-allowed" : "pointer",
-                      padding: "10px 16px",
-                      background:
-                        row.status === opt.label ? "#e9f3ff" : undefined,
-                      fontWeight: row.status === opt.label ? 600 : 400,
-                      opacity:
-                        row.status === "Refunded" && opt.label === "Refunded"
-                          ? 0.6
-                          : 1,
-                    }}
-                    onClick={() => {
-                      if (row.status === "Refunded") return;
-                      setPendingStatus(opt.label);
-                      setPendingStatusRowId(row.id ?? null);
-                      setShowStatusAlert(true);
-                      setStatusDropdownIdx(null);
-                    }}
-                  >
-                    <span
-                      className="me-2 rounded-circle"
-                      style={{
-                        width: 14,
-                        height: 14,
-                        display: "inline-block",
-                        background: opt.color,
-                      }}
-                    ></span>
-                    {opt.label}
-                  </div>
-                ))}
-              </div>
-            )}
-        </td>
-        <td style={{ position: "relative" }}>
-          <Button
-            color="secondary"
-            size="sm"
-            onClick={() => {
-              setViewOrder(row);
-              setShowViewModal(true);
-            }}
-            style={{
-              borderTopRightRadius: 0,
-              borderBottomRightRadius: 0,
-            }}
-            title="View"
-          >
-            View
-          </Button>
-          <Button
-            color="light"
-            size="sm"
-            className="border-start-0"
-            style={{
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-            }}
-            onClick={(eve: React.MouseEvent<HTMLButtonElement>) => {
-              eve.stopPropagation();
-              setActionDropdownIdx(
-                row.id !== undefined && row.id === actionDropdownIdx
-                  ? null
-                  : row.id ?? null
-              );
-            }}
-            title="Action"
-          >
-            <Icon icon="MoreVert" />
-          </Button>
-          {actionDropdownIdx === row.id && (
-            <div
-              className="shadow border rounded bg-white position-absolute"
-              style={{ zIndex: 20, minWidth: 180, right: 0, top: "110%" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {(row.status === "Canceled" || row.status === "Refunded") ? (
-                <>
-                  <div
-                    className="dropdown-item d-flex align-items-center"
-                    style={{ cursor: "pointer", padding: "10px 16px" }}
-                    onClick={() => {
-                      handleDownload(row);
-                      setActionDropdownIdx(null);
-                    }}
-                  >
-                    <Icon icon="Download" />
-                    Download
-                  </div>
-                  <div
-                    className="dropdown-item d-flex align-items-center text-danger"
-                    style={{ cursor: "pointer", padding: "10px 16px" }}
-                    onClick={() => {
-                      setTableData((data) =>
-                        data.filter((r) => r.id !== row.id)
-                      );
-                      setActionDropdownIdx(null);
-                    }}
-                  >
-                    <Icon icon="Delete" /> Delete
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div
-                    className="dropdown-item d-flex align-items-center"
-                    style={{ cursor: "pointer", padding: "10px 16px" }}
-                    onClick={() => {
-                      setTableData((data) =>
-                        data.map((r) =>
-                          r.id === row.id ? { ...r, status: "Completed" } : r
-                        )
-                      );
-                      setActionDropdownIdx(null);
-                    }}
-                  >
-                    <Icon icon="Check" />
-                    Mark as complete
-                  </div>
-                  <div
-                    className="dropdown-item d-flex align-items-center"
-                    style={{ cursor: "pointer", padding: "10px 16px" }}
-                    onClick={() => {
-                      handleDownload(row);
-                      setActionDropdownIdx(null);
-                    }}
-                  >
-                    <Icon icon="Download" />
-                    Download
-                  </div>
-                  <div
-                    className="dropdown-item d-flex align-items-center"
-                    style={{ cursor: "pointer", padding: "10px 16px" }}
-                    onClick={() => {
-                      setEditOrder(row);
-                      setShowCreateOrder(true);
-                      setActionDropdownIdx(null);
-                    }}
-                  >
-                    <Icon icon="Edit" />
-                    Edit
-                  </div>
-                  <div
-                    className="dropdown-item d-flex align-items-center text-danger"
-                    style={{ cursor: "pointer", padding: "10px 16px" }}
-                    onClick={() => {
-                      setTableData((data) =>
-                        data.filter((r) => r.id !== row.id)
-                      );
-                      setActionDropdownIdx(null);
-                    }}
-                  >
-                    <Icon icon="Delete" /> Delete
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </td>
-      </tr>
-    ))
-  )}
-</tbody>
-        </table>
-        {/* Pagination */}
-        <PaginationButtons
-  data={tableData}
-  label="Orders"
-  setCurrentPage={setCurrentPage}
-  currentPage={currentPage}
-  perPage={perPage}
-  setPerPage={setPerPage}
-/>
-      </div>
+        </div>
+      </Page>
+
       <CreateOrderModal
   isOpen={showCreateOrder}
   onClose={() => {

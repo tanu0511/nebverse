@@ -22,6 +22,8 @@ interface Award {
   parentDepartment?: string;
   date?: string;
   summary?: string;
+  icon?: string;
+  color?: string;
 }
 
 const Appreciation = () => {
@@ -31,8 +33,22 @@ const Appreciation = () => {
   const [viewModalStatus, setViewModalStatus] = useState<boolean>(false);
   const [awards, setAwards] = useState<Award[]>([]);
   const [selectedAward, setSelectedAward] = useState<Award | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState<string>(''); // <-- Add searchTerm state
+  const [awardOptions, setAwardOptions] = useState([
+    { value: 'Employee of the Month', icon: 'Star', color: '#FFD700' },
+    { value: 'Best Innovator', icon: 'Lightbulb', color: '#4CAF50' },
+    { value: 'Team Player', icon: 'Group', color: '#2196F3' }
+  ]);
 
-  const filteredData = awards;
+  // Dynamic search filter
+  const filteredData = awards.filter((award) =>
+    award.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (award.parentDepartment && award.parentDepartment.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (award.date && award.date.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (award.summary && award.summary.toLowerCase().includes(searchTerm.toLowerCase()))||
+    (award.icon && award.icon.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (award.color && award.color.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
   const { items } = useSortableData(filteredData);
 
   const handleDelete = (id: number) => {
@@ -51,12 +67,8 @@ const Appreciation = () => {
             type="search"
             className="border-0 shadow-none bg-transparent"
             placeholder="Search award..."
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              const value = e.target.value.toLowerCase();
-              setAwards((prev) =>
-                prev.filter((award) => award.name.toLowerCase().includes(value))
-              );
-            }}
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
           />
         </SubHeaderLeft>
         <SubHeaderRight>
@@ -71,6 +83,14 @@ const Appreciation = () => {
           >
             Add Award
           </Button>
+          <Button
+            icon="FileDownload"
+            color="secondary"
+            isLight
+          >
+            Export
+          </Button>
+         
         </SubHeaderRight>
       </SubHeader>
 
@@ -91,7 +111,20 @@ const Appreciation = () => {
                   <tbody>
                     {dataPagination(items, currentPage, perPage).map((i) => (
                       <tr key={i.id}>
-                        <td>{i.name}</td>
+                        <td>
+                          {i.icon && (
+                            <Icon
+                              icon={i.icon}
+                              style={{
+                                marginRight: 8,
+                                fontSize: 18,
+                                verticalAlign: 'middle',
+                                color: i.color || '#A259E6'
+                              }}
+                            />
+                          )}
+                          {i.name}
+                        </td>
                         <td>{i.parentDepartment || 'N/A'}</td>
                         <td>{i.date || 'N/A'}</td>
                         <td>

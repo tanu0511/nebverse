@@ -2,7 +2,8 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable react/react-in-jsx-scope */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
 import Page from '../../../layout/Page/Page';
@@ -14,7 +15,6 @@ import PaginationButtons, { dataPagination, PER_COUNT } from '../../../component
 import Icon from '../../../components/icon/Icon';
 import CreateProposalModal from './CreateProposalModal';
 import ViewProposalModal from './ViewProposalModal';
-import { useNavigate } from 'react-router-dom';
 
 const Proposal = () => {
     const navigate = useNavigate();
@@ -23,6 +23,7 @@ const Proposal = () => {
     const [selectedProposal, setSelectedProposal] = useState<any>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editIndex, setEditIndex] = useState<number | null>(null);
+    const [searchTerm, setSearchTerm] = useState<string>('');
 
     interface TableRow {
         proposal: string;
@@ -119,7 +120,13 @@ const Proposal = () => {
         setEditIndex(null);
     };
 
-    const filteredData = tableData;
+    // Dynamic search filter
+    const filteredData = tableData.filter((row) =>
+        row.proposal.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        row.deals.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        row.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        row.status.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     const paginatedData = dataPagination(filteredData, currentPage, perPage);
 
     return (
@@ -134,14 +141,8 @@ const Proposal = () => {
                         type="search"
                         className="border-0 shadow-none bg-transparent"
                         placeholder="Search proposals..."
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            const searchQuery = e.target.value.toLowerCase();
-                            setTableData((prev) =>
-                                prev.filter((row) =>
-                                    row.proposal.toLowerCase().includes(searchQuery)
-                                )
-                            );
-                        }}
+                        value={searchTerm}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                     />
                 </SubHeaderLeft>
                 <SubHeaderRight>

@@ -1,4 +1,3 @@
-
 import React, { lazy } from 'react';
 import { RouteProps } from 'react-router-dom';
 import {
@@ -10,19 +9,30 @@ import {
 } from '../menu';
 import Login from '../pages/presentation/auth/Login';
 import ContractTemplate from '../pages/presentation/contract/ContractTemplate';
-// import ProjectTemplate from '../pages/presentation/project/ProjectTemplate';
+import ProjectTemplate from '../pages/presentation/project/ProjectTemplate';
+import { ProjectsProvider } from '../pages/presentation/project/ProjectsContext';
+import RecurringInvoice from '../pages/presentation/invoices/RecurringInvoice';
+import { TemplateProvider } from '../pages/presentation/genrate/TemplateContext';
+import RecurringExpense from '../pages/presentation/expenses/RecurringExpense';
+import CustomerViewPage from '../pages/presentation/client/CustomerViewPage';
+import JobView from '../pages/presentation/jobs/JobView';
+import LeadViewPage from '../pages/presentation/lead/LeadViewPage';
+import ContractViewPage from '../pages/presentation/contract/ContractViewPage';
+// import TaskManagementPage from '../pages/presentation/task/TaskMangmentPage';
+
+
 // import Task from '../pages/presentation/task/Task';
 
 const LANDING = {
 	DASHBOARD: lazy(() => import('../pages/presentation/dashboard/DashboardPage')),
 	SUMMARY: lazy(() => import('../pages/presentation/SummaryPage')),
 	HR: lazy(() => import('../pages/presentation/hr/Employees')),
-	PRIVATEDASHBOARD: lazy(() => import('../pages/presentation/dashboard/DashboardPage')),
+	PRIVATEDASHBOARD: lazy(() => import('../pages/presentation/crm/Customer')),
 	ADVANCEDDASHBOARD: lazy(() => import('../pages/presentation/dashboard/DashboardPage')),
 	DESIGNATION: lazy(() => import('../pages/presentation/designation/DesignatonPage')),
 };
 const PAYROLL = {
-	EmployeeSalary: lazy(() => import('../pages/presentation/payroll/employeeSalary')),
+	// EmployeeSalary: lazy(() => import('../pages/presentation/payroll/employeeSalary')),
 	PayrollExpenses: lazy(() => import('../pages/presentation/payroll/PayrollExpenses')),
 	Payroll: lazy(() => import('../pages/presentation/payroll/Payroll')),
 	OvertimeRequest: lazy(() => import('../pages/presentation/payroll/overtimeRequest')),
@@ -124,24 +134,58 @@ const APP = {
 		ATTENDANCE: lazy(() => import('../pages/presentation/attendance/Attendance'))
 	},
 	WORK:{
-		// PROJECT: lazy(() => import('../pages/presentation/project/Project')),		
+		PROJECT: lazy(() => import('../pages/presentation/project/ProjectPage')),		
 		TIMESHEET: lazy(() => import('../pages/presentation/timesheet/TimeSheet')),
 		CONTRACT: lazy(() => import('../pages/presentation/contract/Contract')),
-		// TASK: lazy(()=> import('../pages/presentation/task/Task')),
+		PROJECTROADMAP: lazy(()=>import('../pages/presentation/project/ProjectRoad')),
+        TASKPAGE : lazy(()=>import('../pages/presentation/task/CommanUpcomingEvents')),
+		// TASKMANGMENTPAGE: lazy(()=>import('../pages/presentation/task/TaskMangmentPage')),
+		// CALENDER: lazy(()=>import('../pages/presentation/task/CalenderPage')),
+		
 	},
 	LEAD:{
 		LEAD_CONTACTS: lazy(()=> import('../pages/presentation/lead/Lead')),
 		DEALS: lazy(()=> import('../pages/presentation/deals/Deals')),
+		
+	},
+	CLIENT:{
+		CLIENT : lazy(()=>import('../pages/presentation/client/ClientPage')),
+		CLIENT_VIEW: lazy(()=>import('../pages/presentation/client/CustomerViewPage')),
 	},
     PURCHASE:{
 		PRODUCTS: lazy(() => import('../pages/presentation/products/Products')),
+		VENDOR_CREDIT: lazy(()=>import('../pages/presentation/vendorcredit/VendorCredit')),
+		INVENTORY: lazy(()=>import('../pages/presentation/inventory/Inventory')),
+		VENDOR: lazy(()=>import('../pages/presentation/vendor/VendorPage')),
+		VENDORDETAILSPAGE: lazy(()=>import('../pages/presentation/vendor/VendorDetailsPage')),
+		BILLS : lazy(()=>import('../pages/presentation/bills/BillsPage'))
+	},
+	RECRUIT:{
+		SKILLS: lazy(()=> import('../pages/presentation/skills/SkillsPage')),
+		REPORTS: lazy(()=> import('../pages/presentation/reports/ReportPage')),
+		JOBS : lazy(()=>import('../pages/presentation/jobs/JobPage'))
+		// INTERVIEWSCHEDULE: lazy(()=>import('../pages/presentation/interviewSchedule/InterviewSchedule'))
+	},
+
+	LETTER:{
+		GENERATE: lazy(()=>import('../pages/presentation/genrate/GenratePage')),
+		TEMPLATE: lazy(()=>import('../pages/presentation/template/Template'))
 	},
    MESSAGE:{
 	MESSAGE: lazy(()=>import('../pages/presentation/message/ChatMessage')),
    },
    KNOWLEDGEBASE:{
 	KNOWLEDGEBASE: lazy(()=>import('../pages/presentation/knowledgeBase/KnowledgeBasePage'))
-   }
+   },
+   ASSETS:{
+	ASSETS: lazy(()=>import('../pages/presentation/assets/Assets'))
+   },
+   QRCODE:{
+	QRCODE: lazy(()=>import('../pages/presentation/qr/QrPage'))
+   },
+   TICKET:{
+       TICKET: lazy(()=>import('../pages/presentation/ticket/TicketPage'))
+   },
 };
 const PAGE_LAYOUTS = {
 	HEADER_SUBHEADER: lazy(() => import('../pages/presentation/page-layouts/HeaderAndSubheader')),
@@ -272,7 +316,7 @@ const presentation: RouteProps[] = [
 	},
 
 	{
-		path: dashboardPagesMenu.dashboard.path,
+		path: dashboardPagesMenu.dashboard.subMenu.privatedashboard.path,
 		element: <LANDING.PRIVATEDASHBOARD />,
 	},
 	{
@@ -316,10 +360,10 @@ const presentation: RouteProps[] = [
 	/**
 	 * Payroll
 	 */
-	{
-		path: dashboardPagesMenu.Payroll.subMenu.EmployeeSalary.path,
-		element: <PAYROLL.EmployeeSalary />,
-	},
+	// {
+	// 	path: dashboardPagesMenu.Payroll.subMenu.EmployeeSalary.path,
+	// 	element: <PAYROLL.EmployeeSalary />,
+	// },
 	{
 		path: dashboardPagesMenu.Payroll.subMenu.PayrollExpenses.path,
 		element: <PAYROLL.PayrollExpenses />,
@@ -369,8 +413,12 @@ const presentation: RouteProps[] = [
 		element: <FINANCE.EXPENSES />,
 	},
 	{
-		path: 'Recurring-Expenses',
-		element: <FINANCE.RECURRINGEXPENSES />,
+       path:'/recurring-expenses',
+	   element:<RecurringExpense/>
+	},
+	{
+		path: '/recurring-invoice',
+		element: <RecurringInvoice/>
 	},
 	{
 		path: dashboardPagesMenu.Finance.subMenu.Estimates.path,
@@ -386,6 +434,10 @@ const presentation: RouteProps[] = [
 	element: <APP.LEAD.LEAD_CONTACTS />,
 },
 {
+  path : 'leads/view/:email',
+  element:<LeadViewPage />
+},
+{
    path: dashboardPagesMenu.leads.subMenu.deals.path,
    element: <APP.LEAD.DEALS />,
 },
@@ -396,28 +448,53 @@ const presentation: RouteProps[] = [
 		path: dashboardPagesMenu.Work.subMenu.Timesheet.path,
 		element: <APP.WORK.TIMESHEET />,
 	},
+	{
+  path: dashboardPagesMenu.Work.subMenu.Project.path,
+  element: (
+    <ProjectsProvider>
+      <APP.WORK.PROJECT />
+    </ProjectsProvider>
+  ),
+},
+	{
+		path: '/project-template',
+		element: <ProjectTemplate />, // Replace with the actual component
+	},
 	// {
-	// 	path: dashboardPagesMenu.Work.subMenu.Project.path,
-	// 	element: <APP.WORK.PROJECT />,
+    //   path: dashboardPagesMenu.Work.subMenu.Task.path,
+	//   element: <APP.WORK.TASKPAGE/>
 	// },
 	// {
-	// 	path: '/project-template',
-	// 	element: <ProjectTemplate />, // Replace with the actual component
-	// },
-	// {
-	// 	path: dashboardPagesMenu.Work.subMenu.Task.path,
-	// 	element: <APP.WORK.TASK/>,
-		
+    //    path: '/task-management',
+	//    element: <APP.WORK.TASKMANGMENTPAGE/>
 	// },
 	{
 		path: dashboardPagesMenu.Work.subMenu.Contract.path,
 		element: <APP.WORK.CONTRACT />,
 	},
+	// {
+    //    path:'/calendar',
+	//    element:<APP.WORK.CALENDER/>
+	// },
 	{
 		path: '/contract-template',
 		element: <ContractTemplate />, // Replace with the actual component
 	},
-	
+	{
+		path: dashboardPagesMenu.Work.subMenu.ProjectRoadmap.path,
+		element: <ProjectsProvider>
+			<APP.WORK.PROJECTROADMAP/>
+		</ProjectsProvider>
+	},
+{
+        path: '/contract/view',
+		element: <ContractViewPage />
+},
+	//TICKET PAGE
+	{
+      path:dashboardPagesMenu.Ticket.path,
+	  element:<APP.TICKET.TICKET/>
+	},
 
 	// Purchase
 
@@ -425,6 +502,61 @@ const presentation: RouteProps[] = [
 		path: dashboardPagesMenu.Purchase.subMenu.Products.path,
 		element: <APP.PURCHASE.PRODUCTS />,
 	},
+    {
+		path: dashboardPagesMenu.Purchase.subMenu.Vendor_Credits.path,
+		element:<APP.PURCHASE.VENDOR_CREDIT/>
+	},
+    {
+        path:dashboardPagesMenu.Purchase.subMenu.Inventory.path,
+		element:<APP.PURCHASE.INVENTORY/>
+    },
+	{
+		path: dashboardPagesMenu.Purchase.subMenu.Vendor.path,
+		element:<APP.PURCHASE.VENDOR/>
+	},
+	{
+        path: '/vendor-details',
+		element:<APP.PURCHASE.VENDORDETAILSPAGE/>
+	},
+	{
+      path: dashboardPagesMenu.Purchase.subMenu.Bills.path,
+	  element:<APP.PURCHASE.BILLS/>
+	},
+    {
+        path: dashboardPagesMenu.Letter.subMenu.Generate.path,
+		element:<TemplateProvider>
+			<APP.LETTER.GENERATE/>
+		</TemplateProvider>
+	},
+	{
+       path: dashboardPagesMenu.Letter.subMenu.Template.path,
+	   element:<TemplateProvider>
+		<APP.LETTER.TEMPLATE/>
+	   </TemplateProvider>
+	},
+	
+	//RECRUIT
+	{
+      path:dashboardPagesMenu.Recruit.subMenu.Skills.path,
+	  element:<APP.RECRUIT.SKILLS/>
+	},
+	{
+		path: dashboardPagesMenu.Recruit.subMenu.Reports.path,
+		element:<APP.RECRUIT.REPORTS/>
+	},
+	{
+		path: dashboardPagesMenu.Recruit.subMenu.Jobs.path,
+		element:<APP.RECRUIT.JOBS/>
+	},
+	{
+        path:'/jobs/view/:id',
+		element:<JobView/>
+	},
+	// {
+    //      path:dashboardPagesMenu.Recruit.subMenu.InterviewSchedule.path,
+	// 	 element:<APP.RECRUIT.INTERVIEWSCHEDULE/>
+	// },
+
 	// MESSAGE
 	{
 		path: dashboardPagesMenu.message.path,
@@ -436,7 +568,30 @@ const presentation: RouteProps[] = [
 		path: dashboardPagesMenu.KnowledgeBase.path,
 		element:<APP.KNOWLEDGEBASE.KNOWLEDGEBASE />
 	},
+
+
+	//ASSETS
+	{
+		path: dashboardPagesMenu.Assets.path,
+		element:<APP.ASSETS.ASSETS/>
+	},
+    //QR CODE
+	{
+        path:dashboardPagesMenu.QrCode.path,
+		element:<APP.QRCODE.QRCODE/>
+	},
+
+//CLIENT
+{
+	path: dashboardPagesMenu.Client.path,
+	element:<APP.CLIENT.CLIENT/>
+},
+{
+   path: '/clients/:email',
+   element:<CustomerViewPage />
+},
 	/**
+	 * 
 	 * NoticeBoard
 	 */
 	{

@@ -1,4 +1,4 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import Modal from '../../../components/bootstrap/Modal';
 import Button from '../../../components/bootstrap/Button';
@@ -10,8 +10,8 @@ interface AddArticleModalProps {
   onClose: () => void;
   categories: string[];
   onAddCategory: (cat: string) => void;
-  onAddArticle?: (article: { heading: string; category: string; to: string }) => void;
-  editingArticle?: { heading: string; category: string; to: string } | null; // Add this
+  onAddArticle?: (article: { id?: string; heading: string; category: string; to: string }) => void;
+  editingArticle?: { id?: string; heading: string; category: string; to: string } | null;
 }
 
 const AddArticleModal = ({
@@ -22,28 +22,33 @@ const AddArticleModal = ({
   onAddArticle, // Receive this prop
   editingArticle, // Receive this prop
 }: AddArticleModalProps) => {
-  const [forWhom, setForWhom] = useState<'employees' | 'clients'>('employees');
   const [heading, setHeading] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(categories[0] || '');
+  const [to, setTo] = useState('');
+  const [forWhom, setForWhom] = useState<'employees' | 'clients'>('employees');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [articles, setArticles] = useState<{ id?: string; heading: string; category: string; to: string }[]>([]);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   // Prefill form when editingArticle changes
   useEffect(() => {
     if (editingArticle) {
       setHeading(editingArticle.heading);
       setCategory(editingArticle.category);
+      setTo(editingArticle.to);
       setForWhom(editingArticle.to === 'employee' ? 'employees' : 'clients');
       // Optionally set description and file if you support editing them
     } else {
       setHeading('');
-      setCategory('');
+      setCategory(categories[0] || '');
+      setTo('');
       setDescription('');
       setFile(null);
       setForWhom('employees');
     }
-  }, [editingArticle, show]);
+  }, [editingArticle, categories, show]);
 
   const handleAddCategory = (newCategory: string) => {
     onAddCategory(newCategory);
@@ -55,12 +60,27 @@ const AddArticleModal = ({
     console.log(`Delete category: ${categoryToDelete}`);
   };
 
+  const handleAddArticle = (article: { id?: string; heading: string; category: string; to: string }) => {
+    if (article.id) {
+      // Edit mode: update existing article
+      setArticles(prev =>
+        prev.map(a => (a.id === article.id ? { ...a, ...article } : a))
+      );
+    } else {
+      // Add mode: add new article
+      setArticles(prev => [
+        ...prev,
+        { ...article, id: Date.now().toString() }, // or use uuid
+      ]);
+    }
+    setShowAddModal(false);
+  };
+
   return (
     <Modal isOpen={show} setIsOpen={onClose} size="lg" isStaticBackdrop={true}>
       <div className="modal-header">
         <h5 className="modal-title">Article Details</h5>
-        <button type="button" className="btn-close" aria-label="Close" onClick={onClose} />
-      </div>
+       </div>
       <div className="modal-body">
         <div className="mb-3">
           <div>
@@ -159,6 +179,7 @@ const AddArticleModal = ({
               }
               if (onAddArticle) {
                 onAddArticle({
+                  ...(editingArticle?.id ? { id: editingArticle.id } : {}),
                   heading,
                   category,
                   to: forWhom === 'employees' ? 'employee' : 'client',
@@ -166,7 +187,7 @@ const AddArticleModal = ({
               }
               // Clear the form fields
               setHeading('');
-              setCategory('');
+              setCategory(categories[0] || '');
               setDescription('');
               setFile(null);
               setForWhom('employees');

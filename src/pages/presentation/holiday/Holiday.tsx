@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Calendar, dayjsLocalizer, View as TView, Views } from 'react-big-calendar';
@@ -55,8 +55,24 @@ const Holiday = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(5);
     const { items, requestSort, getClassNamesFor } = useSortableData(events);
-    const onCurrentPageData = dataPagination(items, currentPage, perPage);
+    const [searchTerm, setSearchTerm] = useState('');
+    const filteredItems = items.filter((event) => {
+        const term = searchTerm.toLowerCase();
+        return (
+            event.title.toLowerCase().includes(term) ||
+            (event.department && event.department.toLowerCase().includes(term)) ||
+            (event.designation && event.designation.toLowerCase().includes(term))
+        );
+    });
+    const onCurrentPageData = dataPagination(filteredItems, currentPage, perPage);
     const { selectTable, SelectAllCheck } = useSelectTable(onCurrentPageData);
+
+    // Auto-navigate calendar to first filtered event when searching
+    useEffect(() => {
+        if (searchTerm && filteredItems.length > 0) {
+            setDate(filteredItems[0].start);
+        }
+    }, [searchTerm, filteredItems]);
 
     // Function to add new holidays to the calendar
     const handleAddHoliday = (data: { holidays: { date: string; occasion: string; fromTime: string; toTime: string }[]; department: string; designation: string; employmentType: string }) => {
@@ -83,6 +99,9 @@ const Holiday = () => {
         }).filter((event) => event !== null);
     
         setEvents((prevEvents) => [...prevEvents, ...newEvents]);
+        setIsAddHolidayOpen(false);      // Close the modal
+        setSelectedDate(null);           // Clear selected date
+        setSelectedEvent(null);          // Clear selected event
     };
 
     const handleSelectEvent = (event: IEvent) => {
@@ -92,10 +111,9 @@ const Holiday = () => {
     };
 
     const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
-        const selectedDate = slotInfo.start;
-        setSelectedDate(selectedDate);
-        setSelectedEvent(null); // Clear selected event when clicking on an empty cell
-        setIsAddHolidayOpen(true); // Open the modal
+        setSelectedDate(slotInfo.start);
+        setSelectedEvent(null); // Clear selected event
+        setIsAddHolidayOpen(true);
     };
 
     const handleEditEvent = () => {
@@ -115,8 +133,47 @@ const Holiday = () => {
         setIsEventModalOpen(false); // Close the modal after deleting
     };
 
+    const [editingEventId, setEditingEventId] = useState<string | null>(null);
+    const [editForm, setEditForm] = useState<Partial<IEvent>>({});
+
+    // Start editing
+    const handleStartEdit = (event: IEvent) => {
+        setEditingEventId(event.id);
+        setEditForm({ ...event });
+    };
+
+    // Save edit
+    const handleSaveEdit = () => {
+        setEvents((prevEvents) =>
+            prevEvents.map((ev) =>
+                ev.id === editingEventId ? { ...ev, ...editForm } : ev
+            )
+        );
+        setEditingEventId(null);
+        setEditForm({});
+    };
+
+    // Cancel edit
+    const handleCancelEdit = () => {
+        setEditingEventId(null);
+        setEditForm({});
+    };
+
+    // Handle input change
+    const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setEditForm((prev) => ({ ...prev, [name]: value }));
+    };
+
+    // When opening the modal for a new holiday (Add New Holiday button or onSelectSlot)
+    const handleOpenAddHoliday = () => {
+        setSelectedEvent(null); // Clear any selected event
+        setSelectedDate(null); // Or set to the date you want
+        setIsAddHolidayOpen(true);
+    };
+
     return (
-        <PageWrapper title={demoPagesMenu.appointment.subMenu.calendar?.text || 'Default Title'}>
+        <PageWrapper title={demoPagesMenu.appointment.subMenu.calendar.text}>
             <SubHeader>
                 <SubHeaderLeft>
                     <Button
@@ -138,7 +195,7 @@ const Holiday = () => {
                 <SubHeaderRight>
                     <Button
                         icon="AreaChart"
-                        onClick={() => setIsAddHolidayOpen(true)}
+                        onClick={handleOpenAddHoliday}
                         color="primary" isLight
                     >
                         Add New Holiday
@@ -146,6 +203,16 @@ const Holiday = () => {
                 </SubHeaderRight>
             </SubHeader>
             <Page container="fluid">
+                {/* Search Bar above the calendar */}
+                <div className="d-flex justify-content-end mb-3" style={{ maxWidth: 300, marginLeft: 'auto' }}>
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Search by occasion, department, or designation"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
                 <div className="row h-100">
                     <Card stretch style={{ minHeight: 680 }}>
                         <CardHeader>
@@ -171,7 +238,7 @@ const Holiday = () => {
                                 onNavigate={(newDate) => setDate(newDate)}
                                 scrollToTime={new Date(1970, 1, 1, 6)}
                                 defaultDate={new Date()}
-                                events={events}
+                                events={filteredItems} // <-- change this line!
                                 eventPropGetter={(event) => ({
                                     className: classNames({
                                         [`bg-l10-${event.color} text-${event.color}`]: event.color,
@@ -235,23 +302,32 @@ const Holiday = () => {
                 </Modal>
 
                 {/* Add Holiday Modal */}
-                <AddHolidayModal
-                    isOpen={isAddHolidayOpen}
-                    setIsOpen={setIsAddHolidayOpen}
-                    onSave={handleAddHoliday}
-                    selectedDate={selectedDate}
-                    existingEvent={selectedEvent ? { 
-                        date: dayjs(selectedEvent.start).format('YYYY-MM-DD'), 
-                        occasion: selectedEvent.title
-                    } : null}
-                />
-
+               <AddHolidayModal
+  isOpen={isAddHolidayOpen}
+  setIsOpen={setIsAddHolidayOpen}
+  onSave={handleAddHoliday}
+  selectedDate={selectedDate}
+  existingEvent={selectedEvent ? { 
+    date: dayjs(selectedEvent.start).format('YYYY-MM-DD'), 
+    occasion: selectedEvent.title
+  } : null}
+/>
                 {/* Table View */}
                 <Card className="mt-4">
                     <CardHeader>
                         <CardLabel icon="Assignment">
                             <CardTitle>Holiday List</CardTitle>
                         </CardLabel>
+                        {/* Search Bar */}
+                        <div className="ms-auto" style={{ maxWidth: 300 }}>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Search by occasion, department, or designation"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </CardHeader>
                     <CardBody>
                         <table className="table table-modern">
@@ -293,31 +369,94 @@ const Holiday = () => {
                                                 checked={(selectTable.values.selectedList as string[]).includes(event.id.toString())} // Cast selectedList to string[]
                                             />
                                         </td>
-                                        <td>{event.title}</td>
-                                        <td>{dayjs(event.start).format('ddd DD MMM YYYY')}</td>
-                                        <td>{dayjs(event.start).format('dddd')}</td>
-                                        <td>{event.department}</td>
-                                        <td>{event.designation}</td>
-                                        <td>{event.employmentType}</td>
-                                        <td>
-                                            <Dropdown>
-                                                <DropdownToggle>
-                                                    <Button icon="MoreVertical" color="light" />
-                                                </DropdownToggle>
-                                                <DropdownMenu>
-                                                    <DropdownItem onClick={() => handleSelectEvent(event)}>View</DropdownItem>
-                                                    <DropdownItem onClick={() => handleEditEvent()}>Edit</DropdownItem>
-                                                    <DropdownItem onClick={() => handleDeleteEvent()}>Delete</DropdownItem>
-                                                </DropdownMenu>
-                                            </Dropdown>
-                                        </td>
+                                        {editingEventId === event.id ? (
+                                            <>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name="title"
+                                                        value={editForm.title || ''}
+                                                        onChange={handleEditInputChange}
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="date"
+                                                        name="start"
+                                                        value={editForm.start ? dayjs(editForm.start).format('YYYY-MM-DD') : ''}
+                                                        onChange={(e) =>
+                                                            setEditForm((prev) => ({
+                                                                ...prev,
+                                                                start: dayjs(e.target.value).toDate(),
+                                                                end: dayjs(e.target.value).toDate(),
+                                                            }))
+                                                        }
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>{editForm.start ? dayjs(editForm.start).format('dddd') : ''}</td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name="department"
+                                                        value={editForm.department || ''}
+                                                        onChange={handleEditInputChange}
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name="designation"
+                                                        value={editForm.designation || ''}
+                                                        onChange={handleEditInputChange}
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name="employmentType"
+                                                        value={editForm.employmentType || ''}
+                                                        onChange={handleEditInputChange}
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <Button color="success" size="sm" onClick={handleSaveEdit}>Save</Button>{' '}
+                                                    <Button color="secondary" size="sm" onClick={handleCancelEdit}>Cancel</Button>
+                                                </td>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <td>{event.title}</td>
+                                                <td>{dayjs(event.start).format('ddd DD MMM YYYY')}</td>
+                                                <td>{dayjs(event.start).format('dddd')}</td>
+                                                <td>{event.department}</td>
+                                                <td>{event.designation}</td>
+                                                <td>{event.employmentType}</td>
+                                                <td>
+                                                    <Dropdown>
+                                                        <DropdownToggle>
+                                                            <Button icon="MoreVertical" color="light" />
+                                                        </DropdownToggle>
+                                                        <DropdownMenu>
+                                                            <DropdownItem onClick={() => handleSelectEvent(event)}>View</DropdownItem>
+                                                            <DropdownItem onClick={() => handleStartEdit(event)}>Edit</DropdownItem>
+                                                            <DropdownItem onClick={() => handleDeleteEvent()}>Delete</DropdownItem>
+                                                        </DropdownMenu>
+                                                    </Dropdown>
+                                                </td>
+                                            </>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </CardBody>
                     <PaginationButtons
-                        data={items}
+                        data={filteredItems}
                         label="items"
                         setCurrentPage={setCurrentPage}
                         currentPage={currentPage}

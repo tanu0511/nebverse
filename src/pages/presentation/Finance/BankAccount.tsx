@@ -36,9 +36,19 @@ const BankAccountList = () => {
   const [selectedBank, setSelectedBank] = useState<Bank | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
+  // Dynamic search filter for all relevant fields
   const filteredData = banks.filter((bank) =>
+    searchTerm === '' ||
     bank.bankName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    bank.accountHolderName?.toLowerCase().includes(searchTerm.toLowerCase())
+    bank.accountHolderName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.accountNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.accountType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.currency?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.contactNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.openingBalance?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.status?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.cashLocation?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const { items } = useSortableData(filteredData);
@@ -59,6 +69,7 @@ const BankAccountList = () => {
             type='search'
             className='border-0 shadow-none bg-transparent'
             placeholder='Search..'
+            value={searchTerm}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
           />
         </SubHeaderLeft>

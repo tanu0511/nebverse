@@ -10,6 +10,8 @@ import Input from '../../../components/bootstrap/forms/Input';
 import CustomerEditModal from './CustomerEditModal';
 import ViewLeaveModal from './ViewLeaveModal'; // Import the new modal component
 import Dropdown, { DropdownToggle, DropdownMenu, DropdownItem } from '../../../components/bootstrap/Dropdown';
+import DepartmentFilter from '../filter/DepartmentFilter';
+
 
 const Leaves = () => {
     const [leaveData, setLeaveData] = useState<any[]>(() => {
@@ -18,12 +20,23 @@ const Leaves = () => {
     });
 
     const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
-    const [viewModalStatus, setViewModalStatus] = useState<boolean>(false); // State for the "View" modal
-    const [selectedLeave, setSelectedLeave] = useState<any | null>(null); // Store the selected leave data
+    const [viewModalStatus, setViewModalStatus] = useState<boolean>(false);
+    const [selectedLeave, setSelectedLeave] = useState<any | null>(null);
+    const [filterModalOpen, setFilterModalOpen] = useState(false);
+    const departments = ["HR", "Finance", "Engineering"];
+    const [searchTerm, setSearchTerm] = useState<string>(''); // <-- Add searchTerm state
 
     useEffect(() => {
         localStorage.setItem('leaveData', JSON.stringify(leaveData));
     }, [leaveData]);
+
+    // Filter leaveData dynamically based on searchTerm
+    const filteredLeaveData = leaveData.filter((leave) =>
+        leave.member?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        leave.leaveType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        leave.status?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        leave.date?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const handleLeaveSubmit = (formValues: any) => {
         if (!selectedLeave) {
@@ -67,6 +80,11 @@ const Leaves = () => {
         );
     };
 
+    const handleApplyFilters = () => {
+        // Handle filter logic here
+        setFilterModalOpen(false);
+    };
+
     return (
         <PageWrapper title={demoPagesMenu.crm.subMenu.customersList.text}>
             <SubHeader>
@@ -78,7 +96,9 @@ const Leaves = () => {
                         id="searchInput"
                         type="search"
                         className="border-0 shadow-none bg-transparent"
-                        placeholder="Search customer..."
+                        placeholder="Search leave..."
+                        value={searchTerm}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                     />
                 </SubHeaderLeft>
                 <SubHeaderRight>
@@ -104,6 +124,20 @@ const Leaves = () => {
                     >
                         Add Leave
                     </Button>
+                    <Button
+                        icon="FilterList"
+                        color="primary"
+                        isLight
+                        onClick={() => setFilterModalOpen(true)}
+                    >
+                        Filter
+                    </Button>
+                    <DepartmentFilter
+                        isOpen={filterModalOpen}
+                        setIsOpen={setFilterModalOpen}
+                        onApplyFilters={handleApplyFilters}
+                        departments={departments}
+                    />
                 </SubHeaderRight>
             </SubHeader>
             <Page>
@@ -124,7 +158,7 @@ const Leaves = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {leaveData.map((leave) => (
+                                        {filteredLeaveData.map((leave) => (
                                             <tr key={leave.id}>
                                                 <td>{leave.member}</td>
                                                 <td>{leave.date}</td>

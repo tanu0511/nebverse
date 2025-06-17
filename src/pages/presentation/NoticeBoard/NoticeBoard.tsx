@@ -30,12 +30,17 @@ const noticeBoard = () => {
   const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
   const [notices, setNotices] = useState<Notice[]>([]);
   const [selectedNotice, setSelectedNotice] = useState<Notice | undefined>(undefined);
-   // 👈 Add this import
+  const [viewModalStatus, setViewModalStatus] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>(''); // <-- Add searchTerm state
 
-const [viewModalStatus, setViewModalStatus] = useState<boolean>(false); // 👈 New state
-
-
-  const filteredData = notices;
+  // Dynamic search filter for all relevant fields
+  const filteredData = notices.filter((notice) =>
+    searchTerm === '' ||
+    notice.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (notice.parentDepartment && notice.parentDepartment.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (notice.date && notice.date.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (notice.summary && notice.summary.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const { items } = useSortableData(filteredData);
 
@@ -55,12 +60,8 @@ const [viewModalStatus, setViewModalStatus] = useState<boolean>(false); // 👈 
             type='search'
             className='border-0 shadow-none bg-transparent'
             placeholder='Search...'
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              const value = e.target.value.toLowerCase();
-              setNotices((prev) =>
-                prev.filter((notice) => notice.name.toLowerCase().includes(value))
-              );
-            }}
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
           />
         </SubHeaderLeft>
         <SubHeaderRight>
@@ -136,17 +137,16 @@ const [viewModalStatus, setViewModalStatus] = useState<boolean>(false); // 👈 
                               <Button icon='MoreVert' color='primary' isLight className='btn-icon' />
                             </DropdownToggle>
                             <DropdownMenu isAlignmentEnd>
-                            <Button
-  color='link'
-  className='dropdown-item'
-  onClick={() => {
-    setSelectedNotice(i);
-    setViewModalStatus(true); // 👈 Open view modal
-  }}>
-  <Icon icon='Visibility' className='me-2' />
-  View
-</Button>
-
+                              <Button
+                                color='link'
+                                className='dropdown-item'
+                                onClick={() => {
+                                  setSelectedNotice(i);
+                                  setViewModalStatus(true);
+                                }}>
+                                <Icon icon='Visibility' className='me-2' />
+                                View
+                              </Button>
                               <Button
                                 color='link'
                                 className='dropdown-item'
@@ -185,12 +185,11 @@ const [viewModalStatus, setViewModalStatus] = useState<boolean>(false); // 👈 
         </div>
       </Page>
       <ViewNoticeModal
-  isOpen={viewModalStatus}
-  setIsOpen={setViewModalStatus}
-  notice={selectedNotice}
-/>
+        isOpen={viewModalStatus}
+        setIsOpen={setViewModalStatus}
+        notice={selectedNotice}
+      />
 
-      {/* ✅ AddNotice Modal */}
       <AddNotice
         isOpen={editModalStatus}
         setIsOpen={setEditModalStatus}

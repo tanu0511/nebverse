@@ -14,10 +14,24 @@ import useNavigationItemHandle from '../../hooks/useNavigationItemHandle';
 import AuthContext from '../../contexts/authContext';
 import ThemeContext from '../../contexts/themeContext';
 
+// Define the expected user properties, including src and srcSet
+interface IUserProps {
+	id: string | number;
+	name: string;
+	surname?: string;
+	position?: string;
+	src?: string;
+	srcSet?: string;
+	// add other properties as needed
+}
+
 const User = () => {
 	const { width } = useWindowSize();
 	const { setAsideStatus } = useContext(ThemeContext);
-	const { userData, setUser } = useContext(AuthContext);
+	const { userData, setUser } = useContext(AuthContext) as {
+		userData: Partial<IUserProps>;
+		setUser: (user: any) => void;
+	};
 
 	const navigate = useNavigate();
 	const handleItem = useNavigationItemHandle();
@@ -44,7 +58,7 @@ const User = () => {
 				</div>
 				<div className='user-info'>
 					<div className='user-name d-flex align-items-center'>
-						{`${userData?.name} ${userData?.surname}`}
+						{`${userData?.name} ${userData?.surname ?? ''}`}
 						<Icon icon='Verified' className='ms-1' color='info' />
 					</div>
 					<div className='user-sub-title'>{userData?.position}</div>

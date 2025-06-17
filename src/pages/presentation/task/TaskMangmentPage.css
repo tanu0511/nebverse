@@ -1,0 +1,15 @@
+/* Thin horizontal scrollbar for the cards container */
+.task-scroll-thin::-webkit-scrollbar {
+  height: 6px;
+}
+.task-scroll-thin::-webkit-scrollbar-thumb {
+  background: #d1b3c4;
+  border-radius: 4px;
+}
+.task-scroll-thin::-webkit-scrollbar-track {
+  background: #ffe4ec;
+}
+.task-scroll-thin {
+  scrollbar-width: thin;           /* Firefox */
+  scrollbar-color:  #ffe4ec;
+}

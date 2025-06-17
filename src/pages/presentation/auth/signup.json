@@ -1,0 +1,81 @@
+{
+  "users": [
+    {
+      "id": "e376",
+      "email": "neha@gmail.com",
+      "name": "neha",
+      "surname": "singh",
+      "password": "abcd"
+    },
+    {
+      "id": "6ca9",
+      "email": "monu@gmail.com",
+      "name": "monu",
+      "surname": "singh",
+      "password": "abcd"
+    },
+    {
+      "id": "bb2a",
+      "email": "nishuagnih@gmail.com",
+      "name": "nisha",
+      "surname": "agnih",
+      "password": "abcd"
+    },
+    {
+      "id": "db0e",
+      "email": "neha@gmail.com",
+      "name": "neha",
+      "surname": "singh",
+      "password": "abcd"
+    },
+    {
+      "id": "5063",
+      "email": "neha@gmail.com",
+      "name": "neha",
+      "surname": "neha",
+      "password": "gmail"
+    },
+    {
+      "id": "90da",
+      "email": "rohan@gmail.com",
+      "name": "Rohan",
+      "surname": "singh",
+      "password": "aaaa"
+    },
+    {
+      "id": "7230",
+      "email": "neha@gmail.com",
+      "name": "neha",
+      "surname": "singh",
+      "password": "jjjjj"
+    },
+    {
+      "id": "550a",
+      "email": "neha@gmail.com",
+      "name": "neha",
+      "surname": "singh",
+      "password": "jjkmjkmjk"
+    },
+    {
+      "id": "ba3b",
+      "email": "neha@gmail.com",
+      "name": "neha",
+      "surname": "singh",
+      "password": "abcd"
+    },
+    {
+      "id": "aba3",
+      "email": "megha@gmail.com",
+      "name": "megha",
+      "surname": "singh",
+      "password": "abcd"
+    },
+    {
+      "id": "0c18",
+      "email": "jojo@gmail.com",
+      "name": "jojo",
+      "surname": "jjj",
+      "password": "jjj"
+    }
+  ]
+}

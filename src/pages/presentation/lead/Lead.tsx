@@ -12,6 +12,7 @@ import ProfileTab from './ProfileTab';
 import Deals from './Deals';
 import Notes from './Notes';
 import { X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import Dropdown, {
 	DropdownItem,
@@ -37,7 +38,8 @@ type FilterValues = {
 
 
 const CustomersList: FC = () => {
-	
+	const navigate = useNavigate();
+
 	const [leads, setLeads] = useState<Lead[]>(() => {
 		// Load leads from localStorage on initial render
 		const savedLeads = localStorage.getItem('leads');
@@ -112,11 +114,13 @@ const CustomersList: FC = () => {
 	// const [isModalOpen, setIsModalOpen] = useState(false);
 	const [leadToEdit, setLeadToEdit] = useState<Lead | null>(null);
 	const [editIndex, setEditIndex] = useState<number | null>(null);
+
 	const handleEdit = (lead: Lead, index: number) => {
 		setLeadToEdit(lead); // Set the lead to edit
 		setEditIndex(index); // Track the index of the lead being edited
 		setIsFormOpen(true); // Open the AddLeadsForm
 	};
+
 	const handleSubmit = (updatedLead: Lead) => {
 		if (editIndex !== null) {
 			// Update the lead in the leads array
@@ -127,16 +131,18 @@ const CustomersList: FC = () => {
 				),
 			);
 		} else {
+			// Add new lead
 			const leadWithDate = {
 				...updatedLead,
-				created: new Date().toLocaleDateString(), // Add the current date
+				created: new Date().toLocaleDateString(),
 			};
 			setLeads((prevLeads) => [...prevLeads, leadWithDate]);
 		}
-		setIsFormOpen(false); // Close the form
-		setLeadToEdit(null); // Reset the leadToEdit state
-		setEditIndex(null); // Reset the editIndex state
+		setIsFormOpen(false);
+		setLeadToEdit(null);
+		setEditIndex(null);
 	};
+
 	const handleChangeToClient = (lead: Lead) => {
 		console.log('Changing to client:', lead);
 
@@ -369,9 +375,9 @@ const CustomersList: FC = () => {
       <Button
         color="link"
         className="dropdown-item"
-        onClick={() => handleView(lead)}
+        onClick={() => navigate(`/leads/view/${lead.email}`)}
       >
-        <Icon icon="RemoveRedEye" className="me-2" /> View
+        <Icon icon="Visibility" className="me-2" /> View
       </Button>
       <Button
         color="link"
@@ -403,81 +409,20 @@ const CustomersList: FC = () => {
 									</tbody>
 								</table>
 								{/* Modal */}
-								{viewingLead && isModalOpen && (
-									<div
-										className='modal fade show d-block'
-										tabIndex={-1}
-										style={{ background: 'rgba(0, 0, 0, 0.4)' }}>
-										{/* <div className="modal-dialog modal-lg modal-dialog-centered"> */}
-										<div className='modal-dialog modal-lg w-auto h-auto'>
-											<div className='modal-content  shadow-lg overflow-hidden'>
-												{/* Modal Header */}
-												<div className='modal-header d-flex justify-content-between align-items-center px-4 py-3 border-bottom'>
-													<h4 className='modal-title mb-0 text-lg fw-bold'>
-														{viewingLead.name}
-													</h4>
-													{/* Close X Icon */}
-													<div
-														className='cursor-pointer'
-														onClick={() => {
-															setViewingLead(null);
-															setIsModalOpen(false);
-														}}>
-														<X className='w-5 h-5 text-gray-500' />
-													</div>
-												</div>
-
-												{/* Modal Tabs */}
-												<div className='border-bottom px-4 pt-3 pb-2 d-flex gap-3'>
-													{['Profile', 'Deals', 'Notes'].map((tab) => (
-														<button
-															key={tab}
-															onClick={() =>
-																setActiveTab(
-																	tab as
-																		| 'Profile'
-																		| 'Deals'
-																		| 'Notes',
-																)
-															}
-															className={`btn px-3 py-1 rounded-pill ${
-																activeTab === tab
-																	? 'btn-primary text-white'
-																	: 'btn-light text-muted'
-															}`}>
-															{tab}
-														</button>
-													))}
-												</div>
-
-												{/* Modal Body */}
-												<div className='modal-body p-4 fullscreen-modal  '>
-													{activeTab === 'Profile' && (
-														<ProfileTab lead={viewingLead} />
-													)}
-													{activeTab === 'Deals' && <Deals />}
-													{activeTab === 'Notes' && <Notes />}
-												</div>
-											</div>
-										</div>
-									</div>
-								)}
 								{isFormOpen && (
 									<AddLeadsForm
-										onSubmit={(updatedLead) => {
-											handleSubmit(updatedLead); 
-										}}
+										onSubmit={handleSubmit}
 										onClose={() => {
-											setIsFormOpen(false); // Close the form
-											setLeadToEdit(null); // Reset the leadToEdit state
-											setEditIndex(null); // Reset the editIndex state
+											setIsFormOpen(false);
+											setLeadToEdit(null);
+											setEditIndex(null);
 										}}
-										leadToEdit={leadToEdit || undefined} // Pass the lead to edit
-										isOpen={isFormOpen} // Pass the isOpen state
-										setIsOpen={setIsFormOpen} // Pass the setIsOpen function
-										onAddLead={handleAddLead} // Pass the onAddLead function
-										isCreateDeal={false} // Add the required isCreateDeal property
-										mode='lead' // Add the required 'mode' property
+										leadToEdit={leadToEdit || undefined}
+										isOpen={isFormOpen}
+										setIsOpen={setIsFormOpen}
+										onAddLead={handleAddLead}
+										isCreateDeal={false}
+										mode="lead"
 									/>
 								)}
 							</CardBody>

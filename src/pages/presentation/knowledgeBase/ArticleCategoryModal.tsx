@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useEffect, useRef, useState } from 'react';
 import Modal from '../../../components/bootstrap/Modal';
 import Button from '../../../components/bootstrap/Button';
@@ -68,57 +69,51 @@ const ArticleCategoryModal = ({
     <Modal isOpen={show} setIsOpen={onClose} size="lg">
       <div className="modal-header">
         <h5 className="modal-title">Article Category</h5>
+        <button type="button" className="btn-close" aria-label="Close" onClick={onClose} />
       </div>
       <div className="modal-body">
         <div className="mb-3">
-          <table className="table mb-0">
+          <table className="table">
             <thead>
               <tr>
-                <th style={{ width: 40 }}>#</th>
+                <th style={{ width: 50 }}>#</th>
                 <th>Category Name</th>
-                <th>Action</th>
+                <th style={{ width: 120, textAlign: 'center' }}>Action</th>
               </tr>
             </thead>
-          </table>
-          <div
-            ref={tableBodyRef}
-            style={{ maxHeight: 150, overflowY: 'auto' }}
-          >
-            <table className="table mb-0">
-              <tbody>
-                {displayCategories.length === 0 ? (
-                  <tr>
-                    <td colSpan={3} className="text-center" style={{ height: 80 }}>
-                      <div>
-                        <i className="fa fa-list-alt" style={{ fontSize: 28, color: '#b0b8c1' }} />
-                      </div>
-                      <div className="text-muted mt-2">- No record found. -</div>
+            <tbody>
+              {displayCategories.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="text-center" style={{ height: 80 }}>
+                    <div>
+                      <i className="fa fa-list-alt" style={{ fontSize: 28, color: '#b0b8c1' }} />
+                    </div>
+                    <div className="text-muted mt-2">- No record found. -</div>
+                  </td>
+                </tr>
+              ) : (
+                displayCategories.map((cat, idx) => (
+                  <tr key={cat}>
+                    <td>{idx + 1}</td>
+                    <td>{cat}</td>
+                    <td style={{ textAlign: 'center' }}>
+                      <Button
+                        color="light"
+                        className="btn-sm"
+                        onClick={() =>
+                          parentCategories && onDeleteCategory
+                            ? handleDeleteParent(cat)
+                            : handleDeleteLocal(idx)
+                        }
+                      >
+                        <Icon icon="delete" /> Delete
+                      </Button>
                     </td>
                   </tr>
-                ) : (
-                  displayCategories.map((cat, idx) => (
-                    <tr key={idx}>
-                      <td>{idx + 1}</td>
-                      <td>{cat}</td>
-                      <td>
-                        <Button
-                          color="light"
-                          className="btn-sm"
-                          onClick={() =>
-                            parentCategories && onDeleteCategory
-                              ? handleDeleteParent(cat)
-                              : handleDeleteLocal(idx)
-                          }
-                        >
-                          <Icon icon="delete" /> Delete
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
         <div className="mb-3">
           <label className="form-label">
@@ -131,11 +126,7 @@ const ArticleCategoryModal = ({
             onKeyDown={e => {
               if (e.key === 'Enter') {
                 e.preventDefault();
-                if (parentCategories) {
-                  handleSaveParent();
-                } else {
-                  handleSaveLocal();
-                }
+                parentCategories ? handleSaveParent() : handleSaveLocal();
               }
             }}
           />
@@ -147,11 +138,7 @@ const ArticleCategoryModal = ({
           <Button
             color="primary"
             onClick={() => {
-              if (parentCategories) {
-                handleSaveParent();
-              } else {
-                handleSaveLocal();
-              }
+              parentCategories ? handleSaveParent() : handleSaveLocal();
             }}
           >
             Save

@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { FC } from 'react';
 import { useFormik } from 'formik';
+import axios from 'axios';
 import Modal, {
   ModalBody,
   ModalFooter,
@@ -26,17 +28,44 @@ const AddDepartmentModal: FC<IAddDepartmentModalProps> = ({ isOpen, setIsOpen, o
       name: '',
       parentDepartment: '',
     },
-    onSubmit: (values) => {
-      onAddDepartment(values);
-      showNotification(
-        <span className='d-flex align-items-center'>
-          <Icon icon='Info' size='lg' className='me-1' />
-          <span>Added Successfully</span>
-        </span>,
-        `Department "${values.name}" added successfully!`
-      );
-      formik.resetForm();
-      setIsOpen(false);
+    onSubmit: async (values) => {
+      try {
+        const response = await axios.post(
+          'http://localhost:8000/api/v1/departments/departments',
+          {
+            name: values.name,
+            parent: values.parentDepartment || null,
+          },
+          {
+            headers: {
+              'Authorization': 'Bearer 91|tjNgM2tl2RSRG0SfXztWt0qtgOK3bxefy5ZK4GK',
+              'X-Requested-With': 'XMLHttpRequest',
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        showNotification(
+          <span className='d-flex align-items-center'>
+            <Icon icon='Info' size='lg' className='me-1' />
+            <span>Added Successfully</span>
+          </span>,
+          `Department "${values.name}" added successfully!`
+        );
+
+        onAddDepartment(values); // if needed for parent state
+        formik.resetForm();
+        setIsOpen(false);
+      } catch (error: any) {
+        console.error('Error adding department:', error);
+        showNotification(
+          <span className='d-flex align-items-center text-danger'>
+            <Icon icon='AlertCircle' size='lg' className='me-1' />
+            <span>Error</span>
+          </span>,
+          error?.response?.data?.message || 'Something went wrong!'
+        );
+      }
     },
   });
 
@@ -58,20 +87,18 @@ const AddDepartmentModal: FC<IAddDepartmentModalProps> = ({ isOpen, setIsOpen, o
             />
           </FormGroup>
           <FormGroup id='parentDepartment' label='Parent' className='col-md-6'>
-  <Select
-    name='parentDepartment'
-    onChange={formik.handleChange}
-    value={formik.values.parentDepartment}
-    ariaLabel='Parent Department'
-  >
-    <option value=''>--</option>
-    {/* Add dynamic options here if needed */}
-    <option value='HR Manager'>HR Manager</option>
-    <option value='Finance'>Finance</option>
-    <option value='Operations'>Operations</option>
-  </Select>
-</FormGroup>
-
+            <Select
+              name='parentDepartment'
+              onChange={formik.handleChange}
+              value={formik.values.parentDepartment}
+              ariaLabel='Parent Department'
+            >
+              <option value=''>--</option>
+              <option value='HR Manager'>HR Manager</option>
+              <option value='Finance'>Finance</option>
+              <option value='Operations'>Operations</option>
+            </Select>
+          </FormGroup>
         </div>
       </ModalBody>
       <ModalFooter>

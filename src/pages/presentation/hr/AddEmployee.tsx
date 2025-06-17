@@ -1,4 +1,3 @@
-
 import React, { FC, useState } from 'react';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader } from '../../../components/bootstrap/Modal';
@@ -49,8 +48,8 @@ const AddEmployee: FC<IAddEmployeeModalProps> = ({
  
       employeeId: selectedEmployee?.employeeId || '',
       salutation: selectedEmployee?.salutation || '',
-      employeeName: selectedEmployee?.employeeName || '',
-      employeeEmail: selectedEmployee?.employeeEmail || '',
+      name: selectedEmployee?.employeeName || '',
+      email: selectedEmployee?.employeeEmail || '',
       profilePicture: null,
       dateOfBirth: selectedEmployee?.dateOfBirth || '',
       designation: selectedEmployee?.designation || '',
@@ -80,19 +79,34 @@ const AddEmployee: FC<IAddEmployeeModalProps> = ({
       exitDate: selectedEmployee?.exitDate || '',
       employmentType: selectedEmployee?.employmentType || 'N/A',
     },
-    onSubmit: (values) => {
-      console.log('Submitted Values:', values);
-      onAddEmployee({
+    onSubmit: async (values) => {
+      const employeeData = {
         id: Date.now(),
         ...values,
         hourlyRate: Number(values.hourlyRate),
-        probationPeriod: values.probationEndDate || '', // Ensure probationPeriod is set
-        name: values.employeeName, // Map employeeName to name
-        email: values.employeeEmail, // Map employeeEmail to email
-        loginAllowed: values.loginAllowed === 'Yes', // Convert loginAllowed to boolean
-      }); // Pass all required fields
-      formik.resetForm();
-      setIsOpen(false);
+        probationPeriod: values.probationEndDate || '',
+        name: values.name,
+        email: values.email,
+        loginAllowed: values.loginAllowed === 'Yes',
+        password: generateRandomPassword(), // <-- Add this line
+      };
+
+      try {
+        // POST to your local API
+        await fetch('http://localhost:4000/AddEmployee', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(employeeData),
+        });
+        onAddEmployee(employeeData); // Update local state/UI
+        formik.resetForm();
+        setIsOpen(false);
+      } catch (error) {
+        console.error('Failed to save employee:', error);
+        // Optionally show an error message to the user
+      }
     },
   });
 
@@ -106,7 +120,14 @@ const AddEmployee: FC<IAddEmployeeModalProps> = ({
     setDepartmentOptions((prevOptions) => [...prevOptions, newDepartment.name]); // Add the new department to the list
   };
 
-
+  function generateRandomPassword(length = 10) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+  }
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen} size="lg" isStaticBackdrop={true}>
@@ -146,10 +167,10 @@ const AddEmployee: FC<IAddEmployeeModalProps> = ({
           {/* Employee Name */}
           <FormGroup label="Employee Name *" className="col-md-4">
             <Input
-              name="employeeName"
+              name="name"
               placeholder="e.g. John Doe"
               onChange={formik.handleChange}
-              value={formik.values.employeeName}
+              value={formik.values.name}
               required
             />
           </FormGroup>
@@ -157,11 +178,11 @@ const AddEmployee: FC<IAddEmployeeModalProps> = ({
           {/* Employee Email */}
           <FormGroup label="Employee Email *" className="col-md-4">
             <Input
-              name="employeeEmail"
+              name="email"
               type="email"
               placeholder="e.g. johndoe@example.com"
               onChange={formik.handleChange}
-              value={formik.values.employeeEmail}
+              value={formik.values.email}
               required
             />
           </FormGroup>

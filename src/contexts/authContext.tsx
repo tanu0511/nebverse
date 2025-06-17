@@ -1,5 +1,14 @@
 import React, { createContext, FC, ReactNode, useEffect, useMemo, useState } from 'react';
-import { getUserDataWithUsername, IUserProps } from '../common/data/userDummyData';
+import USERS, { getUserDataWithUsername } from '../common/data/usernishadummydata';
+
+// Define or import the IUserProps interface
+export interface IUserProps {
+	// Add the properties that represent a user, for example:
+	id: string;
+	username: string;
+	email?: string;
+	// Add other fields as needed
+}
 
 export interface IAuthContextProps {
 	user: string;
@@ -20,8 +29,9 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
 	}, [user]);
 
 	useEffect(() => {
-		if (user !== '') {
-			setUserData(getUserDataWithUsername(user));
+		if (user) {
+			const data = getUserDataWithUsername(user);
+			setUserData(data || {});
 		} else {
 			setUserData({});
 		}

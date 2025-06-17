@@ -1,230 +1,235 @@
 import React, { FC, useCallback, useState } from 'react';
-import classNames from 'classnames';
-import { useFormik } from 'formik';
-import { useNavigate } from 'react-router-dom';
 import Page from '../../../layout/Page/Page';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Select from '../../../components/bootstrap/forms/Select';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-import Badge from '../../../components/bootstrap/Badge';
-
-import data, { CATEGORIES, TTags } from './helper/dummyKnowledgeData';
-import { demoPagesMenu } from '../../../menu';
 import useDarkMode from '../../../hooks/useDarkMode';
-import useTourStep from '../../../hooks/useTourStep';
-import { TColor } from '../../../type/color-type';
+import Icon from '../../../components/icon/Icon';
+import PaginationButtons from '../../../components/PaginationButtons';
+import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
+import MeetingModal2 from './MeetingModal2'
 
-interface IItemProps {
-	id: string | number;
-	image: string;
-	title: string;
-	description: string;
-	tags: TTags[];
-	color: TColor;
-}
-const Item: FC<IItemProps> = ({ id, image, title, description, tags, color }) => {
-	useTourStep(15);
-	const { darkModeStatus } = useDarkMode();
 
-	const navigate = useNavigate();
-	const handleOnClick = useCallback(
-		() => navigate(`../${demoPagesMenu.knowledge.subMenu.itemID.path}/${id}`),
-		[navigate, id],
-	);
-	return (
-		<Card
-			className='cursor-pointer shadow-3d-primary shadow-3d-hover'
-			onClick={handleOnClick}
-			data-tour={title}>
-			<CardBody>
-				<div
-					className={classNames(
-						'ratio ratio-1x1',
-						'rounded-2',
-						`bg-l${darkModeStatus ? 'o25' : '10'}-${color}`,
-						'mb-3',
-					)}>
-					<img
-						src={image}
-						alt=''
-						width='100%'
-						height='auto'
-						className='object-fit-contain p-3'
-					/>
-				</div>
-				<CardTitle tag='div' className='h5'>
-					{title}
-				</CardTitle>
-				<p className='text-muted truncate-line-2'>{description}</p>
-				<div className='row g-2'>
-					{!!tags &&
-						tags.map((tag) => (
-							<div key={tag.text} className='col-auto'>
-								<Badge isLight color={tag.color} className='px-3 py-2'>
-									{tag.text}
-								</Badge>
-							</div>
-						))}
-				</div>
-			</CardBody>
-		</Card>
-	);
-};
+
 
 const KnowledgeGridPage = () => {
 	const { darkModeStatus } = useDarkMode();
 
-	const [filterableData, setFilterableData] = useState(data);
+	const [filterableData, setFilterableData] = useState<any[]>([]); // Start with empty array
+	const [searchTerm, setSearchTerm] = useState('');
+	const [filterModalStatus, setFilterModalStatus] = useState(false);
+	// const [meetingModalStatus, setMeetingModalStatus] = useState(false);
+	const [selectedMeeting, setSelectedMeeting] = useState<any>(undefined);
+	const [viewModalStatus, setViewModalStatus] = useState(false);
+	const [selectAll, setSelectAll] = useState(false);
+	const [meetings, setMeetings] = useState<any[]>([]); // Your meetings data
+	const [filteredMeetings, setFilteredMeetings] = useState<any[]>([]);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [perPage, setPerPage] = useState(10);
+	const [showMeetingModal, setShowMeetingModal] = useState(false);
 
-	const searchAndFilterData = (searchValue: string, category: string) => {
-		let tempData = data;
+	// Pagination state
+	const itemsPerPage = 10;
 
-		if (category)
-			tempData = data.filter((item) =>
-				item.categories.find((categ) => categ.value === category),
-			);
-
-		return tempData.filter((item) => {
-			return (
-				item.title.toLowerCase().includes(searchValue) ||
-				item.description.toLowerCase().includes(searchValue) ||
-				item.content.toLowerCase().includes(searchValue) ||
-				item.categories.find((categ) => categ.text.toLowerCase().includes(searchValue)) ||
-				item.tags.find((tag) => tag.text.toLowerCase().includes(searchValue))
-			);
-		});
-	};
-
-	const debounce = (func: any, wait: number | undefined) => {
-		let timeout: string | number | NodeJS.Timeout | undefined;
-
-		return function executedFunction(...args: any[]) {
-			const later = () => {
-				clearTimeout(timeout);
-				func(...args);
-			};
-
-			clearTimeout(timeout);
-			timeout = setTimeout(later, wait);
-		};
-	};
-
-	const onFormSubmit = (values: { category: any; search: any }) => {
-		const searchValue = values.search.toString().toLowerCase();
-		const newData = searchAndFilterData(searchValue, values.category);
-
-		if (!values.search && !values.category) {
-			setFilterableData(data);
-		} else {
-			setFilterableData(newData);
-		}
-	};
-
-	const formik = useFormik({
-		initialValues: {
-			search: '',
-			category: '',
-		},
-		onSubmit: onFormSubmit,
-		onReset: () => setFilterableData(data),
-	});
-
-	return (
-		<PageWrapper title={demoPagesMenu.knowledge.subMenu.grid.text}>
-			<Page>
-				<div className='row'>
-					<div className='col-12 text-center my-5'>
-						<span className='display-5 fw-bold'>Hello, May I help you?</span>
-					</div>
-					<div
-						className='col-xxl-6 mx-auto text-center my-5'
-						data-tour='knowledge-filter'>
-						<form
-							className={classNames('row', 'pb-4 px-3 mx-0 g-4', 'rounded-3', [
-								`bg-l${darkModeStatus ? 'o25' : '10'}-primary`,
-							])}
-							onSubmit={formik.handleSubmit}>
-							<div className='col-md-5'>
-								<Select
-									id='category'
-									size='lg'
-									ariaLabel='Category'
-									placeholder='All Category'
-									list={Object.keys(CATEGORIES).map((c) => CATEGORIES[c])}
-									className={classNames('rounded-1', {
-										'bg-white': !darkModeStatus,
-									})}
-									onChange={(e: { target: { value: any } }) => {
-										formik.handleChange(e);
-
-										if (e.target.value)
-											debounce(
-												() =>
-													onFormSubmit({
-														...formik.values,
-														category: e.target.value,
-													}),
-												1000,
-											)();
-									}}
-									value={formik.values.category}
-								/>
-							</div>
-							<div className='col-md-5'>
-								<Input
-									id='search'
-									size='lg'
-									placeholder='Type your question...'
-									className={classNames('rounded-1', {
-										'bg-white': !darkModeStatus,
-									})}
-									onChange={(e: { target: { value: string | any[] } }) => {
-										formik.handleChange(e);
-
-										if (e.target.value.length > 2)
-											debounce(
-												() =>
-													onFormSubmit({
-														...formik.values,
-														search: e.target.value,
-													}),
-												1000,
-											)();
-
-										if (e.target.value.length === 0) formik.resetForm();
-									}}
-									value={formik.values.search}
-								/>
-							</div>
-							<div className='col-md-2'>
-								<Button
-									size='lg'
-									icon='Close'
-									color='primary'
-									className='w-100'
-									rounded={1}
-									onClick={formik.resetForm}
-									type='reset'
-									isDisable={!(formik.values.search || formik.values.category)}
-									aria-label='Clear'
-								/>
-							</div>
-						</form>
-					</div>
-				</div>
-				<div className='row mb-5'>
-					{filterableData.map((item) => (
-						<div key={item.id} className='col-xl-3 col-lg-4 col-md-6'>
-							{/* eslint-disable-next-line react/jsx-props-no-spreading */}
-							<Item {...item} />
-						</div>
-					))}
-				</div>
-			</Page>
-		</PageWrapper>
+	const paginatedData = filterableData.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage,
 	);
+
+	const totalPages = Math.ceil(filterableData.length / itemsPerPage);
+
+	// Pagination helper
+	const dataPagination = (data: any[], page: number, perPage: number) =>
+		data.slice((page - 1) * perPage, page * perPage);
+
+	// Filtering logic (simple search)
+	React.useEffect(() => {
+		let filtered = meetings;
+		if (searchTerm) {
+			filtered = meetings.filter(
+				(m) =>
+					m.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					m.host?.toLowerCase().includes(searchTerm.toLowerCase())
+			);
+		}
+		setFilteredMeetings(filtered);
+		setCurrentPage(1);
+	}, [searchTerm, meetings]);
+
+	// Select all logic
+	const handleSelectAll = (checked: boolean) => {
+		setSelectAll(checked);
+		setFilteredMeetings((prev) =>
+			prev.map((m) => ({ ...m, isSelected: checked }))
+		);
+	};
+
+	// Row select logic
+	const handleRowSelect = (id: any, checked: boolean) => {
+		setFilteredMeetings((prev) =>
+			prev.map((m) => (m.id === id ? { ...m, isSelected: checked } : m))
+		);
+	};
+
+	// Dummy handlers for modals/actions
+	const handleViewMeeting = (meeting: any) => {
+		setSelectedMeeting(meeting);
+		setViewModalStatus(true);
+	};
+	const handleDelete = (id: any) => {
+		setMeetings((prev) => prev.filter((m) => m.id !== id));
+	};
+
+  return (
+    <>
+      <PageWrapper title="Meetings List">
+        <SubHeader>
+          <SubHeaderLeft>
+            <label className="border-0 bg-transparent cursor-pointer me-0" htmlFor="searchInput">
+              <Icon icon="Search" size="2x" color="primary" />
+            </label>
+            <Input
+              id="searchInput"
+              type="search"
+              className="border-0 shadow-none bg-transparent"
+              placeholder="Search meeting..."
+              value={searchTerm}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+            />
+          </SubHeaderLeft>
+          <SubHeaderRight>
+            <Button
+              icon="FilterAlt"
+              color="primary"
+              isLight
+              aria-label="Filter"
+              onClick={() => setFilterModalStatus(true)}
+            >
+              Filter
+            </Button>
+            <Button
+              icon="add"
+              color="primary"
+              isLight
+              onClick={() => {
+                setSelectedMeeting(undefined);
+                // setMeetingModalStatus(true);
+				setShowMeetingModal(true);
+              }}
+            >
+              Add Meeting
+            </Button>
+            <Button
+              color="info"
+              icon="CloudDownload"
+              isLight
+              tag="a"
+              to="/meetings-export.csv"
+              download
+            >
+              Export
+            </Button>
+            <div className="d-inline-flex align-items-center ms-2">
+              <Button
+                color="primary"
+                className="me-1"
+                isLight
+                // style={{ width: 40, height: 40, padding: 0 }}
+              >
+                <Icon icon="List" className="fs-5" />
+              </Button>
+              <Button
+                color="primary"
+                isLight
+              >
+                <Icon icon="CalendarToday" className="fs-5" />
+              </Button>
+            </div>
+          </SubHeaderRight>
+        </SubHeader>
+        <Page>
+          <div className="row h-100">
+            <div className="col-12">
+              <Card stretch>
+                <CardBody isScrollable className="table-responsive">
+                  <table className="table table-modern table-hover mb-0">
+                    <thead>
+                      <tr>
+                        <th>
+                          <input
+                            type="checkbox"
+                            checked={selectAll}
+                            onChange={(e) => handleSelectAll(e.target.checked)}
+                          />
+                        </th>
+                        <th>Meeting Id</th>
+                        <th>Meeting Title</th>
+                        <th>Meeting Host</th>
+                        <th>Start On</th>
+                        <th>End On</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paginatedData.length === 0 ? (
+                        <tr>
+                          <td colSpan={8} className="text-center">
+                            No data available in table
+                          </td>
+                        </tr>
+                      ) : (
+                        paginatedData.map((item) => (
+                          <tr key={item.id}>
+                            <td>
+                              <input
+                                type="checkbox"
+                                checked={item.isSelected || false}
+                                onChange={(e) => handleRowSelect(item.id, e.target.checked)}
+                              />
+                            </td>
+                            <td>{item.id}</td>
+                            <td>{item.title}</td>
+                            <td>{item.host || '-'}</td>
+                            <td>{item.startOn || '-'}</td>
+                            <td>{item.endOn || '-'}</td>
+                            <td>{item.status || '-'}</td>
+                            <td>
+                              <Button size="sm" color="primary">View</Button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </CardBody>
+                <PaginationButtons
+                  data={meetings}
+                  label="Meetings"
+                  setCurrentPage={setCurrentPage}
+                  currentPage={currentPage}
+                  perPage={perPage}
+                  setPerPage={setPerPage}
+                />
+              </Card>
+            </div>
+          </div>
+        </Page>
+      </PageWrapper>
+
+      {/* <MeetingModal
+        show={meetingModalStatus}
+        onClose={() => setMeetingModalStatus(false)} /> */}
+
+		<MeetingModal2
+		show={showMeetingModal}
+		onClose={() => setShowMeetingModal(false)}
+		/>
+		</>
+	);
+
 };
 
 export default KnowledgeGridPage;

@@ -1,247 +1,265 @@
-// import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-// import React, { FC, useState, useEffect } from 'react';
-// import Icon from '../../../components/icon/Icon';
-// import Card, {
-//     CardActions,
-//     CardBody,
-//     CardHeader, 
-//     CardTitle,
-// } from '../../../components/bootstrap/Card';
-// import Button from '../../../components/bootstrap/Button';
-// import PaginationButtons, { dataPagination, PER_COUNT} from '../../../components/PaginationButtons';    
-// import AddProjectTemplateModal from './AddProjectTemplateModal';
-// // import CustomerEditModal from '../presentation/crm/CustomerEditModal'; 
-// import CustomerEditModal from '../crm/CustomerEditModal';
-// import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import React, { useState, useEffect } from 'react';
+import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
+import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
+import Page from '../../../layout/Page/Page';
+import { demoPagesMenu } from '../../../menu';
+import Card, { CardBody } from '../../../components/bootstrap/Card';
+import Button from '../../../components/bootstrap/Button';
+import Icon from '../../../components/icon/Icon';
+import Input from '../../../components/bootstrap/forms/Input';
+import PaginationButtons from '../../../components/PaginationButtons';
+import AddProjectTemplateModal from './AddProjectTemplateModal';
+import CustomerEditModal from './CustomerEditModal';
+import ViewModal from './ViewModal'; 
 
-// interface ICommonUpcomingEventsProps {
-//     isFluid?: boolean;
-// }
+const PER_COUNT: { [key: string]: number } = { '5': 5, '10': 10, '20': 20 }; // Add or adjust as needed
 
-// interface Project {
-//     projectName: string;
-//     members: string;
-//     projectCategory: string;
-// }
+// Define the Project interface
+interface Project {
+    projectName: string;
+    members?: string;
+    projectCategory: string;
+}
 
-// const ProjectTemplate: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
-//     const [currentPage, setCurrentPage] = useState(1);
-//     const [perPage, setPerPage] = useState(PER_COUNT['5']);
-//     const [isModalOpen, setIsModalOpen] = useState(false); // For AddProjectTemplateModal
-//     const [isCustomerEditModalOpen, setIsCustomerEditModalOpen] = useState(false); // For CustomerEditModal
-//     const [isEditMode, setIsEditMode] = useState(false); // Track if the modal is in edit mode
-//     const [editData, setEditData] = useState<Project | null>(null); // Store the data to edit
-//     const [projectData, setProjectData] = useState<Project[]>([]); // Store the list of projects
+const ProjectTemplate: React.FC = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(PER_COUNT['5']);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCustomerEditModalOpen, setIsCustomerEditModalOpen] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editData, setEditData] = useState<Project | null>(null);
+    const [projectData, setProjectData] = useState<Project[]>([]);
+    const [viewProject, setViewProject] = useState<Project | null>(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState<string>(''); // <-- Add searchTerm state
 
-//     const handleSaveProjectTemplate = (data: { projectName: string; projectCategory: string; allowManualLogs: boolean; summary: string; notes: string }) => {
-//         if (isEditMode && editData) {
-//             // Update the existing item
-//             setProjectData((prevData) =>
-//                 prevData.map((item) =>
-//                     item.projectName === editData.projectName
-//                         ? { ...item, projectName: data.projectName, projectCategory: data.projectCategory }
-//                         : item
-//                 )
-//             );
-//         } else {
-//             // Add a new item
-//             setProjectData((prevData) => [
-//                 ...prevData,
-//                 {
-//                     projectName: data.projectName,
-//                     members: 'N/A', // Update dynamically if needed
-//                     projectCategory: data.projectCategory,
-//                 },
-//             ]);
-//         }
+    // Dynamic search filter for all relevant fields
+    const filteredData = projectData.filter((item) =>
+        searchTerm === '' ||
+        (item.projectName && item.projectName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (item.members && item.members.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (item.projectCategory && item.projectCategory.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
 
-//         // Reset the modal state
-//         setIsModalOpen(false); // Close the modal
-//         setIsEditMode(false); // Reset edit mode
-//         setEditData(null); // Clear edit data
-//     };
+    const handleSaveProjectTemplate = (data: { projectName: string; projectCategory: string; allowManualLogs: boolean; summary: string; notes: string }) => {
+        if (isEditMode && editData) {
+            setProjectData((prevData) =>
+                prevData.map((item) =>
+                    item.projectName === editData.projectName
+                        ? { ...item, projectName: data.projectName, projectCategory: data.projectCategory, summary: data.summary, notes: data.notes }
+                        : item
+                )
+            );
+        } else {
+            setProjectData((prevData) => [
+                ...prevData,
+                {
+                    projectName: data.projectName,
+                    members: 'N/A',
+                    projectCategory: data.projectCategory,
+                    summary: data.summary,
+                    notes: data.notes,
+                },
+            ]);
+        }
 
-//     const handleAction = (action: string, projectName: string) => {
-//         if (action === 'Edit') {
-//             const itemToEdit = projectData.find((item) => item.projectName === projectName);
-//             if (itemToEdit) {
-//                 setEditData(itemToEdit); // Set the data to edit
-//                 setIsEditMode(true); // Enable edit mode
-//                 setIsModalOpen(true); // Open the modal
-//             }
-//         } else if (action === 'Delete') {
-//             setProjectData((prevData) => prevData.filter((item) => item.projectName !== projectName));
-//         } else if (action === 'Create Project') {
-//             setIsCustomerEditModalOpen(true); // Open the CustomerEditModal
-//         } else {
-//             console.log(`${action} clicked for project: ${projectName}`);
-//         }
-//     };
+        setIsModalOpen(false);
+        setIsEditMode(false);
+        setEditData(null);
+    };
 
-//     const handleAddProject = (project: Project): void => {
-//         console.log('Adding project:', project);
+    const handleAction = (action: string, projectName: string) => {
+        if (action === 'Edit') {
+            const itemToEdit = projectData.find((item) => item.projectName === projectName);
+            if (itemToEdit) {
+                setEditData(itemToEdit); 
+                setIsEditMode(true);
+                setIsModalOpen(true); 
+            }
+        } else if (action === 'Delete') {
+            setProjectData((prevData) => prevData.filter((item) => item.projectName !== projectName));
+        } else if (action === 'Create Project') {
+            setIsCustomerEditModalOpen(true); 
+        } else {
+            console.log(`${action} clicked for project: ${projectName}`);
+        }
+    };
 
-//         // Ensure the project object has all required fields
-//         if (!project.projectName || !project.projectCategory) {
-//             console.error('Project Name and Project Category are required.');
-//             return;
-//         }
+    const handleAddProject = (): void => {
+        setIsCustomerEditModalOpen(false);
+    };
 
-//         // Add the new project to the projectData state
-//         setProjectData((prevData) => [
-//             ...prevData,
-//             {
-//                 projectName: project.projectName,
-//                 members: project.members || 'N/A', // Default to 'N/A' if members are not provided
-//                 projectCategory: project.projectCategory,
-//             },
-//         ]);
-//         setIsCustomerEditModalOpen(false); // Close the CustomerEditModal after adding the project
-//     };
+    useEffect(() => {
+        if (!isModalOpen) {
+            setEditData(null); 
+        }
+    }, [isModalOpen]);
 
-//     useEffect(() => {
-//         if (!isModalOpen) {
-//             setEditData(null); // Clear edit data
-//         }
-//     }, [isModalOpen]);
+    function dataPagination(data: Project[], currentPage: number, perPage: number) {
+        const startIndex = (currentPage - 1) * perPage;
+        const endIndex = startIndex + perPage;
+        return data.slice(startIndex, endIndex);
+    }
 
-//     return (
-//         <>
-//             <Card stretch>
-//                 <CardHeader borderSize={1}>
-//                     <CardTitle tag="div" className="h3">
-//                         Project Template
-//                     </CardTitle>
-//                     <CardActions>
-//                         <Button
-//                             icon="Add"
-//                             color="primary"
-//                             isLight
-//                             onClick={() => {
-//                                 setIsEditMode(false); // Disable edit mode
-//                                 setEditData(null); // Clear edit data
-//                                 setIsModalOpen(true); // Open the modal
-//                             }}
-//                         >
-//                             Add Project Template
-//                         </Button>
-//                     </CardActions>
-//                 </CardHeader>
-//                 <CardBody className="table-responsive" isScrollable={isFluid}>
-//                     <table className="table table-modern">
-//                         <thead>
-//                             <tr>
-//                                 <th>Project Name</th>
-//                                 <th>Members</th>
-//                                 <th>Project Category</th>
-//                                 <th>Action</th>
-//                             </tr>
-//                         </thead>
-//                         <tbody>
-//                             {projectData.length === 0 ? (
-//                                 <tr>
-//                                     <td colSpan={4} className="text-center">
-//                                         No data available in table
-//                                     </td>
-//                                 </tr>
-//                             ) : (
-//                                 dataPagination(projectData, currentPage, perPage).map((item: Project) => (
-//                                     <tr key={item.projectName}>
-//                                         <td>{item.projectName}</td>
-//                                         <td>{item.members}</td>
-//                                         <td>{item.projectCategory}</td>
-//                                         <td>
-//                                             <div className="dropdown">
-//                                                 <button
-//                                                     className="btn btn-light dropdown-toggle"
-//                                                     type="button"
-//                                                     id={`dropdownMenuButton-${item.projectName}`}
-//                                                     data-bs-toggle="dropdown"
-//                                                     aria-expanded="false"
-//                                                 >
-//                                                     <Icon icon="MoreVert" />
-//                                                 </button>
-//                                                 <ul
-//                                                     className="dropdown-menu"
-//                                                     aria-labelledby={`dropdownMenuButton-${item.projectName}`}
-//                                                 >
-//                                                     <li>
-//                                                         <button
-//                                                             className="dropdown-item"
-//                                                             onClick={() => handleAction('View', item.projectName)}
-//                                                         >
-//                                                             <Icon icon="Visibility" className="me-2" />
-//                                                             View
-//                                                         </button>
-//                                                     </li>
-//                                                     <li>
-//                                                         <button
-//                                                             className="dropdown-item"
-//                                                             onClick={() => handleAction('Create Project', item.projectName)}
-//                                                         >
-//                                                             <Icon icon="Add" className="me-2" />
-//                                                             Create Project
-//                                                         </button>
-//                                                     </li>
-//                                                     <li>
-//                                                         <button
-//                                                             className="dropdown-item"
-//                                                             onClick={() => handleAction('Edit', item.projectName)}
-//                                                         >
-//                                                             <Icon icon="Edit" className="me-2" />
-//                                                             Edit
-//                                                         </button>
-//                                                     </li>
-//                                                     <li>
-//                                                         <button
-//                                                             className="dropdown-item text-danger"
-//                                                             onClick={() => handleAction('Delete', item.projectName)}
-//                                                         >
-//                                                             <Icon icon="Delete" className="me-2" />
-//                                                             Delete
-//                                                         </button>
-//                                                     </li>
-//                                                 </ul>
-//                                             </div>
-//                                         </td>
-//                                     </tr>
-//                                 ))
-//                             )}
-//                         </tbody>
-//                     </table>
-//                 </CardBody>
-//                 <PaginationButtons
-//                     data={projectData}
-//                     label="items"
-//                     setCurrentPage={setCurrentPage}
-//                     currentPage={currentPage}
-//                     perPage={perPage}
-//                     setPerPage={setPerPage}
-//                 />
-//             </Card>
-//             <AddProjectTemplateModal
-//                 isOpen={isModalOpen}
-//                 onClose={() => {
-//                     setIsModalOpen(false); // Close the modal
-//                     setIsEditMode(false); // Reset edit mode
-//                     setEditData(null); // Clear edit data
-//                 }}
-//                 onSave={handleSaveProjectTemplate}
-//                 editData={isEditMode && editData ? { projectName: editData.projectName, projectCategory: editData.projectCategory } : undefined}
-//             />
-//             <CustomerEditModal
-//                 setIsOpen={setIsCustomerEditModalOpen}
-//                 isOpen={isCustomerEditModalOpen}
-//                 onAddProject={handleAddProject}
-//             />
-//         </>
-//     );
-// };
+    return (
+        <PageWrapper title={demoPagesMenu.crm.subMenu.customersList.text}>
+            <SubHeader>
+                <SubHeaderLeft>
+                    <label
+                        className='border-0 bg-transparent cursor-pointer me-0'
+                        htmlFor='searchInput'
+                        aria-label='Search'>
+                        <Icon icon='Search' size='2x' color='primary' />
+                    </label>
+                    <Input
+                        id='searchInput'
+                        type='search'
+                        className='border-0 shadow-none bg-transparent'
+                        placeholder='Search..'
+                        value={searchTerm}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                    />
+                </SubHeaderLeft>
+                <SubHeaderRight>
+                    <Button
+                        icon="Add"
+                        color="primary"
+                        isLight
+                        onClick={() => {
+                            setIsEditMode(false); 
+                            setEditData(null); 
+                            setIsModalOpen(true); 
+                        }}
+                    >
+                        Add Project Template
+                    </Button>
+                </SubHeaderRight>
+            </SubHeader>
+            <Page>
+                <div className='row h-100'>
+                    <div className='col-12'>
+                        <Card stretch>
+                            <CardBody isScrollable className='table-responsive'>
+                                <table className="table table-modern">
+                                    <thead>
+                                        <tr>
+                                            <th>Project Name</th>
+                                            <th>Members</th>
+                                            <th>Project Category</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredData.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={4} className="text-center">
+                                                    No data available in table
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            dataPagination(filteredData, currentPage, perPage).map((item: Project) => (
+                                                <tr key={item.projectName}>
+                                                    <td>{item.projectName}</td>
+                                                    <td>{item.members}</td>
+                                                    <td>{item.projectCategory}</td>
+                                                    <td>
+                                                        <div className="dropdown">
+                                                            <button
+                                                                className="btn btn-light dropdown-toggle"
+                                                                type="button"
+                                                                id={`dropdownMenuButton-${item.projectName}`}
+                                                                data-bs-toggle="dropdown"
+                                                                aria-expanded="false"
+                                                            >
+                                                                <Icon icon="MoreVert" />
+                                                            </button>
+                                                            <ul
+                                                                className="dropdown-menu"
+                                                                aria-labelledby={`dropdownMenuButton-${item.projectName}`}
+                                                            >
+                                                                <li>
+                                                                    <button
+                                                                        className="dropdown-item"
+                                                                        onClick={() => {
+                                                                            setViewProject(item);
+                                                                            setIsViewModalOpen(true);
+                                                                        }}
+                                                                    >
+                                                                        <Icon icon="Visibility" className="me-2" />
+                                                                        View
+                                                                    </button>
+                                                                </li>
+                                                                <li>
+                                                                    <button
+                                                                        className="dropdown-item"
+                                                                        onClick={() => handleAction('Create Project', item.projectName)}
+                                                                    >
+                                                                        <Icon icon="Add" className="me-2" />
+                                                                        Create Project
+                                                                    </button>
+                                                                </li>
+                                                                <li>
+                                                                    <button
+                                                                        className="dropdown-item"
+                                                                        onClick={() => handleAction('Edit', item.projectName)}
+                                                                    >
+                                                                        <Icon icon="Edit" className="me-2" />
+                                                                        Edit
+                                                                    </button>
+                                                                </li>
+                                                                <li>
+                                                                    <button
+                                                                        className="dropdown-item text-danger"
+                                                                        onClick={() => handleAction('Delete', item.projectName)}
+                                                                    >
+                                                                        <Icon icon="Delete" className="me-2" />
+                                                                        Delete
+                                                                    </button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </CardBody>
+                            <PaginationButtons
+                                data={filteredData}
+                                label='items'
+                                setCurrentPage={setCurrentPage}
+                                currentPage={currentPage}
+                                perPage={perPage}
+                                setPerPage={setPerPage}
+                            />
+                        </Card>
+                    </div>
+                </div>
+            </Page>
+            <AddProjectTemplateModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false); 
+                    setIsEditMode(false); 
+                    setEditData(null); 
+                }}
+                onSave={handleSaveProjectTemplate}
+                editData={isEditMode && editData ? { projectName: editData.projectName, projectCategory: editData.projectCategory } : undefined}
+            />
+            <CustomerEditModal
+                setIsOpen={setIsCustomerEditModalOpen}
+                isOpen={isCustomerEditModalOpen}
+                onAddProject={handleAddProject}
+            />
+            <ViewModal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+                project={viewProject}
+            />
+        </PageWrapper>
+    );
+};
 
-// const WrappedProjectTemplate: FC<ICommonUpcomingEventsProps> = (props) => (
-//     <PageWrapper>
-//         <ProjectTemplate {...props} />
-//     </PageWrapper>
-// );
-
-// export default WrappedProjectTemplate;
+export default ProjectTemplate;

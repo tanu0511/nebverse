@@ -194,14 +194,9 @@ const Contract = () => {
 																	<Button
 																		color='link'
 																		className='dropdown-item'
-																		onClick={() =>
-																			handleOpenPublicModal(i)
-																		}>
-																		<Icon
-																			icon='RemoveRedEye'
-																			className='me-2'
-																		/>{' '}
-																		View
+																		onClick={() => navigate('/contract/view', { state: { contract: i } })}
+																	>
+																		<Icon icon='RemoveRedEye' className='me-2' /> View
 																	</Button>
 
 																	<Button

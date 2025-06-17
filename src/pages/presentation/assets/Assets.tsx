@@ -1,183 +1,375 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
+import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
+import Page from '../../../layout/Page/Page';
+import Card, { CardBody } from '../../../components/bootstrap/Card';
+import Input from '../../../components/bootstrap/forms/Input';
+import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/bootstrap/Dropdown';
+import PaginationButtons, { dataPagination, PER_COUNT } from '../../../components/PaginationButtons';
 import Button from '../../../components/bootstrap/Button';
+import Icon from '../../../components/icon/Icon';
+import AddAssetModal from './AddAssetModal';
+import LendAssetModal from './LentAssetModal';
+import ReturnAssetModal from './ReturnAssetModal';
+import ViewAssetModal from './ViewAssetModal';
 
-interface AddNewAssetModalProps {
-  show: boolean;
-  onHide: () => void;
-  onAddAsset: (asset: { assetName: string; status: string; assetPicture?: string }) => void;
-  initialAsset?: { assetName: string; status: string; assetPicture?: string };
-}
+type Asset = {
+  id: number;
+  assetPicture?: string;
+  assetName?: string;
+  lentTo?: string;
+  status?: string;
+  date?: string; 
+  startOn?: string;
+  startTime?: string;
+  name?: string;
+};
 
-const Assets: React.FC<AddNewAssetModalProps> = ({ show, onHide, onAddAsset, initialAsset }) => {
-  const [assetType, setAssetType] = useState("");
-  const [assetTypes] = useState<string[]>(["Laptop", "Phone", "Tablet"]);
-  const [status, setStatus] = useState(initialAsset?.status || "Available");
-  const [assetName, setAssetName] = useState(initialAsset?.assetName || "");
-  const [assetPicture, setAssetPicture] = useState<string | undefined>(initialAsset?.assetPicture || undefined);
+const Assets = () => {
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(PER_COUNT['10']);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [addAssetModalOpen, setAddAssetModalOpen] = useState(false);
+  const [lendModalOpen, setLendModalOpen] = useState(false);
+  const [returnModalOpen, setReturnModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+  const [returnAsset, setReturnAsset] = useState<Asset | null>(null);
+  const [viewAsset, setViewAsset] = useState<Asset | null>(null);
+  const [editAsset, setEditAsset] = useState<Asset | null>(null);
+  
+  const [assetData, setAssetData] = useState<Asset[]>([]);
 
-  if (!show) return null;
+  const employees = [
+    { id: 1, name: 'Atharva', status: 'Inactive' },
+    { id: 2, name: 'John Doe', status: 'Active' },
+  ];
 
-  const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAssetPicture(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  const filteredData = assetData.filter(
+    (item: Asset) =>
+      (item.assetPicture || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.assetName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.lentTo || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.status || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedIds(filteredData.map((item: Asset) => item.id));
+    } else {
+      setSelectedIds([]);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!assetName) return;
-    onAddAsset({
-      assetName,
-      status,
-      assetPicture,
-    });
-    // reset campi se vuoi
-    setAssetName("");
-    setAssetPicture(undefined);
-    setStatus("Available");
-    setAssetType("");
+  const handleLend = (asset: Asset) => {
+    setSelectedAsset(asset);
+    setLendModalOpen(true);
+  };
+
+  const handleLendSave = (data: { employee: string; dateGiven: string; dateReturn: string; notes: string }) => {
+    setAssetData(prev =>
+      prev.map(asset =>
+        asset.id === selectedAsset?.id
+          ? {
+              ...asset,
+              lentTo: data.employee,
+              startOn: data.dateGiven,
+              date: data.dateGiven, 
+              startTime: data.dateReturn, 
+              estimatedReturn: data.dateReturn,
+              notes: data.notes,
+              status: 'Lent',
+            }
+          : asset
+      )
+    );
+    setSelectedAsset(null);
+  };
+
+  const handleReturn = (asset: Asset) => {
+    setReturnAsset(asset);
+    setReturnModalOpen(true);
+  };
+
+  const handleReturnSave = (data: { returnDate: string; notes: string }) => {
+    setAssetData(prev =>
+      prev.map(asset =>
+        asset.id === returnAsset?.id
+          ? {
+              ...asset,
+              status: 'Available',
+              returnDate: data.returnDate,
+              notes: data.notes,
+              lentTo: undefined,
+              startOn: undefined,
+              estimatedReturn: undefined,
+              date: undefined, 
+            }
+          : asset
+      )
+    );
+    setReturnAsset(null);
+  };
+
+  const handleDelete = (id: number) => {
+    setAssetData(prev => prev.filter(asset => asset.id !== id));
+  };
+
+  const handleView = (asset: Asset) => {
+    setViewAsset(asset);
+    setViewModalOpen(true);
   };
 
   return (
-    <div className="modal-backdrop show">
-      <div className="modal d-block" tabIndex={-1}>
-        <div className="modal-dialog" style={{ maxWidth: 900, width: "100%" }}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Add New Asset</h5>
-              <Button color="link" className="btn-close" onClick={onHide} />
-            </div>
-            <div className="modal-body">
-              <div className="bg-white rounded p-4" style={{ maxWidth: 1100, margin: "32px auto" }}>
-                <h2 className="fw-semibold fs-2 mb-4">Add Asset Info</h2>
-                <form onSubmit={handleSubmit}>
-                  <div className="d-flex gap-4 mb-4">
-                    <div className="flex-grow-1">
-                      <label className="fw-medium form-label">
-                        Asset Name <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control mb-3"
-                        placeholder="e.g. Laptop, iPhone, etc"
-                        required
-                        value={assetName}
-                        onChange={e => setAssetName(e.target.value)}
-                      />
+    <PageWrapper title="Asset">
+      <SubHeader>
+        <SubHeaderLeft>
+          <label className="border-0 bg-transparent cursor-pointer me-0" htmlFor="searchInput">
+            <Icon icon="Search" size="2x" color="primary" />
+          </label>
+          <Input
+            id="searchInput"
+            type="search"
+            className="border-0 shadow-none bg-transparent"
+            placeholder="Search Asset..."
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
+            value={searchTerm}
+          />
+        </SubHeaderLeft>
+        <SubHeaderRight>
+          <Button
+            icon='Add'
+            color='primary'
+            isLight
+            onClick={() => setAddAssetModalOpen(true)}
+          >
+            Add New Asset
+          </Button>
+        </SubHeaderRight>
+      </SubHeader>
+      <Page>
+        <div className="row h-100">
+          <div className="col-12">
+            <Card stretch>
+              <CardBody isScrollable className="table-responsive">
+                <table className="table table-modern table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th style={{  textAlign: 'center' }}>
+                        <input
+                          type="checkbox"
+                          checked={
+                            filteredData.length > 0 &&
+                            selectedIds.length === filteredData.length
+                          }
+                          onChange={handleSelectAll}
+                          aria-label="Select all"
+                        />
+                      </th>
+                      <th>Asset Picture</th>
+                      <th>Asset Name</th>
+                      <th>Lent To</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                      <th>Action</th> 
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dataPagination(filteredData, currentPage, perPage).length > 0 ? (
+                      dataPagination(filteredData, currentPage, perPage).map((item, idx) => (
+                        <tr key={item.id} style={{ height: '56px' }}>
+                          <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                            {/* Show row number instead of checkbox */}
+                            {(currentPage - 1) * perPage + idx + 1}
+                          </td>
+                          <td>
+                            {item.assetPicture
+                              ? <img src={item.assetPicture} alt="Asset" style={{ maxHeight: 40, maxWidth: 60, objectFit: 'cover' }} />
+                              : '-'}
+                          </td>
+                          <td>{item.assetName || '-'}</td>
+                          <td>{item.lentTo || '-'}</td>
+                           <td>
+                            {item.status && (
+                              <span
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  background:
+                                    item.status === 'Lent'
+                                      ? '#ffeaea'
+                                      : 'transparent',
+                                  padding: item.status === 'Lent' ? '2px 8px' : undefined,
+                                  borderRadius: item.status === 'Lent' ? '6px' : undefined,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    display: 'inline-block',
+                                    width: 10,
+                                    height: 10,
+                                    borderRadius: '50%',
+                                    marginRight: 6,
+                                    background:
+                                      item.status === 'Available'
+                                        ? '#2ecc40'
+                                        : item.status === 'Lent'
+                                        ? '#ffb300'
+                                        : item.status === 'Lost'
+                                        ? '#ffc107'
+                                        : item.status === 'Damaged'
+                                        ? '#ff69b4'
+                                        : item.status === 'Non Functional'
+                                        ? '#e53935'
+                                        : item.status === 'Under Maintenance'
+                                        ? '#343a40'
+                                        : '#adb5bd',
+                                  }}
+                                />
+                                {item.status}
+                              </span>
+                            )}
+                          </td> 
+                          <td>
+                            {item.startOn || item.estimatedReturn ? (
+                              <div>
+                                {item.startOn && (
+                                  <div>
+                                    Given Date: {new Date(item.startOn).toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
+                                  </div>
+                                )}
+                                {item.estimatedReturn && (
+                                  <div>
+                                    Estimated Return: {new Date(item.estimatedReturn).toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              item.date || '-'
+                            )}
+                          </td>
+                          <td>
+                            <Dropdown>
+                              <DropdownToggle hasIcon={false}>
+                                <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
+                              </DropdownToggle>
+                              <DropdownMenu isAlignmentEnd>
+                                <Button color="link" className="dropdown-item" onClick={() => handleView(item)}>
+                                  <Icon icon="Visibility" className="me-2" /> View
+                                </Button>
+                                <Button
+                                  color="link"
+                                  className="dropdown-item"
+                                  onClick={() => {
+                                    setEditAsset(item);
+                                    setAddAssetModalOpen(true);
+                                  }}
+                                >
+                                  <Icon icon="Edit" className="me-2" /> Edit
+                                </Button>
 
-                      <label className="fw-medium form-label">
-                        Serial Number <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control mb-3"
-                        placeholder="Serial Number"
-                        required
-                      />
-
-                      <label className="fw-medium form-label">Location</label>
-                      <input
-                        type="text"
-                        className="form-control mb-3"
-                        placeholder="Location"
-                      />
-
-                      <label className="fw-medium form-label">Description</label>
-                      <textarea
-                        className="form-control mb-3"
-                        placeholder="Enter Description (optional)"
-                        style={{ minHeight: 80 }}
-                      />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <label className="fw-medium form-label">
-                        Asset Type <span className="text-danger">*</span>
-                      </label>
-                      <div className="d-flex gap-2 mb-3">
-                        <select
-                          className="form-select"
-                          value={assetType}
-                          onChange={e => setAssetType(e.target.value)}
-                        >
-                          <option value="">--</option>
-                          {assetTypes.map(type => (
-                            <option key={type} value={type}>{type}</option>
-                          ))}
-                        </select>
-                        <Button type="button" color="light" className="px-3">
-                          Add
-                        </Button>
-                      </div>
-
-                      <label className="fw-medium form-label">
-                        Asset Picture <span title="You can upload an image of the asset" style={{ cursor: "pointer", color: "#888" }}>?</span>
-                      </label>
-                      <div className="border rounded-3 d-flex align-items-center justify-content-center flex-column mb-3 mt-2" style={{ height: 140 }}>
-                        <input type="file" style={{ display: "none" }} id="asset-picture" accept="image/*" onChange={handlePictureChange} />
-                        <label htmlFor="asset-picture" style={{ cursor: "pointer", color: "#888", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                          {assetPicture ? (
-                            <img src={assetPicture} alt="Preview" style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 4, marginBottom: 8 }} />
-                          ) : (
-                            <>
-                              <span style={{ fontSize: 36, marginBottom: 8 }}>☁</span>
-                              <span>Choose a file</span>
-                            </>
-                          )}
-                        </label>
-                      </div>
-
-                      <label className="fw-medium form-label">Value</label>
-                      <input
-                        type="text"
-                        className="form-control mb-3"
-                        placeholder="Value"
-                      />
-
-                      <label className="fw-medium form-label">Status</label>
-                      <div className="d-flex gap-3 mt-2 mb-3">
-                        <div className="form-check">
-                          <input className="form-check-input" type="radio" name="status" value="Available" checked={status === "Available"} onChange={() => setStatus("Available")} id="status-available" />
-                          <label className="form-check-label" htmlFor="status-available">Available</label>
-                        </div>
-                        <div className="form-check">
-                          <input className="form-check-input" type="radio" name="status" value="Non Functional" checked={status === "Non Functional"} onChange={() => setStatus("Non Functional")} id="status-nonfunctional" />
-                          <label className="form-check-label" htmlFor="status-nonfunctional">Non Functional</label>
-                        </div>
-                        <div className="form-check">
-                          <input className="form-check-input" type="radio" name="status" value="Lost" checked={status === "Lost"} onChange={() => setStatus("Lost")} id="status-lost" />
-                          <label className="form-check-label" htmlFor="status-lost">Lost</label>
-                        </div>
-                        <div className="form-check">
-                          <input className="form-check-input" type="radio" name="status" value="Damaged" checked={status === "Damaged"} onChange={() => setStatus("Damaged")} id="status-damaged" />
-                          <label className="form-check-label" htmlFor="status-damaged">Damaged</label>
-                        </div>
-                        <div className="form-check">
-                          <input className="form-check-input" type="radio" name="status" value="Under Maintenance" checked={status === "Under Maintenance"} onChange={() => setStatus("Under Maintenance")} id="status-maintenance" />
-                          <label className="form-check-label" htmlFor="status-maintenance">Under Maintenance</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="d-flex gap-3 mt-4">
-                    <Button type="submit" color="primary" className="px-4 fw-medium fs-5">
-                      Save
-                    </Button>
-                    <Button type="button" color="light" className="px-4 fw-medium fs-5 text-secondary" onClick={onHide}>
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            </div>
+                                {!(["Under Maintenance", "Damaged", "Non Functional","Lost"].includes(item.status || "")) && (
+                                  item.lentTo && item.startOn && item.estimatedReturn ? (
+                                    <Button
+                                      color="link"
+                                      className="dropdown-item"
+                                      onClick={() => handleReturn(item)}
+                                    >
+                                      <Icon icon="Autorenew" className="me-2" /> Return
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      color="link"
+                                      className="dropdown-item"
+                                      onClick={() => handleLend(item)}
+                                    >
+                                      <Icon icon="redo" className="me-2" /> Lent
+                                    </Button>
+                                  )
+                                )}
+                                <Button
+                                  color="link"
+                                  className="dropdown-item text-danger"
+                                  onClick={() => handleDelete(item.id)}
+                                >
+                                  <Icon icon="Delete" className="me-2" /> Delete
+                                </Button>
+                              </DropdownMenu>
+                            </Dropdown>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="text-center">
+                          No records found.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </CardBody>
+              <PaginationButtons
+                data={filteredData}
+                label="Asset"
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+                perPage={perPage}
+                setPerPage={setPerPage}
+              />
+            </Card>
           </div>
         </div>
-      </div>
-    </div>
+      </Page>
+      <AddAssetModal
+        isOpen={addAssetModalOpen}
+        setIsOpen={(open) => {
+          setAddAssetModalOpen(open);
+          if (!open) setEditAsset(null); 
+        }}
+        onSave={(asset) => {
+          if (editAsset) {
+            setAssetData(prev =>
+              prev.map(a => (a.id === editAsset.id ? { ...a, ...asset, id: editAsset.id } : a))
+            );
+            setEditAsset(null);
+          } else {
+            setAssetData(prev => [
+              ...prev,
+              {
+                ...asset,
+                id: prev.length > 0 ? prev[prev.length - 1].id + 1 : 1,
+                name: asset.assetName,
+              },
+            ]);
+          }
+          setAddAssetModalOpen(false);
+        }}
+      />
+      <LendAssetModal
+        isOpen={lendModalOpen}
+        setIsOpen={setLendModalOpen}
+        onSave={handleLendSave}
+        employees={employees}
+        asset={selectedAsset}
+      />
+      <ReturnAssetModal
+        isOpen={returnModalOpen}
+        setIsOpen={setReturnModalOpen}
+        asset={returnAsset}
+        onSave={handleReturnSave}
+      />
+      <ViewAssetModal
+        isOpen={viewModalOpen}
+        setIsOpen={setViewModalOpen}
+        asset={viewAsset}
+      />
+    </PageWrapper>
   );
 };
 

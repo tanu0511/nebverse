@@ -1,5 +1,4 @@
-
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../../../components/bootstrap/Modal';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
@@ -17,7 +16,6 @@ interface IAddExpenseModalProps {
   onUpdateExpense: (updatedExpense: ExpenseItem) => void;
 }
 
-// AddExpense.tsx
 interface ExpenseItem {
   id: number;
   itemName: string;
@@ -29,6 +27,7 @@ interface ExpenseItem {
   paymentMethod?: string;
   notes?: string;
   category?: string;
+  currency?: string;
 }
 
 const AddExpense: FC<IAddExpenseModalProps> = ({
@@ -39,19 +38,20 @@ const AddExpense: FC<IAddExpenseModalProps> = ({
   onUpdateExpense,
 }) => {
   const formik = useFormik({
+    enableReinitialize: true, // <-- This is important!
     initialValues: {
-      itemName: '',
-      currency: '',
+      itemName: expenseToUpdate?.itemName || '',
+      currency: expenseToUpdate?.currency || 'INR',
       exchangeRate: '1',
-      price: '',
-      purchaseDate: '',
-      employee: '',
+      price: expenseToUpdate?.price || '',
+      purchaseDate: expenseToUpdate?.purchaseDate || '',
+      employee: expenseToUpdate?.employee || '',
       project: '',
-      expenseCategory: '',
-      purchasedFrom: '',
-      bankAccount: '',
-      status: '',
-      summary: '',
+      expenseCategory: expenseToUpdate?.category || '',
+      purchasedFrom: expenseToUpdate?.purchasedFrom || '',
+      bankAccount: expenseToUpdate?.paymentMethod || '',
+      status: expenseToUpdate?.status || '',
+      summary: expenseToUpdate?.notes || '',
     },
     onSubmit: (values, { resetForm }) => {
       const expense: ExpenseItem = {
@@ -75,32 +75,10 @@ const AddExpense: FC<IAddExpenseModalProps> = ({
         showNotification('Expense added successfully!', 'success');
       }
 
-      resetForm();         // ✅ Reset form fields
-      setIsOpen(false);    // ✅ Close the modal
+      resetForm();
+      setIsOpen(false);
     },
   });
-
-  // Prefill form in edit mode
-  useEffect(() => {
-    if (expenseToUpdate) {
-      formik.setValues({
-        itemName: expenseToUpdate.itemName || '',
-        currency: 'INR',
-        exchangeRate: '1',
-        price: expenseToUpdate.price || '',
-        purchaseDate: expenseToUpdate.purchaseDate || '',
-        employee: expenseToUpdate.employee || '',
-        project: '',
-        expenseCategory: expenseToUpdate.category || '',
-        purchasedFrom: expenseToUpdate.purchasedFrom || '',
-        bankAccount: expenseToUpdate.paymentMethod || '',
-        status: expenseToUpdate.status || '',
-        summary: expenseToUpdate.notes || '',
-      });
-    } else {
-      formik.resetForm(); // ✅ For add mode, clear form
-    }
-  }, [expenseToUpdate, formik, isOpen]);
 
   if (!isOpen) return null;
 

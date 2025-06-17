@@ -1,3 +1,4 @@
+/* eslint-disable react/self-closing-comp */
 import React, { useState } from 'react';
 import Button from '../../../components/bootstrap/Button';
 import Input from '../../../components/bootstrap/forms/Input';
@@ -14,23 +15,24 @@ const KnowledgeBasePage = () => {
   >([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [editingArticle, setEditingArticle] = useState<{ heading: string; category: string; to: string } | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Handler to add a new category
   const handleAddCategory = (category: string) => {
     if (category && !categories.includes(category)) {
-      setCategories((prev) => [...prev, category]);
+      setCategories(prev => [...prev, category]);
     }
   };
 
   const handleDeleteCategory = (cat: string) => {
-    setCategories((prev) => prev.filter((c) => c !== cat));
+    setCategories(prev => prev.filter(c => c !== cat));
   };
 
   const handleAddArticle = (article: { heading: string; category: string; to: string }) => {
     if (editingArticle) {
-      setArticles((prev) => {
+      setArticles(prev => {
         const idx = prev.findIndex(
-          (a) =>
+          a =>
             a.heading === editingArticle.heading &&
             a.category === editingArticle.category &&
             a.to === editingArticle.to
@@ -44,15 +46,15 @@ const KnowledgeBasePage = () => {
       });
       setEditingArticle(null);
     } else {
-      setArticles((prev) => [...prev, article]);
+      setArticles(prev => [...prev, article]);
     }
   };
 
   // Handler to delete an article
   const handleDeleteArticle = (articleToDelete: { heading: string; category: string; to: string }) => {
-    setArticles((prev) =>
+    setArticles(prev =>
       prev.filter(
-        (a) =>
+        a =>
           !(
             a.heading === articleToDelete.heading &&
             a.category === articleToDelete.category &&
@@ -71,10 +73,10 @@ const KnowledgeBasePage = () => {
     }
   };
 
-  const filteredArticles =
-    selectedCategory === 'All'
-      ? articles
-      : articles.filter((article) => article.category === selectedCategory);
+  const filteredArticles = articles.filter(article =>
+    (selectedCategory === 'All' || article.category === selectedCategory) &&
+    article.heading.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="container-fluid" style={{ minHeight: '100vh', background: '#f4f6fa' }}>
@@ -82,20 +84,27 @@ const KnowledgeBasePage = () => {
         {/* Sidebar */}
         <div className="col-md-2 px-0 py-3" style={{ background: '#eef2f6', minHeight: '100vh' }}>
           <div className="p-3">
-            <Input
-              type="search"
-              placeholder="Search"
-              className="mb-3"
-              style={{ background: '#fff' }}
-            />
+            <div className="input-group mb-3 align-items-center" style={{ background: '#fff', borderRadius: 8 }}>
+              <label className="border-0 bg-transparent cursor-pointer me-0" htmlFor="searchInput" style={{ marginRight: 0 }}>
+                <Icon icon="Search" size="2x" color="primary" />
+              </label>
+              <Input
+                id="searchInput"
+                type="search"
+                className="border-0 shadow-none bg-transparent"
+                placeholder="Search article..."
+                value={searchTerm}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                style={{ flex: 1, background: 'transparent' }}
+              />
+            </div>
             <div className="list-group">
               {categories.map((cat) => (
                 <button
                   key={cat}
-                  className={`list-group-item list-group-item-action${
-                    selectedCategory === cat ? ' active' : ''
-                  }`}
+                  className={`list-group-item list-group-item-action${selectedCategory === cat ? ' active' : ''}`}
                   onClick={() => setSelectedCategory(cat)}
+                  type="button"
                 >
                   {cat}
                 </button>
@@ -108,18 +117,13 @@ const KnowledgeBasePage = () => {
           <div className="d-flex align-items-center justify-content-between mt-4 mb-3">
             <div>
               <Button color="primary" isLight className="me-2" onClick={() => setShowAddModal(true)}>
-                <Icon icon="AddCircle" /> Add New Article
+                <Icon icon='AddCircle' /> Add New Article
               </Button>
               <Button color="secondary" isLight className="border" onClick={() => setShowCategoryModal(true)}>
-                <Icon icon="AddCircle" /> Manage Article Category
+                <Icon icon='AddCircle' /> Manage Article Category
               </Button>
             </div>
             <div>
-              <Input
-                type="search"
-                placeholder="Start typing to search"
-                style={{ width: 220, background: '#fff' }}
-              />
             </div>
           </div>
           <div className="card" style={{ minHeight: 350 }}>
@@ -192,7 +196,7 @@ const KnowledgeBasePage = () => {
         categories={categories}
         onAddCategory={handleAddCategory}
         onAddArticle={handleAddArticle}
-        editingArticle={editingArticle} // Pass this prop
+        editingArticle={editingArticle}
       />
       {/* Example Category Modal */}
       {showCategoryModal && (

@@ -27,14 +27,29 @@ const AddHolidayModal: React.FC<AddHolidayModalProps> = ({
     const [employmentType, setEmploymentType] = useState<string>(''); // New field
 
     useEffect(() => {
-        if (existingEvent) {
-            // Pre-fill the form if an event exists for the selected date
-            setHolidayList([{ date: existingEvent.date, occasion: existingEvent.occasion, fromTime: '', toTime: '' }]);
-        } else if (selectedDate) {
-            // Reset the form with the selected date if no event exists
-            setHolidayList([{ date: dayjs(selectedDate).format('YYYY-MM-DD'), occasion: '', fromTime: '', toTime: '' }]);
+        if (isOpen) {
+            if (existingEvent) {
+                // Prefill form fields with existingEvent data
+                setHolidayList([{
+                    date: existingEvent.date,
+                    occasion: existingEvent.occasion,
+                    fromTime: '',
+                    toTime: ''
+                }]);
+            } else {
+                // Reset all form fields to initial state here
+                setHolidayList([{
+                    date: selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : '',
+                    occasion: '',
+                    fromTime: '',
+                    toTime: ''
+                }]);
+            }
+            setDepartment('');
+            setDesignation('');
+            setEmploymentType('');
         }
-    }, [selectedDate, existingEvent]);
+    }, [isOpen, existingEvent, selectedDate]);
 
     const handleAddFields = () => {
         setHolidayList([...holidayList, { date: '', occasion: '', fromTime: '', toTime: '' }]);
@@ -54,7 +69,6 @@ const AddHolidayModal: React.FC<AddHolidayModalProps> = ({
             designation,
             employmentType,
         };
-        console.log('Data to Save:', dataToSave);
         onSave(dataToSave); // Pass the combined data to the parent component
         setIsOpen(false);
     };
@@ -136,7 +150,7 @@ const AddHolidayModal: React.FC<AddHolidayModalProps> = ({
                             type="button"
                             icon="Add"
                         >
-                            Add
+                            Add Holiday
                         </Button>
                     </div>
 

@@ -1,4 +1,3 @@
-
 import UserImage from '../../assets/img/wanna/wanna1.png';
 import UserImageWebp from '../../assets/img/wanna/wanna1.webp';
 import UserImage2 from '../../assets/img/wanna/wanna2.png';
@@ -36,10 +35,10 @@ export interface IUserProps {
     department: "all",
 }
 
-const atharva: IUserProps = {
+const arjun: IUserProps = {
     id: '1',
-    username: 'Atharva',
-    name: 'Atharva',
+    username: 'Arjun',
+    name: 'Arjun',
     surname: 'Singh',
     position: 'CEO, Founder',
     email: 'john@omtanke.studio',
@@ -107,10 +106,10 @@ const ranjana: IUserProps = {
 
 const nisha: IUserProps = {
     id: '5',
-    username: 'Nisha',
+    username: 'nisha',
     name: 'Nisha',
     surname: 'Singh',
-    position: 'Worker',
+    position: 'Admin',
     email: 'ella@omtanke.studio',
     src: UserImage5,
     srcSet: UserImage5Webp,
@@ -127,7 +126,7 @@ const tanushree: IUserProps = {
     username: 'Tanushree',
     name: 'Tanushree',
     surname: 'Singh',
-    position: 'Staff',
+    position: 'Manager',
     email: 'chloe@omtanke.studio',
     src: UserImage6,
     srcSet: UserImage6Webp,
@@ -157,7 +156,7 @@ const manthan: IUserProps = {
 };
 
 const USERS: { [key: string]: IUserProps } = {
-    ATHARVA: atharva,
+    ARJUN: arjun,
     AKHILESH: akhilesh,
     AYUSHI: ayushi,
     RANJANA: ranjana,
@@ -166,9 +165,9 @@ const USERS: { [key: string]: IUserProps } = {
     MANTHAN: manthan
 };
 
-export function getUserDataWithUsername(username: string): IUserProps{
-    // @ts-ignore
-    return USERS[Object.keys(USERS).filter((f) => USERS[f].username.toString() === username)];
+export function getUserDataWithUsername(username: string): IUserProps | undefined {
+    const key = Object.keys(USERS).find((f) => USERS[f].username === username);
+    return key ? USERS[key] : undefined;
 }
 
 

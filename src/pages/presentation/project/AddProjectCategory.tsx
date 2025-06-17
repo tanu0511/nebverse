@@ -8,7 +8,6 @@ import Modal, {
 import Button from '../../../components/bootstrap/Button';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Input from '../../../components/bootstrap/forms/Input';
-// ...rest of your code...
 
 interface AddProjectCategoryProps {
     isOpen: boolean;

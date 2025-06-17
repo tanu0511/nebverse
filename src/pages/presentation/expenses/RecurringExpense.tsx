@@ -34,8 +34,18 @@ const RecurringExpense = () => {
   const [selectedRecur, setSelectedRecur] = useState<RecurringExpense | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
+  // Dynamic search filter for all relevant fields
   const filteredData = recurringExpenses.filter((expense) =>
-    expense.itemName.toLowerCase().includes(searchTerm.toLowerCase())
+    searchTerm === '' ||
+    expense.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (expense.price && expense.price.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (expense.employee && expense.employee.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (expense.project && expense.project.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (expense.bankAccount && expense.bankAccount.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (expense.expenseCategory && expense.expenseCategory.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (expense.purchasedFrom && expense.purchasedFrom.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (expense.billFrequency && expense.billFrequency.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (expense.status && expense.status.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const { items } = useSortableData(filteredData);
@@ -56,9 +66,8 @@ const RecurringExpense = () => {
             type='search'
             className='border-0 shadow-none bg-transparent'
             placeholder='Search...'
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setSearchTerm(e.target.value);
-            }}
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
           />
         </SubHeaderLeft>
         <SubHeaderRight>

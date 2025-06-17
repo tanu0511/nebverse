@@ -1,197 +1,180 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState } from 'react';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
 import Page from '../../../layout/Page/Page';
 import Card, { CardBody } from '../../../components/bootstrap/Card';
-import Button from '../../../components/bootstrap/Button';
 import Input from '../../../components/bootstrap/forms/Input';
+import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/bootstrap/Dropdown';
+import PaginationButtons, { dataPagination, PER_COUNT } from '../../../components/PaginationButtons';
+import Button from '../../../components/bootstrap/Button';
+import Icon from '../../../components/icon/Icon';
 
-import Dropdown, {
-    DropdownItem,
-    DropdownMenu,
-    DropdownToggle,
-} from '../../../components/bootstrap/Dropdown';
-
-import { DateRange, DefinedRange, Range } from 'react-date-range';
-import 'react-date-range/dist/styles.css';
-import 'react-date-range/dist/theme/default.css';
+interface CreditNote {
+  isSelected: unknown;
+  id: number;
+  creditNote: string;
+  invoice: string;
+  name: string;
+  total: string;
+  creditNoteDate: string;
+  status: string;
+}
 
 const CreditNotePage = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [clientFilter, setClientFilter] = useState('All');
-    const [duration, setDuration] = useState('Select Duration');
-    const [isCustomRange, setIsCustomRange] = useState(false);
-    const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
-    const [dateRange, setDateRange] = useState<Range[]>([
-        {
-            startDate: new Date(),
-            endDate: new Date(),
-            key: 'selection',
-        },
-    ]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(PER_COUNT['10']);
+  const [creditNotes, setCreditNotes] = useState<CreditNote[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectAll, setSelectAll] = useState<boolean>(false);
 
-    const FilterSidebar = () => {
-        return (
-            <div className='filter-sidebar'>
-                <DropdownMenu isAlignmentEnd size='lg'>
-                    <div className='container py-2'>
-                        <div className='row g-3'>
-                            <p>Custom filters can go here.</p>
-                        </div>
-                    </div>
-                </DropdownMenu>
-            </div>
-        );
-    };
+  // Filtered and paginated data
+  const filteredData = creditNotes.filter((note) =>
+    note.creditNote.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    note.invoice.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    note.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const items = filteredData; // For compatibility with dataPagination if needed
 
-    const handleDurationChange = (range: string) => {
-        let startDate: Date | null = null;
-        let endDate: Date | null = null;
-        const today = new Date();
-        setIsCustomRange(range === 'Custom Range');
+  const handleDelete = (id: number) => {
+    setCreditNotes((prev) => prev.filter((note) => note.id !== id));
+  };
 
-        if (range === 'Today') {
-            startDate = endDate = today;
-        } else if (range === 'Last 30 Days') {
-            startDate = new Date(today);
-            startDate.setDate(today.getDate() - 30);
-            endDate = today;
-        } else if (range === 'This Month') {
-            startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-            endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        } else if (range === 'Last Month') {
-            startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-            endDate = new Date(today.getFullYear(), today.getMonth(), 0);
-        } else if (range === 'Last 90 Days') {
-            startDate = new Date(today);
-            startDate.setDate(today.getDate() - 90);
-            endDate = today;
-        } else if (range === 'Last 6 Months') {
-            startDate = new Date(today);
-            startDate.setMonth(today.getMonth() - 6);
-            endDate = today;
-        } else if (range === 'Last 1 Year') {
-            startDate = new Date(today);
-            startDate.setFullYear(today.getFullYear() - 1);
-            endDate = today;
-        } else if (range === 'Custom Range') {
-            setDuration('Select start and end dates');
-            return;
-        }
-
-        const startDateStr = startDate?.toLocaleDateString() || '';
-        const endDateStr = endDate?.toLocaleDateString() || '';
-
-        setStartDate(startDate);
-        setEndDate(endDate);
-        setDuration(`${startDateStr} To ${endDateStr}`);
-        setIsCustomRange(false);
-    };
-
-    const handleCustomRange = (start: Date, end: Date) => {
-        const startStr = start.toLocaleDateString();
-        const endStr = end.toLocaleDateString();
-        setStartDate(start);
-        setEndDate(end);
-        setDuration(`${startStr} To ${endStr}`);
-    };
-
-    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value);
-    };
-
-    const handleCancel = () => setIsCustomRange(false);
-    const handleApply = () => setIsCustomRange(true);
-
-    return (
-        <PageWrapper title='Credit Note'>
-            <SubHeader>
-                <SubHeaderLeft>
-                        <Input
-                        className='ms-3'
-                        placeholder='Start typing to search'
-                        value={searchTerm}
-                        onChange={handleSearchChange}
-                    />
-                </SubHeaderLeft>
-
-                <SubHeaderRight>
-                    <div>
-                        <Button
-                            color='light'
-                            icon='FilterList'
-                            isLight
-                            onClick={() => setIsFilterOpen(true)}>
-                            Filters
-                        </Button>
-                        {isFilterOpen && <FilterSidebar />}
-                    </div>
-                </SubHeaderRight>
-            </SubHeader>
-
-            <Page>
-                <Card>
-                    <CardBody>
-                    <Button
-								color='info'
-								icon='CloudDownload'
-								isLight
-								tag='a'
-								to='/somefile.txt'
-								target='_blank'
-								download>
-								Export
-							</Button>
-                        <div className='table-responsive'>
-                            <table className='table'>
-                                <thead>
-                                    <tr>
-                                        <th>Credit Note</th>
-                                        <th>Invoice</th>
-                                        <th>Name</th>
-                                        <th>Total</th>
-                                        <th>Credit Note Date</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colSpan={7} className='text-center'>
-                                            No data available in table
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div className='d-flex justify-content-between align-items-center mt-3'>
-                                <div>
-                                    Show{' '}
-                                    <select className='form-select d-inline w-auto'>
-                                        <option>25</option>
-                                        <option>50</option>
-                                        <option>100</option>
-                                    </select>{' '}
-                                    entries
-                                </div>
-                                <div>Showing 0 to 0 of 0 entries</div>
-                                <div>
-                                    <Button color='light' isLight className='me-1'>
-                                        Previous
-                                    </Button>
-                                    <Button color='light' isLight>
-                                        Next
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    </CardBody>
-                </Card>
-            </Page>
-        </PageWrapper>
+  const handleSelectAll = (isChecked: boolean) => {
+    setSelectAll(isChecked);
+    setCreditNotes((prev) =>
+      prev.map((note) => ({
+        ...note,
+        isSelected: isChecked,
+      }))
     );
+  };
+
+  const handleRowSelect = (id: number, isChecked: boolean) => {
+    setCreditNotes((prev) =>
+      prev.map((note) =>
+        note.id === id ? { ...note, isSelected: isChecked } : note
+      )
+    );
+    const allSelected = creditNotes.every((note) =>
+      note.id === id ? isChecked : note.isSelected
+    );
+    setSelectAll(allSelected);
+  };
+
+  return (
+    <PageWrapper title="Credit Notes">
+      <SubHeader>
+        <SubHeaderLeft>
+          <label className="border-0 bg-transparent cursor-pointer me-0" htmlFor="searchInput">
+            <Icon icon="Search" size="2x" color="primary" />
+          </label>
+          <Input
+            id="searchInput"
+            type="search"
+            className="border-0 shadow-none bg-transparent"
+            placeholder="Search credit note..."
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+          />
+        </SubHeaderLeft>
+        <SubHeaderRight>
+          <Button
+            color="info"
+            icon="CloudDownload"
+            isLight
+            tag="a"
+            to="/credit-notes-export.txt"
+            target="_blank"
+            download
+          >
+            Export
+          </Button>
+        </SubHeaderRight>
+      </SubHeader>
+      <Page>
+        <div className="row h-100">
+          <div className="col-12">
+            <Card stretch>
+              <CardBody isScrollable className="table-responsive">
+                <table className="table table-modern table-hover">
+                  <thead>
+                    <tr>
+                      <th>
+                        <input
+                          type="checkbox"
+                          checked={selectAll}
+                          onChange={(e) => handleSelectAll(e.target.checked)}
+                        />
+                      </th>
+                      <th>Credit Note</th>
+                      <th>Invoice</th>
+                      <th>Name</th>
+                      <th>Total</th>
+                      <th>Credit Note Date</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dataPagination(items, currentPage, perPage).length > 0 ? (
+                      dataPagination(items, currentPage, perPage).map((note) => (
+                        <tr key={note.id}>
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={note.isSelected || false}
+                              onChange={(e) => handleRowSelect(note.id, e.target.checked)}
+                            />
+                          </td>
+                          <td>{note.creditNote}</td>
+                          <td>{note.invoice}</td>
+                          <td>{note.name}</td>
+                          <td>{note.total}</td>
+                          <td>{note.creditNoteDate}</td>
+                          <td>{note.status}</td>
+                          <td>
+                            <Dropdown>
+                              <DropdownToggle hasIcon={false}>
+                                <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
+                              </DropdownToggle>
+                              <DropdownMenu isAlignmentEnd>
+                                <Button
+                                  color="link"
+                                  className="dropdown-item text-danger"
+                                  onClick={() => handleDelete(note.id)}
+                                >
+                                  <Icon icon="Delete" className="me-2" /> Delete
+                                </Button>
+                              </DropdownMenu>
+                            </Dropdown>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={8} className="text-center bg-light">
+                          No data available in table
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </CardBody>
+              <PaginationButtons
+                data={filteredData}
+                label="Credit Notes"
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+                perPage={perPage}
+                setPerPage={setPerPage}
+              />
+            </Card>
+          </div>
+        </div>
+      </Page>
+    </PageWrapper>
+  );
 };
 
 export default CreditNotePage;

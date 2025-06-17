@@ -56,7 +56,7 @@ const Attendance = () => {
       const updatedAttendance = { ...prev };
 
       data.dates.forEach((date) => {
-        const key =`${data.employeeName}-${date}`;
+        const key = `${data.employeeName}-${date}`;
 
         if (data.overwrite || !updatedAttendance[key]) {
           updatedAttendance[key] = {
@@ -151,7 +151,7 @@ const Attendance = () => {
               <tr key={emp.id}>
                 <td>{emp.name}</td>
                 <td>{emp.department}</td>
-                <td>{attendance[`${emp.name}-01`]?.workingFrom || '-'}</td>
+                <td>{attendance[`${emp.name}-${dates[0].date}`]?.workingFrom || '-'}</td>
                 <td>{attendance[`${emp.name}-01`]?.clockIn || '-'}</td>
                 <td>{attendance[`${emp.name}-01`]?.clockOut || '-'}</td>
                 {dates.map((date) => {

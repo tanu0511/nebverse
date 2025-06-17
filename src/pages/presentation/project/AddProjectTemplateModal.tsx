@@ -5,11 +5,12 @@ import Modal, {
     ModalBody,
     ModalFooter,
     ModalHeader,
-   ModalTitle,} from '../../../components/bootstrap/Modal';
+    ModalTitle,
+} from '../../../components/bootstrap/Modal';
 import Button from '../../../components/bootstrap/Button';
 import Input from '../../../components/bootstrap/forms/Input';
 import AddProjectCategory from './AddProjectCategory';
-import Select from '../../../components/bootstrap/forms/Select';
+import Select from '../../../components/bootstrap/forms/Select'; 
 
 interface AddProjectTemplateModalProps {
     isOpen: boolean;

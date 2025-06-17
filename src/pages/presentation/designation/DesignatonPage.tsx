@@ -12,10 +12,11 @@ import Button from '../../../components/bootstrap/Button';
 import Icon from '../../../components/icon/Icon';
 import AddDesignation from './AddDesignation';
 import FilterModal from './FilterModal';
+import ViewDesignationModal from './ViewDesignationModal'; // Add this import
 
 interface Designation {
 	id: number;
-	name: string; // Ensure 'name' is typed as a primitive string
+	name: string;
 	parentDepartment?: string;
 }
 
@@ -23,11 +24,18 @@ const DesignationPage = () => {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['10']);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
-	const [filterModalStatus, setFilterModalStatus] = useState<boolean>(false); // State for Filter Modal
+	const [filterModalStatus, setFilterModalStatus] = useState<boolean>(false);
 	const [designations, setDesignations] = useState<Designation[]>([]);
 	const [selectedDesignation, setSelectedDesignation] = useState<Designation | undefined>(undefined);
+	const [searchTerm, setSearchTerm] = useState<string>(''); // <-- Add searchTerm state
+	const [viewModalStatus, setViewModalStatus] = useState<boolean>(false); // Add this state
+	const [viewDesignation, setViewDesignation] = useState<Designation | undefined>(undefined); // Add this state
 
-	const filteredData = designations;
+	// Dynamic search filter
+	const filteredData = designations.filter((desig) =>
+		desig.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+		(desig.parentDepartment && desig.parentDepartment.toLowerCase().includes(searchTerm.toLowerCase()))
+	);
 
 	const { items } = useSortableData(filteredData);
 
@@ -47,12 +55,8 @@ const DesignationPage = () => {
 						type='search'
 						className='border-0 shadow-none bg-transparent'
 						placeholder='Search designation...'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							const value = e.target.value.toLowerCase();
-							setDesignations((prev) =>
-								prev.filter((desig) => desig.name.toLowerCase().includes(value))
-							);
-						}}
+						value={searchTerm}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
@@ -61,7 +65,7 @@ const DesignationPage = () => {
 						color='primary'
 						isLight
 						aria-label='Filter'
-						onClick={() => setFilterModalStatus(true)} // Open the Filter Modal
+						onClick={() => setFilterModalStatus(true)}
 					>
 						Filter
 					</Button>
@@ -109,6 +113,15 @@ const DesignationPage = () => {
 															<Button icon='MoreVert' color='primary' isLight className='btn-icon' />
 														</DropdownToggle>
 														<DropdownMenu isAlignmentEnd>
+															<Button
+																color='link'
+																className='dropdown-item'
+																onClick={() => {
+																	setViewDesignation(i); // Set selected designation
+																	setViewModalStatus(true); // Open modal
+																}}>
+																<Icon icon="RemoveRedEye" className="me-2" /> View
+															</Button>
 															<Button
 																color='link'
 																className='dropdown-item'
@@ -163,19 +176,25 @@ const DesignationPage = () => {
 				}}
 			/>
 
-<FilterModal
-  isOpen={filterModalStatus}
-  setIsOpen={setFilterModalStatus}
-  designations={designations.map((desig) => desig.name)} // Convert to string[]
-  onApplyFilters={(filters: Record<string, string>) => {
-	const filteredDesignations = Object.values(filters); // Convert Record<string, string> to string[]
-	setDesignations(
-	  designations.filter((desig) =>
-		filteredDesignations.includes(desig.name)
-	  )
-	);
-  }}
-/>
+			<FilterModal
+				isOpen={filterModalStatus}
+				setIsOpen={setFilterModalStatus}
+				designations={designations.map((desig) => desig.name)}
+				onApplyFilters={(filters: Record<string, string>) => {
+					const filteredDesignations = Object.values(filters);
+					setDesignations(
+						designations.filter((desig) =>
+							filteredDesignations.includes(desig.name)
+						)
+					);
+				}}
+			/>
+
+			<ViewDesignationModal
+				isOpen={viewModalStatus}
+				setIsOpen={setViewModalStatus}
+				designation={viewDesignation}
+			/>
 		</PageWrapper>
 	);
 };

@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import Button from '../../../components/bootstrap/Button';
-import PaginationButtons from '../../../components/PaginationButtons';
-import AddProductPage from './AddProductPage'; // Adjust path if needed
-import Icon from '../../../components/icon/Icon';
+import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
+import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
+import Page from '../../../layout/Page/Page';
+import Card, { CardBody } from '../../../components/bootstrap/Card';
+import Input from '../../../components/bootstrap/forms/Input';
 import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/bootstrap/Dropdown';
-import ProductViewModal from './ProductViewModal'; 
- 
+import PaginationButtons, { dataPagination, PER_COUNT } from '../../../components/PaginationButtons';
+import Button from '../../../components/bootstrap/Button';
+import Icon from '../../../components/icon/Icon';
+import AddProductPage from './AddProductPage';
+import ProductViewModal from './ProductViewModal';
+
 const columns = [
   'Product Image',
   'Products',
@@ -16,6 +21,18 @@ const columns = [
   'Status',
   'Action'
 ];
+
+type Product = {
+  productImage?: string | null;
+  name: string;
+  price: number;
+  stockOnHand: number;
+  unitType: string;
+  clientCanPurchase: boolean;
+  status: string;
+  images?: { url: string; name: string; date: Date }[];
+  isSelected?: boolean;
+};
 
 const StatusDropdown = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => {
   const [open, setOpen] = useState(false);
@@ -99,30 +116,28 @@ const StatusDropdown = ({ value, onChange }: { value: string; onChange: (v: stri
   );
 };
 
-// Example Product type
-type Product = {
-  productImage?: string | null;
-  name: string;
-  price: number;
-  stockOnHand: number;
-  unitType: string;
-  clientCanPurchase: boolean;
-  status: string;
-  images?: { url: string; name: string; date: Date }[];
-};
-
 const Products: React.FC = () => {
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(PER_COUNT['10']);
   const [currentPage, setCurrentPage] = useState(1);
-//   const [actionOpenIdx, setActionOpenIdx] = useState<number | null>(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [viewProduct, setViewProduct] = useState<any>(null);
 
   const [items, setItems] = useState<Product[]>([]);
   const [showAddProduct, setShowAddProduct] = useState(false);
-
   const [editProductIdx, setEditProductIdx] = useState<number | null>(null);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Filtered and paginated data
+  const filteredItems = items.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.unitType && item.unitType.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const paginatedItems = dataPagination(filteredItems, currentPage, perPage);
 
   // Handler to add new product
   const handleAddProduct = (product: Product) => {
@@ -156,187 +171,236 @@ const Products: React.FC = () => {
     setItems(items => items.filter((_, i) => i !== idx));
   };
 
-  return (
-    <div className="container-fluid py-4">
-      <div className="d-flex align-items-center mb-3 gap-2">
-        <Button
-          color="primary"
-          className="px-4"
-          onClick={() => setShowAddProduct(true)}
-        >
-          <Icon icon=''/> Add Product
-        </Button>
-        <Button color="secondary" className="px-4">
-          <i className="fa fa-file-export me-2" /> Export
-        </Button>
-      </div>
-      {showAddProduct && (
-        <div className="mb-4">
-          <AddProductPage
-            onClose={() => {
-              setShowAddProduct(false);
-              setEditProductIdx(null);
-              setEditProduct(null);
-            }}
-            onSave={editProduct ? handleSaveEditProduct : handleAddProduct}
-            product={editProduct}
-          />
-        </div>
-      )}
-      <div className="card p-3">
-        <table className="table mb-0">
-          <thead>
-            <tr>
-              <th>
-                <input type="checkbox" />
-              </th>
-              {columns.map(col => (
-                <th key={col}>{col}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {items.length === 0 ? (
-              <tr>
-                {/* <td></td> */}
-                <td colSpan={columns.length} className="text-center text-muted">
-                  No data available in table
-                </td>
-              </tr>
-            ) : (
-              items.map((item, idx) => (
-                <tr key={idx}>
-                  <td>
-                    <input type="checkbox" />
-                  </td>
-                  <td>
-                    {item.productImage ? (
-                      <img src={item.productImage} alt="Product" style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 4 }} />
-                    ) : (
-                      '-'
-                    )}
-                  </td>
-                  <td>{item.name}</td>
-                  <td>{item.price}</td>
-                  <td>{item.stockOnHand || '-'}</td>
-                  <td>{item.unitType}</td>
-                  {/* Client can purchase */}
-                  <td>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        border: '1px solid #e0e0e0',
-                        borderRadius: 6,
-                        padding: '4px 12px',
-                        minWidth: 90,
-                        background: '#fff',
-                        fontWeight: 500,
-                        height: 36,
-                        width: 120
-                      }}
-                    >
-                      <span style={{
-                        display: 'inline-block',
-                        width: 16,
-                        height: 16,
-                        borderRadius: '50%',
-                        background: item.clientCanPurchase ? '#28e60b' : '#dc3545',
-                        marginRight: 8,
-                      }} />
-                      <span>
-                        {item.clientCanPurchase ? 'Allowed' : 'Not Allowed'}
-                      </span>
-                    </div>
-                  </td>
-                  {/* Status */}
-                  <td>
-                    <StatusDropdown
-                      value={item.status || 'Active'}
-                      onChange={newStatus => {
-                        setItems(items =>
-                          items.map((it, i) =>
-                            i === idx ? { ...it, status: newStatus } : it
-                          )
-                        );
-                      }}
-                    />
-                  </td>
-                  {/* Action */}
-                  <td>
-                    <Dropdown>
-                      <DropdownToggle hasIcon={false}>
-                        <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
-                      </DropdownToggle>
-                      <DropdownMenu isAlignmentEnd>
-                        <Button
-                          color="link"
-                          className="dropdown-item"
-                          onClick={() => handleViewProduct(item)}
-                        >
-                          <Icon icon="RemoveRedEye" className="me-2" /> View
-                        </Button>
-                        <Button
-                          color="link"
-                          className="dropdown-item"
-                          onClick={() => handleEditProduct(item, idx)}
-                        >
-                          <Icon icon="Edit" className="me-2" /> Edit
-                        </Button>
-                        <Button
-                          color="link"
-                          className="dropdown-item text-danger"
-                          onClick={() => handleDeleteProduct(idx)}
-                        >
-                          <Icon icon="Delete" className="me-2" /> Delete
-                        </Button>
-                        <Button
-                          color="link"
-                          className="dropdown-item"
-                          onClick={() => {
-                            // Open the form with a copy of the product (remove unique fields if needed)
-                            const duplicate = { ...item };
-                            // If you have an 'id' field, remove or regenerate it:
-                            // delete duplicate.id;
-                            setEditProduct(duplicate);
-                            setEditProductIdx(null); // null means it's not editing an existing one
-                            setShowAddProduct(true);
-                          }}
-                        >
-                          <Icon icon="CopyAll" className="me-2" /> Duplicate
-                        </Button>
-                      </DropdownMenu>
-                    </Dropdown>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-        <PaginationButtons
-          data={items}
-          label="items"
-          setCurrentPage={setCurrentPage}
-          currentPage={currentPage}
-          perPage={perPage}
-          setPerPage={setPerPage}
-        />
+  // Select all handler
+  const handleSelectAll = (checked: boolean) => {
+    setSelectAll(checked);
+    setItems(items => items.map(item => ({ ...item, isSelected: checked })));
+  };
 
-<ProductViewModal
-        show={viewModalOpen}
-        onClose={() => setViewModalOpen(false)}
-        product={viewProduct}
-        onUpdateImages={(images) => {
-          setItems(items =>
-            items.map(item =>
-              item === viewProduct ? { ...item, images } : item
-            )
-          );
-          setViewProduct((prev: Product | null) => prev ? { ...prev, images } : prev);
-        }}
-      />
-      </div>
-    </div>
+  // Row select handler
+  const handleRowSelect = (idx: number, checked: boolean) => {
+    setItems(items =>
+      items.map((item, i) => (i === idx ? { ...item, isSelected: checked } : item))
+    );
+    // Update selectAll state
+    const allSelected = items.every((item, i) => (i === idx ? checked : item.isSelected));
+    setSelectAll(allSelected);
+  };
+
+  return (
+    <PageWrapper title="Products">
+      <SubHeader>
+        <SubHeaderLeft>
+          <label className="border-0 bg-transparent cursor-pointer me-0" htmlFor="searchInput">
+            <Icon icon="Search" size="2x" color="primary" />
+          </label>
+          <Input
+            id="searchInput"
+            type="search"
+            className="border-0 shadow-none bg-transparent"
+            placeholder="Search product..."
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+          />
+        </SubHeaderLeft>
+        <SubHeaderRight>
+          <Button
+            icon="Add"
+            color="primary"
+            isLight
+            onClick={() => setShowAddProduct(true)}
+          >
+            Add Product
+          </Button>
+          <Button
+            color="info"
+            icon="CloudDownload"
+            isLight
+            tag="a"
+            to="/somefile.txt"
+            target="_blank"
+            download
+          >
+            Export
+          </Button>
+        </SubHeaderRight>
+      </SubHeader>
+      <Page>
+        <div className="row h-100">
+          <div className="col-12">
+            <Card stretch>
+              <CardBody isScrollable className="table-responsive">
+                <table className="table table-modern table-hover">
+                  <thead>
+                    <tr>
+                      <th>
+                        <input
+                          type="checkbox"
+                          checked={selectAll}
+                          onChange={e => handleSelectAll(e.target.checked)}
+                        />
+                      </th>
+                      {columns.map(col => (
+                        <th key={col}>{col}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedItems.length === 0 ? (
+                      <tr>
+                        <td colSpan={columns.length + 1} className="text-center text-muted">
+                          No data available in table
+                        </td>
+                      </tr>
+                    ) : (
+                      paginatedItems.map((item, idx) => (
+                        <tr key={idx}>
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={item.isSelected || false}
+                              onChange={e => handleRowSelect(idx + (currentPage - 1) * perPage, e.target.checked)}
+                            />
+                          </td>
+                          <td>
+                            {item.productImage ? (
+                              <img src={item.productImage} alt="Product" style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 4 }} />
+                            ) : (
+                              '-'
+                            )}
+                          </td>
+                          <td>{item.name}</td>
+                          <td>{item.price}</td>
+                          <td>{item.stockOnHand || '-'}</td>
+                          <td>{item.unitType}</td>
+                          <td>
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                border: '1px solid #e0e0e0',
+                                borderRadius: 6,
+                                padding: '4px 12px',
+                                minWidth: 90,
+                                background: '#fff',
+                                fontWeight: 500,
+                                height: 36,
+                                width: 120
+                              }}
+                            >
+                              <span style={{
+                                display: 'inline-block',
+                                width: 16,
+                                height: 16,
+                                borderRadius: '50%',
+                                background: item.clientCanPurchase ? '#28e60b' : '#dc3545',
+                                marginRight: 8,
+                              }} />
+                              <span>
+                                {item.clientCanPurchase ? 'Allowed' : 'Not Allowed'}
+                              </span>
+                            </div>
+                          </td>
+                          <td>
+                            <StatusDropdown
+                              value={item.status || 'Active'}
+                              onChange={newStatus => {
+                                setItems(items =>
+                                  items.map((it, i) =>
+                                    i === idx + (currentPage - 1) * perPage ? { ...it, status: newStatus } : it
+                                  )
+                                );
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <Dropdown>
+                              <DropdownToggle hasIcon={false}>
+                                <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
+                              </DropdownToggle>
+                              <DropdownMenu isAlignmentEnd>
+                                <Button
+                                  color="link"
+                                  className="dropdown-item"
+                                  onClick={() => handleViewProduct(item)}
+                                >
+                                  <Icon icon="RemoveRedEye" className="me-2" /> View
+                                </Button>
+                                <Button
+                                  color="link"
+                                  className="dropdown-item"
+                                  onClick={() => handleEditProduct(item, idx + (currentPage - 1) * perPage)}
+                                >
+                                  <Icon icon="Edit" className="me-2" /> Edit
+                                </Button>
+                                <Button
+                                  color="link"
+                                  className="dropdown-item text-danger"
+                                  onClick={() => handleDeleteProduct(idx + (currentPage - 1) * perPage)}
+                                >
+                                  <Icon icon="Delete" className="me-2" /> Delete
+                                </Button>
+                                <Button
+                                  color="link"
+                                  className="dropdown-item"
+                                  onClick={() => {
+                                    const duplicate = { ...item };
+                                    setEditProduct(duplicate);
+                                    setEditProductIdx(null);
+                                    setShowAddProduct(true);
+                                  }}
+                                >
+                                  <Icon icon="CopyAll" className="me-2" /> Duplicate
+                                </Button>
+                              </DropdownMenu>
+                            </Dropdown>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </CardBody>
+              <PaginationButtons
+                data={filteredItems}
+                label="Products"
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+                perPage={perPage}
+                setPerPage={setPerPage}
+              />
+            </Card>
+          </div>
+        </div>
+      </Page>
+      {/* Add/Edit Product Modal */}
+      {showAddProduct && (
+        <AddProductPage
+          onClose={() => {
+            setShowAddProduct(false);
+            setEditProductIdx(null);
+            setEditProduct(null);
+          }}
+          onSave={editProduct ? handleSaveEditProduct : handleAddProduct}
+          product={editProduct}
+        />
+      )}
+      {/* View Product Modal */}
+      {viewProduct && (
+        <ProductViewModal
+          show={viewModalOpen}
+          onClose={() => setViewModalOpen(false)}
+          product={viewProduct}
+          onUpdateImages={(images) => {
+            setItems(items =>
+              items.map(item =>
+                item === viewProduct ? { ...item, images } : item
+              )
+            );
+            setViewProduct((prev: Product | null) => prev ? { ...prev, images } : prev);
+          }}
+        />
+      )}
+    </PageWrapper>
   );
 };
 

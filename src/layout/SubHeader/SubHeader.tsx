@@ -49,6 +49,8 @@ const SubHeader: FC<ISubHeaderProps> = ({ children, className }) => {
 			{children}
 		</div>
 	);
+
+	
 };
 
 export default SubHeader;

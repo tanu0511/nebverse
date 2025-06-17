@@ -23,6 +23,7 @@ import showNotification from '../../../components/extras/showNotification';
 import useDarkMode from '../../../hooks/useDarkMode';
 import Popovers from '../../../components/bootstrap/Popovers';
 import Spinner from '../../../components/bootstrap/Spinner';
+import AuthContext from '../../../contexts/authContext';
 
 interface ICommonHeaderRightProps {
 	beforeChildren?: ReactNode;
@@ -62,12 +63,15 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 	});
 
 	const { setIsOpen } = useTour();
+	const { user, userData } = useContext(AuthContext);
+
+	console.log('userData:', userData);
 
 	return (
 		<HeaderRight>
 			<div className='row g-3'>
 				{beforeChildren}
-				{/* Tour Modal */}
+				{/* Tour Modal  */}
 				{/* {localStorage.getItem('tourModalStarted') === 'shown' && (
 					<div className='col-auto position-relative'>
 						<Popovers trigger='hover' desc='Start the "Facit" tour'>
@@ -88,7 +92,7 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 							)}
 						/>
 					</div>
-				)} */}
+				)}
 
 				{/* Dark Mode */}
 				<div className='col-auto'>
@@ -122,7 +126,7 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 					</Popovers>
 				</div>
 
-				{/* Lang Selector */}
+				{/* Lang Selector + */}
 				{/* <div className='col-auto'>
 					<Dropdown>
 						<DropdownToggle hasIcon={false}>
@@ -160,7 +164,7 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 							))}
 						</DropdownMenu>
 					</Dropdown>
-				</div> */}
+				</div>
 
 				{/* Quick Panel */}
 
@@ -174,7 +178,31 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 						aria-label='Notifications'
 					/>
 				</div>
-				{afterChildren}
+				<div className="col-auto d-flex align-items-center">
+					{(userData as any)?.src && (
+						<img
+							src={(userData as any).src}
+							alt={(userData as any)?.name || user}
+							style={{
+								width: 36,
+								height: 36,
+								borderRadius: '50%',
+								objectFit: 'cover',
+								marginRight: 10,
+								border: '2px solid #eee',
+							}}
+						/>
+					)}
+					<div className="d-flex flex-column align-items-end">
+						<span className="fw-bold" style={{ fontSize: 16 }}>
+							{(userData as any)?.name || user}
+						</span>
+						<span className="text-muted" style={{ fontSize: 12 }}>
+							{(userData as any)?.position || ''}
+						</span>
+					</div>
+				</div>
+				{/* {afterChildren} */}
 			</div>
 
 			<OffCanvas

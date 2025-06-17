@@ -38,6 +38,16 @@ const Customer = () => {
 	const itemData = data.filter((item) => item.id.toString() === id?.toString());
 	const item = itemData[0];
 
+	if (!item) {
+		return (
+			<PageWrapper title='Customer Not Found'>
+				<div className='text-danger p-5 text-center h4'>
+					No customer found for this ID.
+				</div>
+			</PageWrapper>
+		);
+	}
+
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['3']);
 
@@ -49,7 +59,7 @@ const Customer = () => {
 	};
 
 	return (
-		<PageWrapper title={demoPagesMenu.crm.subMenu.customer.text}>
+		<PageWrapper title={demoPagesMenu.appointment.subMenu.appointmentList.text}>
 			<SubHeader>
 				<SubHeaderLeft>
 					<Button

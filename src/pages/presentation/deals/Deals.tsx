@@ -1,6 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { useState } from 'react';
-import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
+  import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
 import Page from '../../../layout/Page/Page';
 import { demoPagesMenu } from '../../../menu';
@@ -26,6 +26,16 @@ interface TableRow {
   dealValue?: number;
   proposalData?: any;
 }
+
+const DEAL_STAGE_OPTIONS = [
+  'Generated',
+  'Qualified',
+  'Proposal',
+  'Negotiation',
+  'Won',
+  'Lost',
+  // Add more stages as needed
+];
 
 const Deals = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -133,13 +143,13 @@ const Deals = () => {
                       </th>
                       <th>Deal Name</th>
                       <th>Lead Name</th>
-                      <th>Contact Details</th>
+                      <th>Contact Details (Email)</th>
                       <th>Value</th>
                       <th>Close Date</th>
                       <th>Next Follow Up</th>
                       <th>Deal Agent</th>
                       <th>Deal Watcher</th>
-                      <th>Stage</th>
+                      <th>Deal Stage</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -152,7 +162,7 @@ const Deals = () => {
         </td>
         <td>{row.proposal}</td>
         <td>{row.contactName}</td>
-
+        <td>{row.proposalData?.email || '--'}</td> {/* Show email from form */}
         <td>{row.dealValue ? `${row.dealValue}` : '--'}</td>
         <td>{row.validTill}</td>
         <td>--</td>
@@ -165,21 +175,29 @@ const Deals = () => {
               className="rounded-circle"
               style={{ width: '30px', height: '30px' }}
             />
-            <span>{row.dealWatcher || 'atharvraj singh rana'}</span>
+            <span>{row.dealWatcher || '--'}</span>
           </div>
         </td>
         <td>
-          <span
-            className={`badge ${
-              row.status === 'Lost'
-                ? 'bg-danger'
-                : row.status === 'Initial Contact'
-                ? 'bg-info'
-                : 'bg-success'
-            }`}
+          <select
+            className="form-select"
+            value={row.dealStages}
+            onChange={e => {
+              const newStage = e.target.value;
+              setTableData(prev =>
+                prev.map((r, idx) =>
+                  idx === index ? { ...r, dealStages: newStage } : r
+                )
+              );
+            }}
+            style={{ minWidth: 120 }}
           >
-            {row.dealStages || row.status}
-          </span>
+            {DEAL_STAGE_OPTIONS.map(stage => (
+              <option key={stage} value={stage}>
+                {stage}
+              </option>
+            ))}
+          </select>
         </td>
         <td>
           <Dropdown>
@@ -187,7 +205,7 @@ const Deals = () => {
               <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
             </DropdownToggle>
             <DropdownMenu isAlignmentEnd>
-            <Button
+              <Button
                 color="link"
                 className="dropdown-item"
                 onClick={() => handleView(row)}
@@ -211,7 +229,6 @@ const Deals = () => {
               <Button
                 color="link"
                 className="dropdown-item"
-            
               >
                 <Icon icon="EventNote" className="me-2" /> Follow Up
               </Button>
@@ -222,7 +239,7 @@ const Deals = () => {
     ))
   ) : (
     <tr>
-      <td colSpan={11} className="text-center">
+      <td colSpan={12} className="text-center">
         No data available in table
       </td>
     </tr>

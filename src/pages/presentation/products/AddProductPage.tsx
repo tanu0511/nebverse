@@ -142,7 +142,7 @@ const AddProductPage: React.FC<AddProductPageProps> = ({ onClose, onSave, produc
                           <option key={cat} value={cat}>{cat}</option>
                         ))}
                       </select>
-                      <Button color="secondary" type="button" onClick={() => setShowCategoryModal(true)}>
+                      <Button color="light" type="button" onClick={() => setShowCategoryModal(true)}>
                         Add
                       </Button>
                     </div>
@@ -164,7 +164,7 @@ const AddProductPage: React.FC<AddProductPageProps> = ({ onClose, onSave, produc
                             </option>
                           ))}
                       </select>
-                      <Button color="secondary" type="button" onClick={() => setShowSubCategoryModal(true)}>
+                      <Button color="light" type="button" onClick={() => setShowSubCategoryModal(true)}>
                         Add
                       </Button>
                     </div>
@@ -221,7 +221,7 @@ const AddProductPage: React.FC<AddProductPageProps> = ({ onClose, onSave, produc
                         </option>
                       ))}
                     </select>
-                    <Button color="secondary" type="button" onClick={() => setShowTaxModal(true)}>
+                    <Button color="light" type="button" onClick={() => setShowTaxModal(true)}>
                       Add
                     </Button>
                   </div>
@@ -289,10 +289,11 @@ const AddProductPage: React.FC<AddProductPageProps> = ({ onClose, onSave, produc
                 </div>
               </div>
               <div className="modal-footer justify-content-end">
-                <Button color="secondary" onClick={onClose}>Cancel</Button>
                 <Button color="primary" className="ms-2" type="submit">
                   Save Product
                 </Button>
+                <Button color="light" onClick={onClose}>Cancel</Button>
+                
               </div>
             </form>
           </div>
@@ -543,8 +544,7 @@ const AddProductPage: React.FC<AddProductPageProps> = ({ onClose, onSave, produc
                 </div>
               </div>
               <div className="modal-footer justify-content-end">
-                <Button color="secondary" onClick={() => setShowTaxModal(false)}>Cancel</Button>
-                <Button
+                 <Button
                   color="primary"
                   className="ms-2"
                   onClick={() => {
@@ -562,6 +562,8 @@ const AddProductPage: React.FC<AddProductPageProps> = ({ onClose, onSave, produc
                 >
                   Save
                 </Button>
+                <Button color="secondary" onClick={() => setShowTaxModal(false)}>Cancel</Button>
+               
               </div>
             </div>
           </div>

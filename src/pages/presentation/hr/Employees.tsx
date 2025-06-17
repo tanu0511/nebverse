@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
 import Page from '../../../layout/Page/Page';
@@ -24,13 +23,43 @@ const Employees = () => {
   const [filterModalStatus, setFilterModalStatus] = useState<boolean>(false); // State for Filter Modal
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | undefined>(undefined);
   const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const [masterEmployeeList, setMasterEmployeeList] = useState<Employee[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [departments, setDepartments] = useState<string[]>(['IT', 'HR', 'Finance']); // State for departments
   const [designations] = useState<string[]>(['Manager', 'Developer', 'Designer']); // State for designations
 
-  const filteredData = employees;
+// Fetch employees from API on mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:8000/api/v1/employee/employees', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('API DATA:', data);
+        setEmployees(Array.isArray(data) ? data : []);
+        setMasterEmployeeList(Array.isArray(data) ? data : []); // <-- Add this line
+      })
+      .catch((err) => {
+        console.error('Failed to fetch employees:', err);
+      });
+  }, []);
+
+  // Update filteredData to use searchTerm
+  const filteredData = employees.filter((emp) =>
+    emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (emp.email && emp.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (emp.employeeId && emp.employeeId.toString().includes(searchTerm)) ||
+    (emp.department && emp.department.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (emp.designation && emp.designation.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
   const { items } = useSortableData(filteredData);
 
   const handleDelete = (id: number) => {
@@ -50,13 +79,6 @@ const Employees = () => {
     }
     setMasterEmployeeList(updatedList);
     setEmployees(updatedList);
-  };
-
-  const handleSearch = (value: string) => {
-    const filtered = masterEmployeeList.filter((emp) =>
-      emp.name.toLowerCase().includes(value.toLowerCase())
-    );
-    setEmployees(filtered);
   };
 
   const handleViewEmployee = (employee: Employee) => {
@@ -117,7 +139,8 @@ const Employees = () => {
             type="search"
             className="border-0 shadow-none bg-transparent"
             placeholder="Search employee..."
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
           />
         </SubHeaderLeft>
         <SubHeaderRight>
@@ -280,7 +303,7 @@ const Employees = () => {
         designations={designations} // Pass designations dynamically
       />
 
-<AddEmployee
+      <AddEmployee
         isOpen={employeeModalStatus}
         setIsOpen={(status) => {
           setEmployeeModalStatus(status);

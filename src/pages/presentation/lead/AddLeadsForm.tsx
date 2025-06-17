@@ -27,7 +27,8 @@ const AddLeadsForm: FC<IAddLeadsModalProps> = ({
     isOpen,
     setIsOpen,
     onSubmit,
-    mode
+    mode,
+	leadToEdit
 }) => {
     //Load initial form data from localStorage or use default values
 	const defaultFormData = {
@@ -58,20 +59,21 @@ const AddLeadsForm: FC<IAddLeadsModalProps> = ({
 		address: '',
 	};
 	
-	const [formData, setFormData] = useState(defaultFormData);
+	// const [formData, setFormData] = useState(defaultFormData);
 	
-	useEffect(() => {
-		if (isOpen) {
-			setFormData(defaultFormData); // Reset form data when modal is opened
-		}
-	}, [isOpen]);
 
-    const formik = useFormik({
-        initialValues: formData,
+    const getInitialValues = () => {
+      if (isOpen && leadToEdit) {
+        return { ...defaultFormData, ...leadToEdit };
+      }
+      return defaultFormData;
+    };
+	
+	const formik = useFormik({
+        initialValues: getInitialValues(),
         enableReinitialize: true, // Allow form to reinitialize with updated values
         onSubmit: (values) => {
             onSubmit(values);
-            setFormData(values); // Update local state
             localStorage.setItem('addLeadsForm', JSON.stringify(values)); // Save to localStorage
             formik.resetForm();
             setIsOpen(false);

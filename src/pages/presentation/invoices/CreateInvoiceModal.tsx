@@ -1,4 +1,6 @@
-import React, {  useState, useRef } from 'react';
+
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {  useState, useRef, useEffect } from 'react';
 import { useFormik } from 'formik';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Modal, {
@@ -12,6 +14,7 @@ import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Input from '../../../components/bootstrap/forms/Input';
 import Select from '../../../components/bootstrap/forms/Select';
 import Textarea from '../../../components/bootstrap/forms/Textarea';
+import AddClientModal from './AddClientModal';
 
 interface CreateInvoiceModalProps {
   isOpen: boolean;
@@ -20,10 +23,27 @@ interface CreateInvoiceModalProps {
   defaultValues?: any;
 }
 
+const emptyInvoice = {
+  invoiceNumber: '',
+  invoiceDate: '',
+  dueDate: '',
+  client: '',
+  project: '',
+  total: '',
+  paymentGateway: '',
+  transactionId: '',
+  status: '',
+};
+
 const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, setIsOpen, onSave, defaultValues }) => {
   const [items, setItems] = useState([
     { name: '', quantity: 1, unit: 'Pcs', unitPrice: 0, tax: '', description: '', file: null },
   ]);
+  const [clients, setClients] = useState([
+    { value: 'Client X', label: 'Client X' },
+    { value: 'Client Y', label: 'Client Y' },
+  ]);
+  const [addClientOpen, setAddClientOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -58,12 +78,12 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, setIsOp
 		const invoiceData = {
 		  ...values,
 		  items,
-		  total: calculateTotal(), // Include the calculated total
+		  total: calculateTotal(), 
 		};
 		if (onSave) {
-		  onSave(invoiceData); // Pass the invoice data to the parent component
+		  onSave(invoiceData); 
 		}
-		setIsOpen(false); // Close the modal
+		setIsOpen(false); 
 	  },
   });
 
@@ -119,16 +139,42 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, setIsOp
     return (subtotal - discountValue).toFixed(2);
   };
 
+  useEffect(() => {
+    // Reset form to empty if defaultValues is null, otherwise use defaultValues
+    formik.setValues(defaultValues || emptyInvoice);
+
+    // Reset items to a single empty item if creating a new invoice
+    if (!defaultValues) {
+      setItems([{ name: '', quantity: 1, unit: 'Pcs', unitPrice: 0, tax: '', description: '', file: null }]);
+      setDiscount(0);
+      setDiscountType('%');
+    } else if (defaultValues.items) {
+      setItems(defaultValues.items);
+      setDiscount(defaultValues.discount || 0);
+      setDiscountType(defaultValues.discountType || '%');
+    }
+  }, [defaultValues, isOpen]);
+
+  // Add this handler to receive new client from AddClientModal
+  const handleAddClient = (clientName: string) => {
+    if (clientName && !clients.some(c => c.value === clientName)) {
+      setClients(prev => [...prev, { value: clientName, label: clientName }]);
+    }
+    setAddClientOpen(false);
+    // Optionally, set the new client as selected:
+    formik.setFieldValue('client', clientName);
+  };
+
   return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' isCentered>
-			<ModalHeader setIsOpen={setIsOpen}>
-				<ModalTitle id='invoice-details-title'>Invoice Details</ModalTitle>
-			</ModalHeader>
-			<ModalBody>
-				<form onSubmit={formik.handleSubmit}>
-					<div className='row g-3'>
-						{/* Invoice Information Fields */}
-						<FormGroup label='Invoice Number' className='col-md-4'>
+    <Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' isStaticBackdrop>
+      <ModalHeader setIsOpen={setIsOpen}>
+        <ModalTitle id='invoice-details-title'>Invoice Details</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <form onSubmit={formik.handleSubmit}>
+          <div className='row g-3'>
+            {/* Invoice Information Fields */}
+            <FormGroup label='Invoice Number' className='col-md-4'>
 							<Input
 								name='invoiceNumber'
 								value={formik.values.invoiceNumber}
@@ -192,21 +238,34 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, setIsOp
 							/>
 						</FormGroup>
 						<FormGroup label='Client' className='col-md-4'>
-							<Select
-								name='client'
-								value={formik.values.client}
-								onChange={formik.handleChange}
-								ariaLabel='Select Client'>
-								<option value=''>-- Select Client --</option>
-								<option value='Client X'>Client X</option>
-								<option value='Client Y'>Client Y</option>
-							</Select>
-							{formik.errors.client ? (
-								<small className='text-danger'>{typeof formik.errors.client === 'string' ? formik.errors.client : ''}</small>
-							) : (
-								<></>
-							)}
-						</FormGroup>
+  <div className="input-group">
+    <Select
+      name='client'
+      value={formik.values.client}
+      onChange={formik.handleChange}
+      ariaLabel='Select Client'
+      className="form-select"
+    >
+      <option value=''>--</option>
+      {clients.map((client) => (
+        <option key={client.value} value={client.value}>
+          {client.label}
+        </option>
+      ))}
+    </Select>
+    <Button
+      color="light"
+      type="button"
+      className="input-group-text"
+      onClick={() => setAddClientOpen(true)}
+    >
+      Add
+    </Button>
+  </div>
+  {formik.errors.client ? (
+	<small className='text-danger'>{typeof formik.errors.client === 'string' ? formik.errors.client : ''}</small>
+  ) : <></>}
+</FormGroup>
 						<FormGroup label='Project' className='col-md-4'>
 							<Select
 								name='project'
@@ -555,6 +614,11 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, setIsOp
 					Save
 				</Button>
 			</ModalFooter>
+			<AddClientModal
+        isOpen={addClientOpen}
+        setIsOpen={setAddClientOpen}
+        onSave={handleAddClient}
+      />
 		</Modal>
   );
 };

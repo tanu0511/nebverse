@@ -1,10 +1,12 @@
-
+/* eslint-disable react/jsx-curly-brace-presence */
+/* eslint-disable react/self-closing-comp */
 import React, { useContext, useEffect, useState } from 'react';
 import { useTour } from '@reactour/tour';
 import useDarkMode from '../../../hooks/useDarkMode';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, {
 	SubHeaderLeft,
+	SubHeaderRight,
 	SubheaderSeparator,
 } from '../../../layout/SubHeader/SubHeader';
 import Page from '../../../layout/Page/Page';
@@ -25,9 +27,8 @@ import ThemeContext from '../../../contexts/themeContext';
 
 const DashboardPage = () => {
 	const { mobileDesign } = useContext(ThemeContext);
-	/**
-	 * Tour Start
-	 */
+
+	// Tour logic
 	const { setIsOpen } = useTour();
 	useEffect(() => {
 		if (localStorage.getItem('tourModalStarted') !== 'shown' && !mobileDesign) {
@@ -36,13 +37,29 @@ const DashboardPage = () => {
 				localStorage.setItem('tourModalStarted', 'shown');
 			}, 7000);
 		}
-		return () => {};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [mobileDesign, setIsOpen]);
 
 	const { themeStatus } = useDarkMode();
-
 	const [activeTab, setActiveTab] = useState<TTabs>(TABS.YEARLY);
+
+	// Clock logic
+	const [currentTime, setCurrentTime] = useState(new Date());
+	const [clockInTime, setClockInTime] = useState<Date | null>(null);
+	const [isClockedIn, setIsClockedIn] = useState(false);
+
+	useEffect(() => {
+		const timer = setInterval(() => {
+			setCurrentTime(new Date());
+		}, 1000);
+		return () => clearInterval(timer);
+	}, []);
+
+	const handleClockToggle = () => {
+		if (!isClockedIn) {
+			setClockInTime(new Date());
+		}
+		setIsClockedIn((prev) => !prev);
+	};
 
 	return (
 		<PageWrapper>
@@ -55,19 +72,57 @@ const DashboardPage = () => {
 							<Button
 								key={key}
 								color={activeTab === TABS[key] ? 'success' : themeStatus}
-								onClick={() => setActiveTab(TABS[key])}>
+								onClick={() => setActiveTab(TABS[key])}
+							>
 								{TABS[key]}
 							</Button>
 						))}
 					</ButtonGroup>
+
 				</SubHeaderLeft>
+
+				<SubHeaderRight>
+					<div className="text-end me-3">
+						<div className="h5 mb-0 fw-bold">
+							{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+						</div>
+						<div className="text-muted small ">
+							{currentTime.toLocaleDateString('en-US', { weekday: 'long' })}
+						</div>
+						{isClockedIn && clockInTime && (
+							<div className="text-muted small">
+								Clock In at - {clockInTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+							</div>
+						)}
+					</div>
+					<Button
+						color={isClockedIn ? 'primary' : 'secondary'}
+						isLight
+						icon={isClockedIn ? 'Logout' : 'WatchLater'}
+						rounded={'end'}
+						size={'lg'}
+						shadow={'default'}
+						onClick={handleClockToggle}
+					>
+						{isClockedIn ? 'Clock Out' : 'Clock In'}
+					</Button>
+					<SubheaderSeparator />
+				</SubHeaderRight>
+				<Button
+				icon='Settings'
+				color='info'
+				isLink
+				size='lg'
+				>
+
+				</Button>
 			</SubHeader>
+
 			<Page container='fluid'>
 				<div className='row'>
 					<div className='col-12'>
 						<CommonDashboardAlert />
 					</div>
-
 					<div className='col-xl-4'>
 						<CommonDashboardUserCard />
 					</div>
@@ -77,7 +132,6 @@ const DashboardPage = () => {
 					<div className='col-xl-4'>
 						<CommonDashboardDesignTeam />
 					</div>
-
 					<div className='col-xxl-6'>
 						<CommonDashboardIncome activeTab={activeTab} />
 					</div>
@@ -87,15 +141,12 @@ const DashboardPage = () => {
 					<div className='col-xxl-3'>
 						<CommonDashboardUserIssue />
 					</div>
-
 					<div className='col-xxl-8'>
 						<CommonDashboardSalesByStore />
 					</div>
-
 					<div className='col-xxl-4 col-xl-6'>
 						<CommonDashboardWaitingAnswer />
 					</div>
-
 					<div className='col-xxl-4 col-xl-6'>
 						<CommonMyWallet />
 					</div>

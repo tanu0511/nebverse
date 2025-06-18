@@ -9,7 +9,7 @@ import Button from '../../../components/bootstrap/Button';
 import Logo from '../../../components/Logo'
 import useDarkMode from '../../../hooks/useDarkMode';
 import AuthContext from '../../../contexts/authContext';
-import USERS, { getUserDataWithUsername } from  '../../../common/data/usernishadummydata';
+import USERS, { getUserDataWithUsername } from '../../../common/data/usernishadummydata';
 import Spinner from '../../../components/bootstrap/Spinner';
 
 // Add your illustration image to your assets and import here
@@ -46,7 +46,7 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
     const [signupName, setSignupName] = useState('');
     const [signupSurname, setSignupSurname] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
-	const [signups , setSignups] = useState<any[]>([]);
+    const [signups, setSignups] = useState<any[]>([]);
     const [jsonUsers, setJsonUsers] = useState<any[]>([]);
     const [addEmployeeUsers, setAddEmployeeUsers] = useState<any[]>([]);
     const navigate = useNavigate();
@@ -95,6 +95,17 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
     };
 
     const passwordCheck = (username: string, password: string) => {
+        // Check dummy data
+        const dummyUser = getUserDataWithUsername(username);
+        if (dummyUser && dummyUser.password === password) return true;
+
+        // Check json-server users
+        const jsonUser = jsonUsers.find(
+            user => user.email === username || user.name === username
+        );
+        if (jsonUser && jsonUser.password === password) return true;
+
+        // Check AddEmployee users
         const addEmpUser = addEmployeeUsers.find(
             user =>
                 user.email === username ||
@@ -102,7 +113,9 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
                 user.employeeEmail === username ||
                 user.employeeName === username
         );
-        return addEmpUser && addEmpUser.password === password;
+        if (addEmpUser && addEmpUser.password === password) return true;
+
+        return false;
     };
 
     const formik = useFormik({
@@ -123,22 +136,31 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
                 if (passwordCheck(values.loginUsername, values.loginPassword)) {
                     // After successful login
                     const user =
-                      getUserDataWithUsername(values.loginUsername) ||
-                      jsonUsers.find(
-                        user => user.email === values.loginUsername || user.name === values.loginUsername
-                      ) ||
-                      addEmployeeUsers.find(
-                        user =>
-                            user.email === values.loginUsername ||
-                            user.name === values.loginUsername ||
-                            user.employeeEmail === values.loginUsername ||
-                            user.employeeName === values.loginUsername
-                      );
+                        getUserDataWithUsername(values.loginUsername) ||
+                        jsonUsers.find(
+                            user => user.email === values.loginUsername || user.name === values.loginUsername
+                        ) ||
+                        addEmployeeUsers.find(
+                            user =>
+                                user.email === values.loginUsername ||
+                                user.name === values.loginUsername ||
+                                user.employeeEmail === values.loginUsername ||
+                                user.employeeName === values.loginUsername
+                        );
                     if (user) {
-                      localStorage.setItem('currentUser', JSON.stringify(user));
-                      if (setUser) setUser(values.loginUsername);
-                      handleOnClick();
-                    }
+                        // Prefer user.id, fallback to user.employeeId
+                        const userId = user.id?.toString() || user.employeeId?.toString();
+                        if (userId && userId !== 'undefined' && userId !== 'null' && userId !== '') {
+                            localStorage.setItem('currentUser', JSON.stringify(user));
+                            localStorage.setItem('currentUserId', userId);
+                            if (setUser) setUser(values.loginUsername);
+                            // OLD: navigate(`/appointment/employee/${userId}`);
+                            navigate('/'); // <-- Go to dashboard after login
+                        } else {
+                            formik.setFieldError('loginUsername', 'User does not have a valid ID.');
+        handleOnClick();
+    }
+}
                 } else {
                     formik.setFieldError('loginPassword', 'Username and password do not match.');
                 }
@@ -178,40 +200,40 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
         }, 1000);
     };
 
-	const handleSignup = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    const signupData = {
-        email: signupEmail,
-        name: signupName,
-        surname: signupSurname,
-        password: signupPassword,
-    };
+    const handleSignup = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        const signupData = {
+            email: signupEmail,
+            name: signupName,
+            surname: signupSurname,
+            password: signupPassword,
+        };
 
-    // Save locally for display (optional)
-    setSignups(prev => [...prev, signupData]);
-    setSignupEmail('');
-    setSignupName('');
-    setSignupSurname('');
-    setSignupPassword('');
+        // Save locally for display (optional)
+        setSignups(prev => [...prev, signupData]);
+        setSignupEmail('');
+        setSignupName('');
+        setSignupSurname('');
+        setSignupPassword('');
 
-    // Send to json-server
-    try {
-        const response = await fetch('http://localhost:4000/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(signupData),
-        });
-        if (!response.ok) {
-            throw new Error('Failed to save user');
+        // Send to json-server
+        try {
+            const response = await fetch('http://localhost:4000/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(signupData),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to save user');
+            }
+            alert('Sign up successful! You can now log in.');
+            setSingUpStatus(false);
+        } catch (error) {
+            alert('Error saving signup: ' + error);
         }
-        alert('Sign up successful! You can now log in.');
-		setSingUpStatus(false); 
-    } catch (error) {
-        alert('Error saving signup: ' + error);
-    }
-};
+    };
 
     return (
         <div style={{ minHeight: '100vh' }}>
@@ -280,7 +302,7 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
                                         </FormGroup>
                                     </div>
                                     <div className="col-12">
-                                        <Button color="info" className="w-100 py-3" onClick={handleSignup}  style={{ background: 'linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%)', border: 'none' }}>
+                                        <Button color="info" className="w-100 py-3" onClick={handleSignup} style={{ background: 'linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%)', border: 'none' }}>
                                             Sign Up
                                         </Button>
                                     </div>
@@ -390,7 +412,7 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
                                 Privacy Policy
                             </Link>
                         </div>
-                 
+
                     </div>
                 </div>
             </div>

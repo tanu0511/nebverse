@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
-import { getUserDataWithId } from '../../../common/data/userDummyData';
+import USERS, { getUserDataWithId } from '../../../common/data/usernishadummydata'; // Use your actual dummy data import
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import Page from '../../../layout/Page/Page';
 import SubHeader, {
@@ -28,7 +28,6 @@ import Dropdown, {
 	DropdownToggle,
 } from '../../../components/bootstrap/Dropdown';
 import Chart, { IChartOptions } from '../../../components/extras/Chart';
-import dummyEventsData from '../../../common/data/dummyEventsData';
 import { priceFormat } from '../../../helpers/helpers';
 import EVENT_STATUS from '../../../common/data/enumEventStatus';
 import Alert from '../../../components/bootstrap/Alert';
@@ -38,77 +37,139 @@ import useDarkMode from '../../../hooks/useDarkMode';
 import useTourStep from '../../../hooks/useTourStep';
 
 const EmployeePage = () => {
-	useTourStep(19);
-	const { darkModeStatus } = useDarkMode();
+    useTourStep(19);
+    const { darkModeStatus } = useDarkMode();
+    const params = useParams();
+console.log('params:', params);
+const { id } = params;
+    const navigate = useNavigate();
 
-	const { id } = useParams();
-	const data = getUserDataWithId(id);
+    useEffect(() => {
+        if (!id) {
+            const currentUserId = localStorage.getItem('currentUserId');
+            if (
+                currentUserId &&
+                currentUserId !== 'undefined' &&
+                currentUserId !== 'null' &&
+                currentUserId !== ''
+            ) {
+                navigate(`/appointment/employee/${currentUserId}`, { replace: true });
+            }
+        }
+    }, [id, navigate]);
 
-	const [dayHours] = useState<IChartOptions>({
-		series: [
-			{
-				data: [8, 12, 15, 20, 15, 22, 9],
-			},
-		],
-		options: {
-			colors: [process.env.REACT_APP_SUCCESS_COLOR],
-			chart: {
-				type: 'radar',
-				width: 200,
-				height: 200,
-				sparkline: {
-					enabled: true,
-				},
-			},
-			xaxis: {
-				categories: [
-					'Monday',
-					'Tuesday',
-					'Wednesday',
-					'Thursday',
-					'Friday',
-					'Saturday',
-					'Sunday',
-				],
-				// convertedCatToNumeric: false,
-			},
-			tooltip: {
-				theme: 'dark',
-				fixed: {
-					enabled: false,
-				},
-				x: {
-					show: true,
-				},
-				y: {
-					title: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						formatter(seriesName) {
-							return 'Hours';
-						},
-					},
-				},
-			},
-			stroke: {
-				curve: 'smooth',
-				width: 2,
-			},
-			plotOptions: {
-				radar: {
-					polygons: {
-						strokeColors: `${COLORS.SUCCESS.code}50`,
-						strokeWidth: '1',
-						connectorColors: `${COLORS.SUCCESS.code}50`,
-					},
-				},
-			},
-		},
-	});
+    const [allUsers, setAllUsers] = useState<any[]>([]);
+    const [userData, setUserData] = useState<any>(null);
 
-	const userTasks = dummyEventsData.filter((f) => f.assigned.username === data.username);
+    useEffect(() => {
+        const fetchAll = async () => {
+            let dummyUsers = Object.values(USERS);
+            let jsonUsers: any[] = [];
+            let addEmployeeUsers: any[] = [];
+            try {
+                const resUsers = await fetch('http://localhost:4000/users');
+                jsonUsers = await resUsers.json();
+            } catch {}
+            try {
+                const resAddEmp = await fetch('http://localhost:4000/AddEmployee');
+                const data = await resAddEmp.json();
+                addEmployeeUsers = Array.isArray(data) ? data : data.AddEmployee || [];
+            } catch {}
+            setAllUsers([...dummyUsers, ...jsonUsers, ...addEmployeeUsers]);
+        };
+        fetchAll();
+    }, []);
 
-	return (
-		<PageWrapper title={`${data.name} ${data.surname}`}>
+    useEffect(() => {
+        if (!id) return;
+        // Combine all users into one array for searching
+        const combinedUsers = [...Object.values(USERS), ...allUsers];
+        // Find by either id or employeeId
+        const found = combinedUsers.find(
+            (u: any) =>
+                u.id?.toString() === id ||
+                u.employeeId?.toString() === id
+        );
+        setUserData(found);
+    }, [id, allUsers]);
+
+    useEffect(() => {
+        console.log('allUsers:', allUsers);
+        console.log('id param:', id);
+    }, [allUsers, id]);
+
+    // ✅ Always call hooks at the top level
+    const [dayHours] = useState<IChartOptions>({
+        series: [
+            {
+                data: [8, 12, 15, 20, 15, 22, 9],
+            },
+        ],
+        options: {
+            colors: [process.env.REACT_APP_SUCCESS_COLOR],
+            chart: {
+                type: 'radar',
+                width: 200,
+                height: 200,
+                sparkline: {
+                    enabled: true,
+                },
+            },
+            xaxis: {
+                categories: [
+                    'Monday',
+                    'Tuesday',
+                    'Wednesday',
+                    'Thursday',
+                    'Friday',
+                    'Saturday',
+                    'Sunday',
+                ],
+            },
+            tooltip: {
+                theme: 'dark',
+                fixed: {
+                    enabled: false,
+                },
+                x: {
+                    show: true,
+                },
+                y: {
+                    title: {
+                        formatter(seriesName) {
+                            return 'Hours';
+                        },
+                    },
+                },
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 2,
+            },
+            plotOptions: {
+                radar: {
+                    polygons: {
+                        strokeColors: `${COLORS.SUCCESS.code}50`,
+                        strokeWidth: '1',
+                        connectorColors: `${COLORS.SUCCESS.code}50`,
+                    },
+                },
+            },
+        },
+    });
+
+    if (!userData) return <div>Loading...</div>;
+
+    const name = userData.name || userData.employeeName || '';
+    const surname = userData.surname || '';
+    const email = userData.email || userData.employeeEmail || '';
+    const username = userData.username || userData.name || userData.employeeName || '';
+    const position = userData.position || userData.designation || '';
+
+
+
+    return (
+		<PageWrapper title={`${name} ${surname}`}>
 			<SubHeader>
 				<SubHeaderLeft>
 					<Button
@@ -131,9 +192,9 @@ const EmployeePage = () => {
 			</SubHeader>
 			<Page>
 				<div className='pt-3 pb-5 d-flex align-items-center'>
-					<span className='display-4 fw-bold me-3'>{`${data.name} ${data.surname}`}</span>
+					<span className='display-4 fw-bold me-3'>{`${name} ${surname}`}</span>
 					<span className='border border-success border-2 text-success fw-bold px-3 py-2 rounded'>
-						{data.position}
+						{position}
 					</span>
 				</div>
 				<div className='row'>
@@ -143,10 +204,10 @@ const EmployeePage = () => {
 								<div className='row g-5'>
 									<div className='col-12 d-flex justify-content-center'>
 										<Avatar
-											src={data.src}
-											srcSet={data.srcSet}
-											color={data.color}
-											isOnline={data.isOnline}
+											src={userData.src}
+											srcSet={userData.srcSet}
+											color={userData.color}
+											isOnline={userData.isOnline}
 										/>
 									</div>
 									<div className='col-12'>
@@ -158,7 +219,7 @@ const EmployeePage = () => {
 													</div>
 													<div className='flex-grow-1 ms-3'>
 														<div className='fw-bold fs-5 mb-0'>
-															{`${data.username}@site.com`}
+															{`${userData.username}@site.com`}
 														</div>
 														<div className='text-muted'>
 															Email Address
@@ -173,7 +234,7 @@ const EmployeePage = () => {
 													</div>
 													<div className='flex-grow-1 ms-3'>
 														<div className='fw-bold fs-5 mb-0'>
-															{`@${data.username}`}
+															{`@${userData.username}`}
 														</div>
 														<div className='text-muted'>
 															Social name
@@ -195,9 +256,9 @@ const EmployeePage = () => {
 								</CardLabel>
 							</CardHeader>
 							<CardBody>
-								{data.services ? (
+								{userData.services ? (
 									<div className='row g-2'>
-										{data?.services.map((service) => (
+										{userData?.services.map((service: any) => (
 											<div key={service.name} className='col-auto'>
 												<Badge
 													isLight
@@ -508,94 +569,14 @@ const EmployeePage = () => {
 												<th>Customer</th>
 												<th>Service</th>
 												<th>Duration</th>
-												<th>Payment</th>
-												<th>Status</th>
-											</tr>
+												<th>Payment</th>											</tr>
 										</thead>
 										<tbody>
-											{userTasks.map((item) => (
-												<tr key={item.id}>
-													<td>
-														<div className='d-flex align-items-center'>
-															<span
-																className={classNames(
-																	'badge',
-																	'border border-2 border-light',
-																	'rounded-circle',
-																	'bg-success',
-																	'p-2 me-2',
-																	`bg-${item.status.color}`,
-																)}>
-																<span className='visually-hidden'>
-																	{item.status.name}
-																</span>
-															</span>
-															<span className='text-nowrap'>
-																{dayjs(
-																	`${item.date} ${item.time}`,
-																).format('MMM Do YYYY, h:mm a')}
-															</span>
-														</div>
-													</td>
-													<td>
-														<div>
-															<div>{item.customer.name}</div>
-															<div className='small text-muted'>
-																{item.customer.email}
-															</div>
-														</div>
-													</td>
-													<td>{item.service.name}</td>
-													<td>{item.duration}</td>
-													<td>
-														{item.payment && priceFormat(item.payment)}
-													</td>
-													<td>
-														<Dropdown>
-															<DropdownToggle hasIcon={false}>
-																<Button
-																	isLink
-																	color={item.status.color}
-																	icon='Circle'
-																	className='text-nowrap'>
-																	{item.status.name}
-																</Button>
-															</DropdownToggle>
-															<DropdownMenu>
-																{Object.keys(EVENT_STATUS).map(
-																	(key) => (
-																		<DropdownItem key={key}>
-																			<div>
-																				<Icon
-																					icon='Circle'
-																					color={
-																						EVENT_STATUS[
-																							key
-																						].color
-																					}
-																				/>
-																				{
-																					EVENT_STATUS[
-																						key
-																					].name
-																				}
-																			</div>
-																		</DropdownItem>
-																	),
-																)}
-															</DropdownMenu>
-														</Dropdown>
-													</td>
-												</tr>
-											))}
+										
 										</tbody>
 									</table>
 								</div>
-								{!userTasks.length && (
-									<Alert color='warning' isLight icon='Report' className='mt-3'>
-										There is no scheduled and assigned task.
-									</Alert>
-								)}
+								
 							</CardBody>
 						</Card>
 					</div>

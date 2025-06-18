@@ -110,7 +110,7 @@ const APP = {
 	},
 	APPOINTMENT: {
 		//	CALENDAR: lazy(() => import('../pages/presentation/appointment/CalendarPage')),
-		EMPLOYEE_LIST: lazy(() => import('../pages/presentation/appointment/EmployeeList')),
+		// EMPLOYEE_LIST: lazy(() => import('../pages/presentation/appointment/EmployeeList')),
 		EMPLOYEE_VIEW: lazy(() => import('../pages/presentation/appointment/EmployeePage')),
 		APPOINTMENT_LIST: lazy(() => import('../pages/presentation/appointment/AppointmentList')),
 	},
@@ -752,10 +752,10 @@ const presentation: RouteProps[] = [
 	// 	path: demoPagesMenu.appointment.subMenu.calendar.path,
 	// 	element: <APP.APPOINTMENT.CALENDAR />,
 	// },
-	{
-		path: demoPagesMenu.appointment.subMenu.employeeList.path,
-		element: <APP.APPOINTMENT.EMPLOYEE_LIST />,
-	},
+	// {
+	// 	path: demoPagesMenu.appointment.subMenu.employeeList.path,
+	// 	element: <APP.APPOINTMENT.EMPLOYEE_LIST />,
+	// },
 	{
 		path: `${demoPagesMenu.appointment.subMenu.employeeID.path}/:id`,
 		element: <APP.APPOINTMENT.EMPLOYEE_VIEW />,
@@ -1210,3 +1210,4 @@ const documentation: RouteProps[] = [
 const contents = [...presentation, ...documentation];
 
 export default contents;
+

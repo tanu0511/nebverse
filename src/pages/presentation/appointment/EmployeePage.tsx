@@ -82,13 +82,11 @@ const { id } = params;
 
     useEffect(() => {
         if (!id) return;
-        // Combine all users into one array for searching
         const combinedUsers = [...Object.values(USERS), ...allUsers];
-        // Find by either id or employeeId
         const found = combinedUsers.find(
             (u: any) =>
-                u.id?.toString() === id ||
-                u.employeeId?.toString() === id
+                (u.id !== undefined && u.id.toString() === id) ||
+                (u.employeeId !== undefined && u.employeeId.toString() === id)
         );
         setUserData(found);
     }, [id, allUsers]);

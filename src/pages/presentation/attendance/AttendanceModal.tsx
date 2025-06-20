@@ -13,7 +13,7 @@ interface AttendanceModalProps {
     clockOut: string;
     workingFrom: string;
     overwrite: boolean;
-  }) => void;
+   }) => void;
   employeeNames: string[];
   selectedEmployee: string | null;
   selectedDate: string | null;
@@ -29,19 +29,24 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
   selectedEmployee,
   selectedDate,
 }) => {
+  const getCurrentTime = () =>
+    new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   const [employeeName, setEmployeeName] = useState<string>("");
   const [department, setDepartment] = useState<string>("HR");
   const [dates, setDates] = useState<string[]>([]);
   const [status, setStatus] = useState<string>("Present");
-  const [clockIn, setClockIn] = useState<string>("09:00");
-  const [clockOut, setClockOut] = useState<string>("17:00");
+  const [clockIn, setClockIn] = useState<string>(getCurrentTime());
+  const [clockOut, setClockOut] = useState<string>("18:30");
   const [workingFrom, setWorkingFrom] = useState<string>("Office");
   const [overwrite, setOverwrite] = useState<boolean>(false);
 
+  // Set clockIn to current time whenever modal opens
   useEffect(() => {
     if (selectedEmployee) setEmployeeName(selectedEmployee);
     if (selectedDate) setDates([selectedDate]);
-  }, [selectedEmployee, selectedDate]);
+    if (isOpen) setClockIn(getCurrentTime());
+  }, [selectedEmployee, selectedDate, isOpen]);
 
   const handleSave = () => {
     if (employeeName && dates.length && status) {
@@ -67,7 +72,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
     setDates([]);
     setStatus("Present");
     setClockIn("09:00");
-    setClockOut("17:00");
+    setClockOut("18:30");
     setWorkingFrom("Office");
     setOverwrite(false);
   };
@@ -131,34 +136,40 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
               <option>Half Day</option>
               <option>On Leave</option>
               <option>Holiday</option>
+              <option>Day Off</option> {/* <-- Add this */}
             </Form.Select>
           </Form.Group>
+<Form.Group className="mb-3">
+  <Form.Label>Clock-In Time</Form.Label>
+  <Form.Control
+    type="text"
+    value={clockIn}
+    readOnly
+  />
+</Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Clock-In Time</Form.Label>
-            <Form.Control
-              type="time"
-              value={clockIn}
-              onChange={(e) => setClockIn(e.target.value)}
-            />
-          </Form.Group>
+<Form.Group className="mb-3">
+  <Form.Label>Clock-Out Time</Form.Label>
+  <Form.Control
+    type="time"
+    value={clockOut}
+    onChange={(e) => setClockOut(e.target.value)}
+    disabled={!overwrite}
+  />
+</Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Clock-Out Time</Form.Label>
-            <Form.Control
-              type="time"
-              value={clockOut}
-              onChange={(e) => setClockOut(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Working From</Form.Label>
-            <Form.Select value={workingFrom} onChange={(e) => setWorkingFrom(e.target.value)}>
-              <option>Office</option>
-              <option>Home</option>
-            </Form.Select>
-          </Form.Group>
+<Form.Group className="mb-3">
+  <Form.Label>Working From</Form.Label>
+  <Form.Select
+    value={workingFrom}
+    onChange={(e) => setWorkingFrom(e.target.value)}
+    disabled={!overwrite}
+  >
+    <option>Office</option>
+    <option>Home</option>
+    <option>Other</option>
+  </Form.Select>
+</Form.Group>
 
           <Form.Group className="mb-3" controlId="overwriteAttendance">
             <Form.Check

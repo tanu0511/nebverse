@@ -3462,6 +3462,11 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-select-country-list@^2.2.3":
+  version "2.2.3"
+  resolved "https://registry.npmjs.org/@types/react-select-country-list/-/react-select-country-list-2.2.3.tgz"
+  integrity sha512-nffcYOwuun+5B0EWqubK+amHpPdK9Xj20xkLYNqYrzmESd8FnpLwHsS79ClLAWA9y+icVA8gWPkbwBp1gpjSwA==
+
 "@types/react-syntax-highlighter@^15.5.13":
   version "15.5.13"
   resolved "https://registry.npmjs.org/@types/react-syntax-highlighter/-/react-syntax-highlighter-15.5.13.tgz"
@@ -11477,6 +11482,11 @@ react-scrollspy@^3.4.3:
     babel-runtime "^6.26.0"
     classnames "^2.2.5"
     prop-types "^15.5.10"
+
+react-select-country-list@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.npmjs.org/react-select-country-list/-/react-select-country-list-2.2.3.tgz"
+  integrity sha512-eRgXL613dVyJiE99yKDYLvSBKDxvIlhkmvO2DVIjdKVyUQq6kBqoMUV/2zuRIAsbRXgBGmKjeL1dxjf7zTfszg==
 
 react-select@^5.10.1:
   version "5.10.1"

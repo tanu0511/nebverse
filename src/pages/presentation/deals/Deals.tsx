@@ -1,6 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { useState } from 'react';
-  import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
+import { useNavigate } from 'react-router-dom';
+import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
 import Page from '../../../layout/Page/Page';
 import { demoPagesMenu } from '../../../menu';
@@ -11,6 +12,7 @@ import Button from '../../../components/bootstrap/Button';
 import Icon from '../../../components/icon/Icon';
 import CreateProposalModal from './CreateProposalModal';
 import ViewProposalModal from './ViewProposalModal';
+import FollowupModal from './FollowupModal';
 
 interface TableRow {
   proposal: string;
@@ -25,6 +27,8 @@ interface TableRow {
   dealStages?: string;
   dealValue?: number;
   proposalData?: any;
+  followupDate?: string;   // <-- add this
+  followupTime?: string;   // <-- add this
 }
 
 const DEAL_STAGE_OPTIONS = [
@@ -40,15 +44,23 @@ const DEAL_STAGE_OPTIONS = [
 const Deals = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isFollowupModalOpen, setIsFollowupModalOpen] = useState(false);
   const [selectedProposal, setSelectedProposal] = useState<TableRow | null>(null);
+  const [selectedFollowup, setSelectedFollowup] = useState<TableRow | null>(null);
   const [tableData, setTableData] = useState<TableRow[]>([]);
   const [editIdx, setEditIdx] = useState<number | null>(null);
+  const [followupForm, setFollowupForm] = useState({
+    leadName: '',
+    date: '',
+    time: '',
+    sendReminder: false,
+    remark: '',
+  });
+  const navigate = useNavigate();
 
   const handleView = (row: TableRow) => {
-    setSelectedProposal(row);
-    setIsViewModalOpen(true);
+    navigate('/deals/view', { state: { deal: row } });
   };
-
 
   const handleEdit = (row: TableRow, index: number) => {
     setEditIdx(index);
@@ -66,6 +78,17 @@ const Deals = () => {
     }
   };
 
+  const handleFollowUp = (row: TableRow) => {
+    setSelectedFollowup(row);
+    setFollowupForm({
+      leadName: row.contactName || '',
+      date: row.followupDate || '',
+      time: row.followupTime || '',
+      sendReminder: false,
+      remark: '',
+    });
+    setIsFollowupModalOpen(true);
+  };
 
   const handleSave = (formData: any) => {
     const newRow: TableRow = {
@@ -81,6 +104,7 @@ const Deals = () => {
       dealStages: formData.dealStages,
       dealValue: formData.dealValue,
       proposalData: formData,
+      
     };
     if (editIdx !== null) {
       setTableData((prev) =>
@@ -92,6 +116,26 @@ const Deals = () => {
     }
     setIsModalOpen(false);
     setSelectedProposal(null);
+  };
+
+  const handleFollowupChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    setFollowupForm(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
+
+  const handleFollowupSave = () => {
+    if (!selectedFollowup) return;
+    setTableData(prev =>
+      prev.map(row =>
+        row === selectedFollowup
+          ? { ...row, followupDate: followupForm.date, followupTime: followupForm.time }
+          : row
+      )
+    );
+    setIsFollowupModalOpen(false);
   };
 
   return (
@@ -165,7 +209,11 @@ const Deals = () => {
         <td>{row.proposalData?.email || '--'}</td> {/* Show email from form */}
         <td>{row.dealValue ? `${row.dealValue}` : '--'}</td>
         <td>{row.validTill}</td>
-        <td>--</td>
+        <td>
+          {row.followupDate && row.followupTime
+            ? `${row.followupDate} ${row.followupTime}`
+            : '--'}
+        </td>
         <td>{row.dealAgent || '--'}</td>
         <td>
           <div className="d-flex align-items-center gap-2">
@@ -226,12 +274,16 @@ const Deals = () => {
               >
                 <Icon icon="Delete" className="me-2" /> Delete
               </Button>
-              <Button
-                color="link"
-                className="dropdown-item"
-              >
-                <Icon icon="EventNote" className="me-2" /> Follow Up
-              </Button>
+              {/* Only show Follow Up if not "Won" */}
+              {row.dealStages !== "Won" && (
+                <Button
+                  color="link"
+                  className="dropdown-item"
+                  onClick={() => handleFollowUp(row)}
+                >
+                  <Icon icon="EventNote" className="me-2" /> Follow Up
+                </Button>
+              )}
             </DropdownMenu>
           </Dropdown>
         </td>
@@ -262,6 +314,14 @@ const Deals = () => {
         isOpen={isViewModalOpen}
         setIsOpen={setIsViewModalOpen}
         proposalData={selectedProposal}
+      />
+      <FollowupModal
+        isOpen={isFollowupModalOpen}
+        setIsOpen={setIsFollowupModalOpen}
+        form={followupForm}
+        onChange={handleFollowupChange}
+        onSave={handleFollowupSave}
+        editIndex={null}
       />
     </PageWrapper>
   );

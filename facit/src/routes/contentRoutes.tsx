@@ -112,7 +112,7 @@ const APP = {
 	},
 	HR: {
 		DESIGNATION: lazy(() => import('../pages/presentation/designation/DesignatonPage')),
-		EMPLOYEES: lazy(() => import('../pages/presentation/hr/Employees')),
+		EMPLOYEES: lazy(() => import('../pages/presentation/')),
 		DEPARTMENT: lazy(() => import('../pages/presentation/department/Department')),
 		APPRECIATION: lazy(() => import('../pages/presentation/appreciation/Appreciation')),
 		SHIFTROASTER: lazy(() => import('../pages/presentation/shiftRoaster/ShiftRoaster')),

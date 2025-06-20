@@ -40,18 +40,18 @@ export const dashboardPagesMenu = {
 		text: 'Dashboard',
 		path: '/',
 		icon: 'Dashboard',
-		subMenu: {
-			privatedashboard: {
-				id: 'privatedashboard',
-				text: 'Private Dashboard',
-				path: '/privatedashboard',
-			},
-			advanceddashboard: {
-				id: 'advanceddashboard',
-				text: 'Advanced Dashboard',
-				path: '/',
-			},
-		},
+		// subMenu: {
+		// 	// privatedashboard: {
+		// 	// 	id: 'privatedashboard',
+		// 	// 	text: 'Private Dashboard',
+		// 	// 	path: '/private-dashboard',
+		// 	// },
+		// 	advanceddashboard: {
+		// 		id: 'advanceddashboard',
+		// 		text: 'Advanced Dashboard',
+		// 		path: '/',
+		// 	},
+		// },
 	},
 	leads: {
 		id: 'leads',

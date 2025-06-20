@@ -154,7 +154,6 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
                             localStorage.setItem('currentUser', JSON.stringify(user));
                             localStorage.setItem('currentUserId', userId);
                             if (setUser) setUser(values.loginUsername);
-                            // OLD: navigate(`/appointment/employee/${userId}`);
                             navigate('/'); // <-- Go to dashboard after login
                         } else {
                             formik.setFieldError('loginUsername', 'User does not have a valid ID.');

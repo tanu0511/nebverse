@@ -18,6 +18,8 @@ import Dropdown, {
 import CustomerEditModal from './CustomerEditModal';
 import CustomerViewModal from './CustomerViewModal';
 import Input from '../../../components/bootstrap/forms/Input';
+import AddClientModal from './AddClientModal';
+import Icon from '../../../components/icon/Icon';
 {/* <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" /> */}
 
 
@@ -59,7 +61,9 @@ import Input from '../../../components/bootstrap/forms/Input';
     const navigate = useNavigate();
 	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean[]>([]); // State to track dropdown visibility
 	const [employeeModalStatus, setEmployeeModalStatus] = useState<boolean>(false);
-    const [selectedEmployee, setSelectedEmployee] = useState<Customer | undefined>(undefined);	const toggleDropdown = (index: number) => {
+    const [selectedEmployee, setSelectedEmployee] = useState<Customer | undefined>(undefined);
+	const [originalEmail, setOriginalEmail] = useState<string | undefined>(undefined);
+	const toggleDropdown = (index: number) => {
 		setIsDropdownOpen((prev) => {
 			const newState = [...prev];
 			newState[index] = !newState[index]; // Toggle the visibility for the specific index
@@ -82,22 +86,25 @@ import Input from '../../../components/bootstrap/forms/Input';
 	
 	
     const handleSaveCustomer = (customerData: Customer) => {
-        setCustomers((prev) => {
-            const existingIndex = prev.findIndex((c) => c.email === customerData.email);
-            if (existingIndex !== -1) {
-                // Update existing customer
-                const updatedCustomers = [...prev];
-                updatedCustomers[existingIndex] = customerData;
-                localStorage.setItem('customers', JSON.stringify(updatedCustomers));
-                return updatedCustomers;
-            }
-            // Add new customer
-            const newCustomers = [...prev, customerData];
-            localStorage.setItem('customers', JSON.stringify(newCustomers));
-            return newCustomers;
-        });
-        setEmployeeModalStatus(false); // Close the modal
-    };
+  setCustomers((prev) => {
+    // Use originalEmail to find the row, fallback to customerData.email if not set
+    const keyEmail = originalEmail || customerData.email;
+    const existingIndex = prev.findIndex((c) => c.email === keyEmail);
+    if (existingIndex !== -1) {
+      // Update existing customer
+      const updatedCustomers = [...prev];
+      updatedCustomers[existingIndex] = customerData;
+      localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+      return updatedCustomers;
+    }
+    // Add new customer
+    const newCustomers = [...prev, customerData];
+    localStorage.setItem('customers', JSON.stringify(newCustomers));
+    return newCustomers;
+  });
+  setEmployeeModalStatus(false); // Close the modal
+  setOriginalEmail(undefined); // Reset after save
+};
     const handleAddOrUpdateEmployee = (employee: Customer) => {
         let updatedList: Customer[];
         if (selectedEmployee) {
@@ -190,38 +197,47 @@ import Input from '../../../components/bootstrap/forms/Input';
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {customers.map((customer, index) => (
+                                        {customers.map((client, index) => (
                                             <tr key={index}>
 												<td>{index + 1}</td> 
-                                                <td>{customer.name}</td>
-                                                <td>{customer.email}</td>
-                                                <td>{customer.mobile}</td>
-                                                <td>{customer.status}</td>
-                                                <td>{customer.createdAt}</td>
+                                                <td>{client.name}</td>
+                                                <td>{client.email}</td>
+                                                <td>{client.mobile}</td>
+                                                <td>{client.status}</td>
+                                                <td>{client.createdAt}</td>
 												<td>
 <Dropdown>
     <DropdownToggle hasIcon={false}>
-        <Button
-            icon="MoreVert"
-            className="btn btn-light btn-icon-only"
-            onClick={() => toggleDropdown(index)} // Toggle dropdown visibility
-        />
+      <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
     </DropdownToggle>
-    <DropdownMenu className={`dropdown-menu${isDropdownOpen[index] ? ' show' : ''}`}>
-        <DropdownItem onClick={() => navigate(`/clients/${customer.email}`)}>
-    View
-</DropdownItem>
-        <DropdownItem
-            onClick={() => {
-                setSelectedEmployee(customer);
-                setEmployeeModalStatus(true);
-            }}
-        >
-            Update
-        </DropdownItem>
-        <DropdownItem onClick={() => handleDeleteRow(index)}>Delete</DropdownItem>
+    <DropdownMenu isAlignmentEnd>
+      <Button
+        color="link"
+        className="dropdown-item"
+        onClick={() => navigate(`/clients/view/${client.email}`)}
+      >
+        <Icon icon="RemoveRedEye" className="me-2" /> View
+      </Button>
+      <Button
+        color="link"
+        className="dropdown-item"
+        onClick={() => {
+          setSelectedEmployee(client);
+          setOriginalEmail(client.email);
+          setEmployeeModalStatus(true);
+        }}
+      >
+        <Icon icon="Edit" className="me-2" /> Update
+      </Button>
+      <Button
+        color="link"
+        className="dropdown-item text-danger"
+        onClick={() => handleDeleteRow(index)}
+      >
+        <Icon icon="Delete" className="me-2" /> Delete
+      </Button>
     </DropdownMenu>
-</Dropdown>
+  </Dropdown>
 </td>
                                             </tr>
                                         ))}
@@ -236,16 +252,28 @@ import Input from '../../../components/bootstrap/forms/Input';
     isOpen={employeeModalStatus}
     setIsOpen={(status) => {
         setEmployeeModalStatus(status);
-        if (!status) setSelectedEmployee(undefined); // Use undefined instead of null
+        if (!status) {
+          setSelectedEmployee(undefined);
+          setOriginalEmail(undefined);
+        }
     }}
     selectedEmployee={selectedEmployee} // Pass the selected customer
     onAddEmployee={handleSaveCustomer} // Handle save
 />
+<AddClientModal
+  isOpen={employeeModalStatus}
+  setIsOpen={(status) => {
+    setEmployeeModalStatus(status);
+    if (!status) setSelectedEmployee(undefined);
+  }}
+  selectedEmployee={selectedEmployee} // <-- use the correct prop name
+  onAddEmployee={handleSaveCustomer}
+/>
 <CustomerViewModal
-                isOpen={isViewModalOpen}
-                setIsOpen={setIsViewModalOpen}
-                customer={viewData} // Pass the selected customer
-            />
+  isOpen={isViewModalOpen}
+  setIsOpen={setIsViewModalOpen}
+  customer={viewData}
+/>
         </PageWrapper>
     );
 };

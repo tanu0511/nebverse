@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 // import Button from '../../../components/bootstrap/Button';
 // import Invoice from './Invoice'; // Uncomment and adjust path if you have an Invoice component
 import Invoices from '../invoices/Invoices'
@@ -49,8 +49,7 @@ const TABS = [
 ];
 
 const CustomerViewPage: React.FC = () => {
-    const { email } = useParams();
-    // const navigate = useNavigate();
+  const { email } = useParams<{ email: string }>();
     const [activeTab, setActiveTab] = useState('Profile');
 
     // Fetch customers from localStorage (or replace with your data source)

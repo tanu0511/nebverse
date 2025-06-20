@@ -285,7 +285,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
                                   </select>
                                   <button
                                       type="button"
-                                      className="btn btn-primary"
+                                      className="btn btn-light"
                                       onClick={() => setIsCategoryModalOpen(true)}
                                   >
                                       Add
@@ -313,7 +313,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
                                       </select>
                                       <button
                                           type="button"
-                                          className="btn btn-primary"
+                                          className="btn btn-light"
                                           onClick={() => setIsAgentModalOpen(true)}
                                       >
                                           Add

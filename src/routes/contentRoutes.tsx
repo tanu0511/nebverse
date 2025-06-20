@@ -18,6 +18,11 @@ import CustomerViewPage from '../pages/presentation/client/CustomerViewPage';
 import JobView from '../pages/presentation/jobs/JobView';
 import LeadViewPage from '../pages/presentation/lead/LeadViewPage';
 import ContractViewPage from '../pages/presentation/contract/ContractViewPage';
+import DealViewPage from '../pages/presentation/deals/DealViewPage'; // adjust path as needed
+import ViewEmployeePage from '../pages/presentation/hr/ViewEmployeePage';
+
+// import EmloyeeViewPage from '../pages/presentation/hr/EmployeeViewPage';
+
 // import TaskManagementPage from '../pages/presentation/task/TaskMangmentPage';
 
 
@@ -27,12 +32,12 @@ const LANDING = {
 	DASHBOARD: lazy(() => import('../pages/presentation/dashboard/DashboardPage')),
 	SUMMARY: lazy(() => import('../pages/presentation/SummaryPage')),
 	HR: lazy(() => import('../pages/presentation/hr/Employees')),
-	PRIVATEDASHBOARD: lazy(() => import('../pages/presentation/crm/Customer')),
+	// PRIVATEDASHBOARD: lazy(() => import('../pages/presentation/dashboard/DashboardBookingPage')),
 	ADVANCEDDASHBOARD: lazy(() => import('../pages/presentation/dashboard/DashboardPage')),
 	DESIGNATION: lazy(() => import('../pages/presentation/designation/DesignatonPage')),
 };
 const PAYROLL = {
-	// EmployeeSalary: lazy(() => import('../pages/presentation/payroll/employeeSalary')),
+	EmployeeSalary: lazy(() => import('../pages/presentation/payroll/employeeSalary')),
 	PayrollExpenses: lazy(() => import('../pages/presentation/payroll/PayrollExpenses')),
 	Payroll: lazy(() => import('../pages/presentation/payroll/Payroll')),
 	OvertimeRequest: lazy(() => import('../pages/presentation/payroll/overtimeRequest')),
@@ -110,7 +115,7 @@ const APP = {
 	},
 	APPOINTMENT: {
 		//	CALENDAR: lazy(() => import('../pages/presentation/appointment/CalendarPage')),
-		// EMPLOYEE_LIST: lazy(() => import('../pages/presentation/appointment/EmployeeList')),
+		EMPLOYEE_LIST: lazy(() => import('../pages/presentation/appointment/EmployeeList')),
 		EMPLOYEE_VIEW: lazy(() => import('../pages/presentation/appointment/EmployeePage')),
 		APPOINTMENT_LIST: lazy(() => import('../pages/presentation/appointment/AppointmentList')),
 	},
@@ -118,6 +123,10 @@ const APP = {
 		CRM_DASHBOARD: lazy(() => import('../pages/presentation/crm/CrmDashboard')),
 		CUSTOMERS: lazy(() => import('../pages/presentation/crm/CustomersList')),
 		CUSTOMER: lazy(() => import('../pages/presentation/crm/Customer')),
+		 // ...other CRM routes...
+  TICKET_PREVIEW: lazy(() => import('../pages/presentation/crm/TicketPreviewPage')),
+
+		
 	},
 	CHAT: {
 		WITH_LIST: lazy(() => import('../pages/presentation/chat/WithListChatPage')),
@@ -138,7 +147,7 @@ const APP = {
 		TIMESHEET: lazy(() => import('../pages/presentation/timesheet/TimeSheet')),
 		CONTRACT: lazy(() => import('../pages/presentation/contract/Contract')),
 		PROJECTROADMAP: lazy(()=>import('../pages/presentation/project/ProjectRoad')),
-        TASKPAGE : lazy(()=>import('../pages/presentation/task/CommanUpcomingEvents')),
+        // TASKPAGE : lazy(()=>import('../pages/presentation/task/CommanUpcomingEvents')),
 		// TASKMANGMENTPAGE: lazy(()=>import('../pages/presentation/task/TaskMangmentPage')),
 		// CALENDER: lazy(()=>import('../pages/presentation/task/CalenderPage')),
 		
@@ -163,7 +172,8 @@ const APP = {
 	RECRUIT:{
 		SKILLS: lazy(()=> import('../pages/presentation/skills/SkillsPage')),
 		REPORTS: lazy(()=> import('../pages/presentation/reports/ReportPage')),
-		JOBS : lazy(()=>import('../pages/presentation/jobs/JobPage'))
+		JOBS : lazy(()=>import('../pages/presentation/jobs/JobPage')),
+		OFFERLETTER:lazy(()=>import('../pages/presentation/offerletter/OfferLetter'))
 		// INTERVIEWSCHEDULE: lazy(()=>import('../pages/presentation/interviewSchedule/InterviewSchedule'))
 	},
 
@@ -184,7 +194,8 @@ const APP = {
 	QRCODE: lazy(()=>import('../pages/presentation/qr/QrPage'))
    },
    TICKET:{
-       TICKET: lazy(()=>import('../pages/presentation/ticket/TicketPage'))
+       TICKET: lazy(()=>import('../pages/presentation/ticket/TicketPage')),
+	//    TICKETPREVIEWPAGE: lazy(()=>import('../pages/presentation/ticket/TicketPreviewForm'))
    },
 };
 const PAGE_LAYOUTS = {
@@ -315,10 +326,7 @@ const presentation: RouteProps[] = [
 		element: <LANDING.HR />,
 	},
 
-	{
-		path: dashboardPagesMenu.dashboard.subMenu.privatedashboard.path,
-		element: <LANDING.PRIVATEDASHBOARD />,
-	},
+	
 	{
 		path: dashboardPagesMenu.dashboard.path,
 		element: <LANDING.ADVANCEDDASHBOARD />,
@@ -326,6 +334,10 @@ const presentation: RouteProps[] = [
 	{
 		path: dashboardPagesMenu.hr.subMenu.employees.path,
 		element: <APP.HR.EMPLOYEES />,
+	},
+	{
+		path:'/employees/view/:id',
+		element:<ViewEmployeePage/>
 	},
 	{
 		path: dashboardPagesMenu.hr.subMenu.designation.path,
@@ -360,10 +372,10 @@ const presentation: RouteProps[] = [
 	/**
 	 * Payroll
 	 */
-	// {
-	// 	path: dashboardPagesMenu.Payroll.subMenu.EmployeeSalary.path,
-	// 	element: <PAYROLL.EmployeeSalary />,
-	// },
+	{
+		path: dashboardPagesMenu.Payroll.subMenu.EmployeeSalary.path,
+		element: <PAYROLL.EmployeeSalary />,
+	},
 	{
 		path: dashboardPagesMenu.Payroll.subMenu.PayrollExpenses.path,
 		element: <PAYROLL.PayrollExpenses />,
@@ -441,6 +453,10 @@ const presentation: RouteProps[] = [
    path: dashboardPagesMenu.leads.subMenu.deals.path,
    element: <APP.LEAD.DEALS />,
 },
+{
+  path:'/deals/view',
+  element:<DealViewPage />
+},
 
 // WORK
 
@@ -464,10 +480,7 @@ const presentation: RouteProps[] = [
     //   path: dashboardPagesMenu.Work.subMenu.Task.path,
 	//   element: <APP.WORK.TASKPAGE/>
 	// },
-	// {
-    //    path: '/task-management',
-	//    element: <APP.WORK.TASKMANGMENTPAGE/>
-	// },
+	
 	{
 		path: dashboardPagesMenu.Work.subMenu.Contract.path,
 		element: <APP.WORK.CONTRACT />,
@@ -495,6 +508,15 @@ const presentation: RouteProps[] = [
       path:dashboardPagesMenu.Ticket.path,
 	  element:<APP.TICKET.TICKET/>
 	},
+	// {
+    //   path:'app/ticket/TicketPreviewForm',
+	//   element:<APP.TICKET.TICKETPREVIEWPAGE/>
+	// },
+
+{
+  path: '/crm/ticket-preview', // or any path you want
+  element: <APP.CRM.TICKET_PREVIEW />,
+},
 
 	// Purchase
 
@@ -552,6 +574,10 @@ const presentation: RouteProps[] = [
         path:'/jobs/view/:id',
 		element:<JobView/>
 	},
+	{
+       path: dashboardPagesMenu.Recruit.subMenu.OfferLetters.path,
+	   element:<APP.RECRUIT.OFFERLETTER/>
+	},
 	// {
     //      path:dashboardPagesMenu.Recruit.subMenu.InterviewSchedule.path,
 	// 	 element:<APP.RECRUIT.INTERVIEWSCHEDULE/>
@@ -587,7 +613,7 @@ const presentation: RouteProps[] = [
 	element:<APP.CLIENT.CLIENT/>
 },
 {
-   path: '/clients/:email',
+   path: '/clients/view/:email',
    element:<CustomerViewPage />
 },
 	/**
@@ -716,14 +742,14 @@ const presentation: RouteProps[] = [
 	/**
 	 * App > Knowledge
 	 */
-	{
-		path: demoPagesMenu.knowledge.subMenu.grid.path,
-		element: <APP.KNOWLEDGE.GRID />,
-	},
-	{
-		path: `${demoPagesMenu.knowledge.subMenu.itemID.path}/:id`,
-		element: <APP.KNOWLEDGE.VIEW />,
-	},
+	// {
+	// 	path: demoPagesMenu.knowledge.subMenu.grid.path,
+	// 	element: <APP.KNOWLEDGE.GRID />,
+	// },
+	// {
+		// path: `${demoPagesMenu.knowledge.subMenu.itemID.path}/:id`,
+	// 	element: <APP.KNOWLEDGE.VIEW />,
+	// },
 
 	/**
 	 * App > Sales
@@ -752,10 +778,10 @@ const presentation: RouteProps[] = [
 	// 	path: demoPagesMenu.appointment.subMenu.calendar.path,
 	// 	element: <APP.APPOINTMENT.CALENDAR />,
 	// },
-	// {
-	// 	path: demoPagesMenu.appointment.subMenu.employeeList.path,
-	// 	element: <APP.APPOINTMENT.EMPLOYEE_LIST />,
-	// },
+	{
+		path: demoPagesMenu.appointment.subMenu.employeeList.path,
+		element: <APP.APPOINTMENT.EMPLOYEE_LIST />,
+	},
 	{
 		path: `${demoPagesMenu.appointment.subMenu.employeeID.path}/:id`,
 		element: <APP.APPOINTMENT.EMPLOYEE_VIEW />,
@@ -1210,4 +1236,3 @@ const documentation: RouteProps[] = [
 const contents = [...presentation, ...documentation];
 
 export default contents;
-

@@ -142,21 +142,7 @@ const AddLeadsForm: FC<IAddLeadsModalProps> = ({
 		}
 	};
 
-	useEffect(() => {
-		fetch('https://restcountries.com/v3.1/all')
-			.then((res) => res.json())
-			.then((data) => {
-				const sorted = data
-					.map((country: any) => ({
-						name: country.name.common,
-						code: country.cca2,
-						flag: country.flag,
-					}))
-					.sort((a: Country, b: Country) => a.name.localeCompare(b.name));
 
-				setCountries(sorted);
-			});
-	}, []);
 	// Example static options
 	const agentOptions = ['John Doe', 'Jane Smith', 'Amit Verma'];
 	const categoryOptions = ['Residential', 'Commercial', 'Enterprise'];

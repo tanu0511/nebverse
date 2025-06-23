@@ -60,7 +60,7 @@ const DashboardPage = () => {
 							</Button>
 						))}
 					</ButtonGroup>
-				</SubHeaderLeft>
+				</SubHeaderLeft>clo
 			</SubHeader>
 			<Page container='fluid'>
 				<div className='row'>

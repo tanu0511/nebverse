@@ -19,6 +19,9 @@ import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
+import Input from '../../../components/bootstrap/forms/Input';
+import Icon from '../../../components/icon/Icon'; // Make sure this import exists
+
 interface Lead {
 	lead: string;
 	leadContact: string;
@@ -52,6 +55,7 @@ const Deals: React.FC = () => {
 	const [employees, setEmployees] = useState<Lead[]>([]);
 	// const [selectedEmployee, setSelectedEmployee] = useState<Lead | null>(null);
 	const [selectAll, setSelectAll] = useState<boolean>(false);
+	const [searchTerm, setSearchTerm] = useState('');
 
 	useEffect(() => {
 		const handleStorageChange = () => {
@@ -184,34 +188,17 @@ const Deals: React.FC = () => {
 		<PageWrapper title='Deals'>
 			<SubHeader>
 				<SubHeaderLeft>
-					<Button
-						icon='PersonAdd'
-						color='primary'
-						isLight
-						onClick={() => setIsModalOpen(true)}>
-						Add Deal
-					</Button>
-					{isModalOpen && (
-						<AddLeadsForm
-							onSubmit={(lead) => handleAddLead(lead)}
-							onAddLead={handleAddLead}
-							onClose={() => setIsModalOpen(false)}
-							isOpen={isModalOpen}
-							setIsOpen={setIsModalOpen}
-							mode='deal' // ✅ Only show the Create Deal section
-							isCreateDeal={false}
-						/>
-					)}
-					<Button
-						color='info'
-						icon='CloudDownload'
-						isLight
-						tag='a'
-						to='/somefile.txt'
-						target='_blank'
-						download>
-						Export
-					</Button>
+					<label className="border-0 bg-transparent cursor-pointer me-0" htmlFor="searchInput">
+						<Icon icon="Search" size="2x" color="primary" />
+					</label>
+					<Input
+						id="searchInput"
+						type="search"
+						className="border-0 shadow-none bg-transparent"
+						placeholder="Search employee..."
+						value={searchTerm}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+					/>
 				</SubHeaderLeft>
 			</SubHeader>
 

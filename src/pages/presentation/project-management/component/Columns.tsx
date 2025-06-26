@@ -1,3 +1,4 @@
+/* eslint-disable prefer-template */
 import React, { FC, useState } from 'react';
 import { useFormik } from 'formik';
 import classNames from 'classnames';
@@ -35,13 +36,17 @@ import USERS from '../../../../common/data/userDummyData';
 import TAGS from '../../../../common/data/boardTagsData';
 import { TCards, TColumnData, TColumnsData } from '../type/types';
 import ColumnCardWrapper from './ColumnCardWrapper';
+import { TColor } from '../../../../type/color-type';
 
 interface IColumns {
 	cardsData: TCards;
 	columnsData: TColumnsData;
 	setCardsData(...args: unknown[]): unknown;
+	onCreateProposal: () => void;
+	onEditStage: (columnKey: string, columnData: TColumnData) => void;
+	onDeleteColumn: (columnKey: string, columnData: TColumnData) => void;
 }
-const Columns: FC<IColumns> = ({ cardsData, columnsData, setCardsData }) => {
+const Columns: FC<IColumns> = ({ cardsData, columnsData, setCardsData, onCreateProposal, onEditStage, onDeleteColumn }) => {
 	const { darkModeStatus } = useDarkMode();
 
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
@@ -68,10 +73,23 @@ const Columns: FC<IColumns> = ({ cardsData, columnsData, setCardsData }) => {
 					<div key={columnKey} className='col-auto'>
 						<Card className={classNames(`board-group shadow-3d-${columnData.color}`)}>
 							<CardHeader>
-								<CardLabel icon={columnData.icon} iconColor={columnData.color}>
-									<CardTitle tag='div' className='h5'>
+								<CardLabel>
+									<span
+										style={{
+											display: 'inline-block',
+											width: 18,
+											height: 18,
+											borderRadius: '50%',
+											background: columnData.color,
+											marginRight: 8,
+											border: '2px solid #fff',
+											verticalAlign: 'middle',
+										}}
+										title={columnData.title + ' color'}
+									/>
+									<CardTitle tag='div' className='h5' style={{ display: 'inline-block', verticalAlign: 'middle' }}>
 										<>{columnData.title} </>
-										<Badge color={columnData.color} isLight>
+										<Badge color={columnData.color as TColor} isLight>
 											{cardsData[columnKey].length}
 										</Badge>
 									</CardTitle>
@@ -87,18 +105,22 @@ const Columns: FC<IColumns> = ({ cardsData, columnsData, setCardsData }) => {
 										</DropdownToggle>
 										<DropdownMenu isAlignmentEnd>
 											<DropdownItem>
-												<Button icon='Edit'>Rename column</Button>
+												<Button icon='Edit' onClick={() => onEditStage(columnKey, columnData)}>
+													Edit
+												</Button>
 											</DropdownItem>
 											<DropdownItem>
-												<Button icon='Speed'>Set column limit</Button>
+												<Button icon='Delete' onClick={() => onDeleteColumn(columnKey, columnData)}>
+													Delete
+												</Button>
 											</DropdownItem>
-											<DropdownItem>
+											{/* <DropdownItem>
 												<Button icon='AddBox'>Add new column</Button>
 											</DropdownItem>
 											<DropdownItem isDivider />
 											<DropdownItem>
 												<Button icon='Delete'>Delete column</Button>
-											</DropdownItem>
+											</DropdownItem> */}
 										</DropdownMenu>
 									</Dropdown>
 								</CardActions>
@@ -121,16 +143,24 @@ const Columns: FC<IColumns> = ({ cardsData, columnsData, setCardsData }) => {
 										/>
 										{providedDroppable.placeholder}
 									</CardBody>
-								)}
+								)}  
 							</Droppable>
 							<CardFooter>
-								<CardFooterLeft>
+								<CardFooterLeft style={{ width: '100%' }}>
 									<Button
-										color={columnData.color}
 										isLight
-										icon='AddTask'
-										onClick={() => setEditModalStatus(true)}>
-										Create
+										color= "primary"
+										style={{
+											width: '100%',
+											justifyContent: 'center',
+											fontWeight: 500,
+											fontSize: 18,
+											padding: '24px 0',
+										}}
+										onClick={onCreateProposal}
+									>
+										<span style={{ fontSize: 22, marginRight: 8, lineHeight: 1 }}>+</span>
+										Add Deal
 									</Button>
 								</CardFooterLeft>
 							</CardFooter>

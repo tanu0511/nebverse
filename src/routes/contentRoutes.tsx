@@ -155,6 +155,7 @@ const APP = {
 	LEAD:{
 		LEAD_CONTACTS: lazy(()=> import('../pages/presentation/lead/Lead')),
 		DEALS: lazy(()=> import('../pages/presentation/deals/Deals')),
+		STAGEPAGE: lazy(() => import('../pages/presentation/deals/StagePage')),
 		
 	},
 	CLIENT:{
@@ -456,6 +457,10 @@ const presentation: RouteProps[] = [
 {
   path:'/deals/view',
   element:<DealViewPage />
+},
+{
+	path:'/deals/stage',
+	element:<APP.LEAD.STAGEPAGE />
 },
 
 // WORK

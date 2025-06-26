@@ -1,0 +1,939 @@
+{
+  "AddDeal": [
+    {
+      "id": "1",
+      "leadContacts": "Contact1",
+      "deal": "Website Redesign",
+      "validTill": "2025-07-01",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "Redesign the company website for better UX.",
+      "requireSignature": false,
+      "discount": 10,
+      "discountType": "%",
+      "dealValue": 50000,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "Category1",
+      "dealAgent": "Agent1",
+      "products": "Product1",
+      "dealWatcher": "Bean",
+      "email": "client@email.com",
+      "items": [
+        {
+          "description": "UI/UX Design",
+          "quantity": 1,
+          "unitPrice": 20000,
+          "tax": "18%",
+          "amount": 23600
+        },
+        {
+          "description": "Development",
+          "quantity": 1,
+          "unitPrice": 30000,
+          "tax": "18%",
+          "amount": 35400
+        }
+      ]
+    },
+    {
+      "id": "c7ce",
+      "leadContacts": "Contact2",
+      "deal": "ddc",
+      "validTill": "2025-06-23",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "-1",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "6e80",
+      "leadContacts": "Contact1",
+      "deal": "tanu",
+      "validTill": "2025-06-23",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "0790",
+      "pipeline": "Marketing Pipeline",
+      "dealStages": "Initial Contact",
+      "dealCategory": "Category1",
+      "dealAgent": "Agent1",
+      "products": "Product1",
+      "dealWatcher": "tertrtrtt",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "2391",
+      "leadContacts": "Contact2",
+      "deal": "bob",
+      "validTill": "2025-06-23",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "054",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Qualified",
+      "dealCategory": "Category1",
+      "dealAgent": "Agent1",
+      "products": "Product2",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "819a",
+      "leadContacts": "Contact1",
+      "deal": "nisha",
+      "validTill": "2025-06-23",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "0412",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Schedule Appointment",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "f4f8",
+      "leadContacts": "Contact1",
+      "deal": "gfds",
+      "validTill": "2025-06-23",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Qualified",
+      "dealCategory": "",
+      "dealAgent": "Agent1",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "13fa",
+      "leadContacts": "Contact2",
+      "deal": "ftgyh",
+      "validTill": "2025-06-23",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "065",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "88cf",
+      "leadContacts": "Contact1",
+      "deal": "gf",
+      "validTill": "2025-06-23",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "0852",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Qualified",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "97e2",
+      "leadContacts": "Contact1",
+      "deal": "hnjk",
+      "validTill": "2025-06-23",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "1",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "d758",
+      "leadContacts": "Contact1",
+      "deal": "tanu",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "67",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Qualified",
+      "dealCategory": "Category1",
+      "dealAgent": "Agent1",
+      "products": "Product1",
+      "dealWatcher": "ramu",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "e603",
+      "leadContacts": "Contact1",
+      "deal": "ftgyh",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "fdb9",
+      "leadContacts": "Contact2",
+      "deal": "tgh",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Schedule Appointment",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "e2b5",
+      "leadContacts": "Contact1",
+      "deal": "gfds",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "bc0b",
+      "leadContacts": "Contact1",
+      "deal": "tanu",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Schedule Appointment",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "Bean",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "62a3",
+      "leadContacts": "Contact2",
+      "deal": " hbui ",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "4799",
+      "leadContacts": "Contact1",
+      "deal": "f",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Lost",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "9a56",
+      "leadContacts": "Contact1",
+      "deal": "t5yk",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Schedule Appointment",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "45e1",
+      "leadContacts": "Contact1",
+      "deal": "tanu",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "05",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Qualified",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "c243",
+      "leadContacts": "Contact1",
+      "deal": "ftgyh",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "0210",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Proposal Sent",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "1423",
+      "leadContacts": "Contact2",
+      "deal": "hnjk",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "054",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Initial Contact",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "c918",
+      "leadContacts": "Contact1",
+      "deal": "hnjk",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "0654",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "e863",
+      "leadContacts": "Contact1",
+      "deal": "t5yk",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Schedule Appointment",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "yolo",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "6b99",
+      "leadContacts": "Contact1",
+      "deal": "bhj",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "-15",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "Seema",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "be5a",
+      "leadContacts": "Contact1",
+      "deal": "tanu",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Proposal Sent",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "ebf2",
+      "leadContacts": "Contact2",
+      "deal": "ginni",
+      "validTill": "2025-06-24",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "6357",
+      "leadContacts": "Contact2",
+      "deal": "t5yk",
+      "validTill": "2025-06-25",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "054",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "97c3",
+      "leadContacts": "Contact1",
+      "deal": "tanu",
+      "validTill": "2025-06-25",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Proposal Sent",
+      "dealCategory": "",
+      "dealAgent": "Agent1",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "5879",
+      "leadContacts": "Contact1",
+      "deal": "ftgyh",
+      "validTill": "2025-06-25",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "06554",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "fa8f",
+      "leadContacts": "Contact1",
+      "deal": "JMJJ",
+      "validTill": "2025-06-25",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "-1",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Qualified",
+      "dealCategory": "Category1",
+      "dealAgent": "Agent1",
+      "products": "Product1",
+      "dealWatcher": "tertrtrtt",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "cbe7",
+      "leadContacts": "Contact2",
+      "deal": "tanu",
+      "validTill": "2025-06-26",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "Category1",
+      "dealAgent": "Agent1",
+      "products": "Product1",
+      "dealWatcher": "Seema",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "0656",
+      "leadContacts": "Contact1",
+      "deal": "jhbnm,.",
+      "validTill": "2025-06-26",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": "065",
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "Agent1",
+      "products": "Product2",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "e846",
+      "leadContacts": "Contact1",
+      "deal": "t5yk",
+      "validTill": "2025-06-26",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Marketing Pipeline",
+      "dealStages": "Qualified",
+      "dealCategory": "",
+      "dealAgent": "Agent1",
+      "products": "Product1",
+      "dealWatcher": "ramu",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    }
+  ]
+}

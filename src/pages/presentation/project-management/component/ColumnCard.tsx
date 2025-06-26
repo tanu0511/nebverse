@@ -12,7 +12,6 @@ import Card, {
 	CardSubTitle,
 	CardTitle,
 } from '../../../../components/bootstrap/Card';
-import Avatar from '../../../../components/Avatar';
 import Icon from '../../../../components/icon/Icon';
 import Badge from '../../../../components/bootstrap/Badge';
 import Modal, {
@@ -95,11 +94,17 @@ const ColumnCard: FC<IColumnCard> = ({
 						data-tour={card.title}>
 						{card.title}
 					</CardTitle>
+					{/* Show lead contact below deal name */}
+					{card.user?.username && (
+						<div className="text-muted" >
+							{card.user.username}
+						</div>
+					)}
 					{card.subtitle && (
 						<CardSubTitle className='text-muted'>{card.subtitle}</CardSubTitle>
 					)}
 				</CardLabel>
-				{card.user && (
+				{/* {card.user && (
 					<CardActions>
 						<Avatar
 							src={card.user.src}
@@ -109,7 +114,7 @@ const ColumnCard: FC<IColumnCard> = ({
 							userName={`${card.user.name} ${card.user.surname}`}
 						/>
 					</CardActions>
-				)}
+				)} */}
 			</CardHeader>
 			<CardBody className='pt-0'>
 				<div className='row g-2 mb-3'>

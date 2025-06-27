@@ -1,11 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { TColor } from '../../../../type/color-type';
 import { TIcons } from '../../../../type/icons-type';
 
-export type TColumnData = { id: string; title: string; color: TColor; icon: TIcons };
+export type TColumnData = {
+    id: string;
+    title: string;
+    color: TColor | string; // Allow hex code or TColor
+    icon: string;
+};
 export type TColumnsData = {
 	[key: string]: TColumnData;
 };
 export type TCard = {
+    deals: any;
+    leadContacts: any;
 	id: string;
 	title: string;
 	subtitle: string;

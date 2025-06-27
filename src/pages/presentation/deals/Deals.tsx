@@ -1,18 +1,23 @@
+/* eslint-disable react/jsx-no-undef */
 /* eslint-disable react/react-in-jsx-scope */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
-import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
+import SubHeader, { SubHeaderLeft, SubHeaderRight,  } from '../../../layout/SubHeader/SubHeader';
 import Page from '../../../layout/Page/Page';
 import { demoPagesMenu } from '../../../menu';
 import Card, { CardBody } from '../../../components/bootstrap/Card';
 import Input from '../../../components/bootstrap/forms/Input';
 import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/bootstrap/Dropdown';
-import Button from '../../../components/bootstrap/Button';
+
 import Icon from '../../../components/icon/Icon';
 import CreateProposalModal from './CreateProposalModal';
 import ViewProposalModal from './ViewProposalModal';
 import FollowupModal from './FollowupModal';
+import Button from '../../../components/bootstrap/Button';
+import AddSatgeData from './AddSatge.json';
+import PaginationButtons, { dataPagination, PER_COUNT } from '../../../components/PaginationButtons';
+import Select from 'react-select';
 
 interface TableRow {
   proposal: string;
@@ -31,15 +36,13 @@ interface TableRow {
   followupTime?: string;   // <-- add this
 }
 
-const DEAL_STAGE_OPTIONS = [
-  'Generated',
-  'Qualified',
-  'Proposal',
-  'Negotiation',
-  'Won',
-  'Lost',
-  // Add more stages as needed
-];
+const DEAL_STAGE_OPTIONS = AddSatgeData.AddStage
+  .filter(stage => stage.title)
+  .map(stage => ({
+    value: stage.title,
+    label: stage.title,
+    color: stage.color,
+  }));
 
 const Deals = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,7 +59,14 @@ const Deals = () => {
     sendReminder: false,
     remark: '',
   });
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(PER_COUNT['10']);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const deals = JSON.parse(localStorage.getItem('deals') || '[]');
+    setTableData(deals);
+  }, []);
 
   const handleView = (row: TableRow) => {
     navigate('/deals/view', { state: { deal: row } });
@@ -69,13 +79,11 @@ const Deals = () => {
   };
 
   const handleDelete = (index: number) => {
-    if (window.confirm('Are you sure you want to delete this proposal?')) {
-      setTableData((prev) => prev.filter((_, i) => i !== index));
-      setEditIdx(null);
-      setIsModalOpen(false);
-      setIsViewModalOpen(false);
-      setSelectedProposal(null);
-    }
+    // Remove the deal at the given index
+    const updatedDeals = tableData.filter((_, i) => i !== index);
+    setTableData(updatedDeals);
+    // Update localStorage
+    localStorage.setItem('deals', JSON.stringify(updatedDeals));
   };
 
   const handleFollowUp = (row: TableRow) => {
@@ -165,12 +173,50 @@ const Deals = () => {
           >
             Add Deal
           </Button>
-          <Button color="secondary" isLight icon="ForwardToInbox">
+          <Button color="info" isLight icon="ForwardToInbox">
             Import
           </Button>
-          <Button color="secondary" isLight icon="ForwardToInbox">
+         <Button
+            color="info"
+            icon="CloudDownload"
+            isLight
+            tag="a"
+            to="/somefile.txt"
+            target="_blank"
+            download
+          >
             Export
           </Button>
+        
+         
+                    {/* {Object.keys(TABS).map((key) => (
+                      <Button
+                        key={key}
+                        color={activeTab === TABS[key] ? 'success' : themeStatus}
+                        onClick={() => setActiveTab(TABS[key])}
+                      >
+                        {TABS[key]}
+                    
+                      </Button>
+                    ))} */}
+                  <Button
+                    color="primary"
+                    isLight
+                    // icon="ViewList"
+                    onClick={() => navigate('/leads/deals')}
+                  >
+                    <Icon icon="List" size='lg'/>
+                  </Button>
+          <Button
+            color="primary"
+            isLight
+            // icon="ViewModule"
+            onClick={() => navigate('/deals/stage')}
+          >
+            <Icon icon="Assessment" size='lg'/>
+          </Button>
+              
+            
         </SubHeaderRight>
       </SubHeader>
 
@@ -198,97 +244,153 @@ const Deals = () => {
                     </tr>
                   </thead>
                   <tbody>
-  {tableData.length > 0 ? (
-    tableData.map((row, index) => (
-      <tr key={index}>
-        <td>
-          <input type="checkbox" />
-        </td>
-        <td>{row.proposal}</td>
-        <td>{row.contactName}</td>
-        <td>{row.proposalData?.email || '--'}</td> {/* Show email from form */}
-        <td>{row.dealValue ? `${row.dealValue}` : '--'}</td>
-        <td>{row.validTill}</td>
-        <td>
-          {row.followupDate && row.followupTime
-            ? `${row.followupDate} ${row.followupTime}`
-            : '--'}
-        </td>
-        <td>{row.dealAgent || '--'}</td>
-        <td>
-          <div className="d-flex align-items-center gap-2">
-            <img
-              src="/path/to/avatar.jpg"
-              alt="Watcher Avatar"
-              className="rounded-circle"
-              style={{ width: '30px', height: '30px' }}
+  {dataPagination(tableData, currentPage, perPage).length > 0 ? (
+    dataPagination(tableData, currentPage, perPage).map((row, index) => {
+      const globalIndex = (currentPage - 1) * perPage + index;
+      return (
+        <tr key={globalIndex}>
+          <td>
+            <input type="checkbox" />
+          </td>
+          <td>{row.deals}</td>
+          <td>{row.contactName}</td>
+          <td>{row.proposalData?.email || '--'}</td>
+          <td>{row.dealValue ? `${row.dealValue}` : '--'}</td>
+          <td>{row.validTill}</td>
+          <td>
+            {row.followupDate && row.followupTime
+              ? `${row.followupDate} ${row.followupTime}`
+              : '--'}
+          </td>
+          <td>{row.dealAgent || '--'}</td>
+          <td>
+            <div className="d-flex align-items-center gap-2">
+              <img
+                src="/path/to/avatar.jpg"
+                alt="Watcher Avatar"
+                className="rounded-circle"
+                style={{ width: '30px', height: '30px' }}
+              />
+              <span>{row.dealWatcher || '--'}</span>
+            </div>
+          </td>
+          <td>
+            <Select
+              value={DEAL_STAGE_OPTIONS.find(opt => opt.value === row.dealStages) || null}
+              onChange={option => {
+                const newStage = option?.value || '';
+                setTableData(prev =>
+                  prev.map((r, idx) =>
+                    idx === globalIndex ? { ...r, dealStages: newStage } : r
+                  )
+                );
+              }}
+              options={DEAL_STAGE_OPTIONS}
+              isSearchable={false}
+              menuPlacement="auto"
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  minHeight: '32px',
+                  borderColor: '#ced4da',
+                  borderRadius: '8px',
+                  boxShadow: 'none',
+                  fontSize: '1rem',
+                }),
+                option: (provided) => ({
+                  ...provided,
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontSize: '1rem',
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  display: 'flex',
+                  alignItems: 'center',
+                }),
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 9999,
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  padding: 4,
+                }),
+                clearIndicator: (provided) => ({
+                  ...provided,
+                  padding: 4,
+                }),
+                valueContainer: (provided) => ({
+                  ...provided,
+                  padding: '0 6px',
+                }),
+                input: (provided) => ({
+                  ...provided,
+                  margin: 0,
+                  padding: 0,
+                }),
+              }}
+              formatOptionLabel={option => (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      width: 14,
+                      height: 14,
+                      borderRadius: '50%',
+                      background: option.color,
+                      marginRight: 8,
+                      border: '1px solid #888',
+                    }}
+                  />
+                  {option.label}
+                </div>
+              )}
+              placeholder="Select Stage"
             />
-            <span>{row.dealWatcher || '--'}</span>
-          </div>
-        </td>
-        <td>
-          <select
-            className="form-select"
-            value={row.dealStages}
-            onChange={e => {
-              const newStage = e.target.value;
-              setTableData(prev =>
-                prev.map((r, idx) =>
-                  idx === index ? { ...r, dealStages: newStage } : r
-                )
-              );
-            }}
-            style={{ minWidth: 120 }}
-          >
-            {DEAL_STAGE_OPTIONS.map(stage => (
-              <option key={stage} value={stage}>
-                {stage}
-              </option>
-            ))}
-          </select>
-        </td>
-        <td>
-          <Dropdown>
-            <DropdownToggle hasIcon={false}>
-              <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
-            </DropdownToggle>
-            <DropdownMenu isAlignmentEnd>
-              <Button
-                color="link"
-                className="dropdown-item"
-                onClick={() => handleView(row)}
-              >
-                <Icon icon="RemoveRedEye" className="me-2" /> View
-              </Button>
-              <Button
-                color="link"
-                className="dropdown-item"
-                onClick={() => handleEdit(row, index)}
-              >
-                <Icon icon="Edit" className="me-2" /> Update
-              </Button>
-              <Button
-                color="link"
-                className="dropdown-item text-danger"
-                onClick={() => handleDelete(index)}
-              >
-                <Icon icon="Delete" className="me-2" /> Delete
-              </Button>
-              {/* Only show Follow Up if not "Won" */}
-              {row.dealStages !== "Won" && (
+          </td>
+          <td>
+            <Dropdown>
+              <DropdownToggle hasIcon={false}>
+                <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
+              </DropdownToggle>
+              <DropdownMenu isAlignmentEnd>
                 <Button
                   color="link"
                   className="dropdown-item"
-                  onClick={() => handleFollowUp(row)}
+                  onClick={() => handleView(row)}
                 >
-                  <Icon icon="EventNote" className="me-2" /> Follow Up
+                  <Icon icon="RemoveRedEye" className="me-2" /> View
                 </Button>
-              )}
-            </DropdownMenu>
-          </Dropdown>
-        </td>
-      </tr>
-    ))
+                <Button
+                  color="link"
+                  className="dropdown-item" 
+                  onClick={() => handleEdit(row, globalIndex)}
+                >
+                  <Icon icon="Edit" className="me-2" /> Update
+                </Button>
+                <Button
+                  color="link"
+                  className="dropdown-item text-danger"
+                  onClick={() => handleDelete(globalIndex)}
+                >
+                  <Icon icon="Delete" className="me-2" /> Delete
+                </Button>
+                {row.dealStages !== "Won" && (
+                  <Button
+                    color="link"
+                    className="dropdown-item"
+                    onClick={() => handleFollowUp(row)}
+                  >
+                    <Icon icon="EventNote" className="me-2" /> Follow Up
+                  </Button>
+                )}
+              </DropdownMenu>
+            </Dropdown>
+          </td>
+        </tr>
+      );
+    })
   ) : (
     <tr>
       <td colSpan={12} className="text-center">
@@ -298,10 +400,20 @@ const Deals = () => {
   )}
 </tbody>
                 </table>
+  
               </CardBody>
+                  <PaginationButtons
+  data={tableData}
+  label="Deals"
+  setCurrentPage={setCurrentPage}
+  currentPage={currentPage}
+  perPage={perPage}
+  setPerPage={setPerPage}
+/>
             </Card>
           </div>
         </div>
+       
       </Page>
 
       <CreateProposalModal
@@ -323,6 +435,7 @@ const Deals = () => {
         onSave={handleFollowupSave}
         editIndex={null}
       />
+     
     </PageWrapper>
   );
 };

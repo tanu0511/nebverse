@@ -6,6 +6,9 @@ import Modal, {
     ModalTitle,
 } from '../../../components/bootstrap/Modal';
 import Button from '../../../components/bootstrap/Button';
+import AddEmployeeData from '../hr/AddEmployee.json'; // Adjust path if needed
+import AddSatgeData from './AddSatge.json'; // Adjust path if needed
+import Select from 'react-select';
 
 interface CreateProposalModalProps {
     isOpen: boolean;
@@ -32,7 +35,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
     discountType: '%',
     dealValue: 0,
     pipeline: 'Sales Pipeline',
-    dealStages: 'Generated',
+    dealStages: '',
     dealCategory: '',
     dealAgent: '',
     products: '',
@@ -54,31 +57,44 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
   };
 
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      onSave({ ...formData, items }); // <-- This saves the data!
-      setIsOpen(false);
-      setFormData({
-          leadContacts: '',
-          deal: '',
-          validTill: '',
-          currency: 'INR (₹)',
-          calculateTax: 'After Discount',
-          description: '',
-          requireSignature: false,
-          discount: 0,
-          discountType: '%',
-          dealValue: 0,
-          pipeline: 'Sales Pipeline',
-          dealStages: 'Generated',
-          dealCategory: '',
-          dealAgent: '',
-          products: '',
-          dealWatcher: '',
-          email: '', // <-- Add this
-      });
-      setItems([{ description: '', quantity: 1, unitPrice: 0, tax: '', amount: 0 }]);
-  };
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const dealData = { ...formData, items };
+
+    // Send data to backend API
+    try {
+        await fetch('http://localhost:4000/AddDeal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dealData),
+        });
+        onSave(dealData);
+        setIsOpen(false);
+        setFormData({
+            leadContacts: '',
+            deal: '',
+            validTill: '',
+            currency: 'INR (₹)',
+            calculateTax: 'After Discount',
+            description: '',
+            requireSignature: false,
+            discount: 0,
+            discountType: '%',
+            dealValue: 0,
+            pipeline: 'Sales Pipeline',
+            dealStages: 'Generated',
+            dealCategory: '',
+            dealAgent: '',
+            products: '',
+            dealWatcher: '',
+            email: '',
+        });
+        setItems([{ description: '', quantity: 1, unitPrice: 0, tax: '', amount: 0 }]);
+    } catch (error) {
+        alert('Failed to save deal!');
+        console.error(error);
+    }
+};
 
 
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -129,6 +145,17 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
     }
     // eslint-disable-next-line
   }, [isOpen, proposalData]);
+
+  // Extract employee names for Deal Watcher
+  const employeeNames = AddEmployeeData.AddEmployee
+    .map(emp => emp.name)
+    .filter(Boolean); // removes empty names
+
+  // Extract deal stages from JSON
+  const dealStages = AddSatgeData.AddStage.map(stage => ({
+    title: stage.title,
+    color: stage.color,
+  }));
 
   return (
       <>
@@ -195,27 +222,79 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
 
                       <div className="row">
                           {/* Deal Stages */}
-                          <div className="mb-3 col-md-4">
-                              <label htmlFor="dealStages" className="form-label">
-                                  Deal Stages <span className="text-danger">*</span>
-                              </label>
-                              <select
-                                  id="dealStages"
-                                  name="dealStages"
-                                  className="form-select"
-                                  value={formData.dealStages}
-                                  onChange={handleInputChange}
-                                  required
-                              >
-                                  <option value="Generated">⚫ Generated</option>
-                                  <option value="Qualified">🔵 Qualified</option>
-                                  <option value="Initial Contact">🟢 Initial Contact</option>
-                                  <option value="Schedule Appointment">🟣 Schedule Appointment</option>
-                                  <option value="Proposal Sent">🟠 Proposal Sent</option>
-                                  <option value="Win">🟡 Win</option>
-                                  <option value="Lost">🔴 Lost</option>
-                              </select>
-                          </div>
+                          <div className="mb-3 col-md-4" style={{ position: 'relative' }}>
+  <label htmlFor="dealStages" className="form-label">
+    Deal Stages <span className="text-danger">*</span>
+  </label>
+  <Select
+    id="dealStages"
+    name="dealStages"
+    value={dealStages
+      .filter(stage => stage.title)
+      .map(stage => ({
+        value: stage.title,
+        label: stage.title,
+        color: stage.color,
+      }))
+      .find(option => option.value === formData.dealStages) || null}
+    onChange={option => {
+      setFormData(prev => ({
+        ...prev,
+        dealStages: option?.value || '',
+      }));
+    }}
+    options={dealStages
+      .filter(stage => stage.title)
+      .map(stage => ({
+        value: stage.title,
+        label: stage.title,
+        color: stage.color,
+      }))}
+    isSearchable={false}
+    styles={{
+      control: (provided, state) => ({
+        ...provided,
+        minHeight: '38px',
+        borderColor: '#ced4da',
+        borderRadius: '45px',
+        boxShadow: state.isFocused ? '0 0 0 0.2rem rgba(0,123,255,.25)' : provided.boxShadow,
+        '&:hover': { borderColor: '#86b7fe' },
+      }),
+      option: (provided) => ({
+        ...provided,
+        display: 'flex',
+        alignItems: 'center',
+      }),
+      singleValue: (provided) => ({
+        ...provided,
+        display: 'flex',
+        alignItems: 'center',
+      }),
+      menu: (provided) => ({
+        ...provided,
+        zIndex: 9999,
+      }),
+    }}
+    formatOptionLabel={option => (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <span
+          style={{
+            display: 'inline-block',
+            width: 14,
+            height: 14,
+            borderRadius: '50%',
+            background: option.color,
+            marginRight: 8,
+            border: '1px solid #888',
+          }}
+        />
+        {option.label}
+      </div>
+    )}
+    placeholder="Select Stage"
+    required
+  />
+</div>
 
                           {/* Deal Value */}
                           <div className="mb-3 col-md-4">
@@ -353,9 +432,12 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
                                       value={formData.dealWatcher || ''}
                                       onChange={handleInputChange}
                                   >
-                                      <option value="atharvraj">atharvraj singh rana (It's you)</option>
-                                      <option value="Watcher1">Watcher 1</option>
-                                      <option value="Watcher2">Watcher 2</option>
+                                      <option value="">Select Watcher</option>
+                                      {employeeNames.map((name, idx) => (
+                                        <option key={idx} value={name}>
+                                          {name}
+                                        </option>
+                                      ))}
                                   </select>
                               </div>
                           </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
@@ -67,6 +68,8 @@ const ProjectManagementsProject = () => {
 					{ id: 2, path: 'somefile.txt', file: 'WORD' },
 					{ id: 3, path: 'somefile.txt', file: 'PSD' },
 				],
+				deals: undefined,
+				leadContacts: undefined
 			},
 			{
 				id: 'Card2',
@@ -80,6 +83,8 @@ const ProjectManagementsProject = () => {
 					{ id: 1, text: 'Lorem ipsum dolor', status: true },
 					{ id: 2, text: 'Sit amet.', status: false },
 				],
+				deals: undefined,
+				leadContacts: undefined
 			},
 		],
 		column2: [
@@ -97,6 +102,8 @@ const ProjectManagementsProject = () => {
 					{ id: 3, text: 'Will be sent for review.', status: false },
 				],
 				attachments: [{ id: 2, path: 'somefile.txt', file: 'WORD' }],
+				deals: undefined,
+				leadContacts: undefined
 			},
 			{
 				id: 'Card4',
@@ -109,6 +116,8 @@ const ProjectManagementsProject = () => {
 				tags: [TAGS.design],
 				tasks: [{ id: 1, text: 'Lorem ipsum dolor', status: true }],
 				attachments: [{ id: 1, path: 'somefile.txt', file: 'TXT' }],
+				deals: undefined,
+				leadContacts: undefined
 			},
 		],
 		column3: [],
@@ -131,6 +140,8 @@ const ProjectManagementsProject = () => {
 					{ id: 2, path: 'somefile.txt', file: 'WORD' },
 					{ id: 3, path: 'somefile.txt', file: 'PSD' },
 				],
+				deals: undefined,
+				leadContacts: undefined
 			},
 		],
 		column5: [
@@ -153,6 +164,8 @@ const ProjectManagementsProject = () => {
 					{ id: 2, path: 'somefile.txt', file: 'WORD' },
 					{ id: 3, path: 'somefile.txt', file: 'PSD' },
 				],
+				deals: undefined,
+				leadContacts: undefined
 			},
 		],
 	});
@@ -211,17 +224,7 @@ const ProjectManagementsProject = () => {
 					</CommonAvatarTeam>
 				</SubHeaderRight>
 			</SubHeader>
-			<Page container='fluid'>
-				<DragDropContext onDragEnd={onDragEnd}>
-					<Board>
-						<Columns
-							columnsData={columnsData}
-							cardsData={state}
-							setCardsData={setState}
-						/>
-					</Board>
-				</DragDropContext>
-			</Page>
+			
 		</PageWrapper>
 	);
 };

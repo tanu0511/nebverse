@@ -132,13 +132,13 @@ const DashboardPage = () => {
 					<div className='col-xl-4'>
 						<CommonDashboardDesignTeam />
 					</div>
-					<div className='col-xxl-6'>
+					<div className='col-xxl-12'>
 						<CommonDashboardIncome activeTab={activeTab} />
 					</div>
-					<div className='col-xxl-3'>
+					<div className='col-xxl-12'>
 						<CommonDashboardRecentActivities />
 					</div>
-					<div className='col-xxl-3'>
+					<div className='col-xxl-12'>
 						<CommonDashboardUserIssue />
 					</div>
 					<div className='col-xxl-8'>

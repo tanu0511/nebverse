@@ -18,10 +18,13 @@ import Dropdown, {
 } from '../../../components/bootstrap/Dropdown';
 import { demoPagesMenu } from '../../../menu';
 
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
 import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
+import { Eye, Edit, Trash, UserCheck, MoreVertical } from 'lucide-react';
 
 type FilterValues = {
 	dateFilter: string;
@@ -37,14 +40,10 @@ import { X } from 'lucide-react';
 const CustomersList: FC = () => {
 	
 	const [leads, setLeads] = useState<Lead[]>(() => {
-    const savedLeads = localStorage.getItem('leads');
-    try {
-        const parsed = savedLeads ? JSON.parse(savedLeads) : [];
-        return Array.isArray(parsed) ? parsed : [];
-    } catch {
-        return [];
-    }
-});
+		// Load leads from localStorage on initial render
+		const savedLeads = localStorage.getItem('leads');
+		return savedLeads ? JSON.parse(savedLeads) : [];
+	});
 
 	const [deals, setDeals] = useState<any[]>(() => {
 		// Load deals from localStorage on initial render
@@ -56,17 +55,12 @@ const CustomersList: FC = () => {
 		setLeadToEdit(null); // Ensure the form is not prefilled
 		setEditIndex(null); // Reset the edit index
 		if (savedLeads) {
-			try {
-				const parsed = JSON.parse(savedLeads);
-				setLeads(Array.isArray(parsed) ? parsed : []);
-			} catch {
-				setLeads([]);
-			}
+			setLeads(JSON.parse(savedLeads));
 		}
 	}, []);
 	useEffect(() => {
-  localStorage.setItem('leads', JSON.stringify(leads));
-}, [leads]);
+		localStorage.setItem('leads', JSON.stringify(leads));
+	}, [leads]);
 	
 
 	const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
@@ -78,10 +72,37 @@ const CustomersList: FC = () => {
 	}, [isFormOpen]);
 	
 
-	const handleAddLead = (newLead: any) => {
-  if (!newLead || typeof newLead !== 'object' || Array.isArray(newLead)) return;
-  setLeads((prev) => Array.isArray(prev) ? [...prev, newLead] : [newLead]);
-};
+	const handleAddLead = (newLead: Lead): void => {
+	
+
+		const leadWithDate = {
+			...newLead,
+			created: new Date().toLocaleDateString(), // Add the current date
+		};
+		setLeads((prev) => [...prev, leadWithDate]);
+		localStorage.setItem('leads', JSON.stringify([...leads, leadWithDate]));
+
+		if (newLead.createDeal) {
+			const storedDeals = localStorage.getItem('dealsData');
+			const deals = storedDeals ? JSON.parse(storedDeals) : [];
+			const newDeal = {
+				dealName: newLead.dealName,
+				pipeline: newLead.pipeline,
+				dealStage: newLead.dealStage,
+				dealValue: newLead.dealValue,
+				closeDate: newLead.closeDate,
+				dealCategory: newLead.dealCategory,
+				dealAgent: newLead.dealAgent,
+				products: newLead.products,
+			};
+			const updatedDeals = [...deals, newDeal];
+			localStorage.setItem('dealsData', JSON.stringify(updatedDeals));
+			setDeals(updatedDeals); // Update the Deals table state
+		}
+		
+
+		setIsFormOpen(false); // Close the form
+	};
 
 	const handleView = (lead: Lead) => {
 		console.log('view');
@@ -137,6 +158,9 @@ const CustomersList: FC = () => {
 		addedBy: 'all',
 	});
 
+	const [expenses, setExpenses] = useState([]); // for badge logic
+	const filteredData = expenses; // apply real filter logic here
+
 	const handleChange = (key: keyof FilterValues, value: string) => {
 		setFilters((prev) => ({ ...prev, [key]: value }));
 	};
@@ -187,7 +211,7 @@ const CustomersList: FC = () => {
 	  const [filterModalStatus, setFilterModalStatus] = useState<boolean>(false); // State for Filter Modal
 	    const [masterEmployeeList, setMasterEmployeeList] = useState<Lead[]>([]);
 		const [employees, setEmployees] = useState<Lead[]>([]);
-		// const [selectedEmployee, setSelectedEmployee] = useState<Lead | null>(null);
+		const [selectedEmployee, setSelectedEmployee] = useState<Lead | null>(null);
 		  const [selectAll, setSelectAll] = useState<boolean>(false);
 		
 	  
@@ -217,19 +241,6 @@ const CustomersList: FC = () => {
 		setSelectAll(allSelected);
 	  };
 
-	const [searchTerm, setSearchTerm] = useState('');
-
-	// Filter and paginate leads for display in the table and PaginationButtons
-	const filteredData = Array.isArray(leads)
-  ? leads.filter(
-      (lead) =>
-        lead &&
-        typeof lead === 'object' &&
-        typeof lead.name === 'string' &&
-        lead.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  : [];
-
 	return (
 		<PageWrapper title={demoPagesMenu.crm.subMenu.customersList.text}>
 			<SubHeader>
@@ -242,11 +253,7 @@ const CustomersList: FC = () => {
 						type='search'
 						className='border-0 shadow-none bg-transparent'
 						placeholder='Search employee...'
-						value={searchTerm}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setSearchTerm(e.target.value);
-							handleSearch(e.target.value);
-						}}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
 					  />
 					</SubHeaderLeft>
 					<SubHeaderRight>
@@ -333,14 +340,14 @@ const CustomersList: FC = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{filteredData.length === 0 ? (
+										{leads.length === 0 ? (
 											<tr>
 												<td colSpan={10} className='text-center'>
 													No data available in table
 												</td>
 											</tr>
 										) : (
-											filteredData.map((lead, idx) => (
+											leads.map((lead, idx) => (
 												<tr key={idx}>
 													 <td>
                           <input
@@ -357,7 +364,7 @@ const CustomersList: FC = () => {
 													<td className='d-flex align-items-center'>
 														<Dropdown>
 															<DropdownToggle>
-																<Icon icon='MoreVert' size='2x' color='primary' />
+																<MoreVertical size={16} />
 															</DropdownToggle>
 															<DropdownMenu isAlignmentEnd>
 																<DropdownItem
@@ -366,8 +373,10 @@ const CustomersList: FC = () => {
 																		handleView(lead)
 																	}>
 																	<>
-																		<Icon icon='Visibility' size='2x' color='primary' className='me-2' />
-																			
+																		<Eye
+																			size={14}
+																			className='me-2'
+																		/>{' '}
 																		View
 																	</>
 																</DropdownItem>
@@ -377,7 +386,10 @@ const CustomersList: FC = () => {
 																		handleEdit(lead, idx)
 																	}>
 																	<>
-																		<Icon icon='Edit' size='2x' color='primary' className='me-2' />
+																		<Edit
+																			size={14}
+																			className='me-2'
+																		/>{' '}
 																		Edit
 																	</>
 																</DropdownItem>
@@ -387,8 +399,11 @@ const CustomersList: FC = () => {
 																		handleChangeToClient(lead)
 																	}>
 																	<>
-																		<Icon icon='Person' size='2x' color='primary' className='me-2' />
-																		Change to Client
+																		<UserCheck
+																			size={14}
+																			className='me-2'
+																		/>{' '}
+																		Change To Client
 																	</>
 																</DropdownItem>
 																<DropdownItem
@@ -398,7 +413,10 @@ const CustomersList: FC = () => {
 																	}
 																	className='text-danger'>
 																	<>
-																		<Icon icon='Delete' size='2x' color='danger' className='me-2' />
+																		<Trash
+																			size={14}
+																			className='me-2'
+																		/>{' '}
 																		Delete
 																	</>
 																</DropdownItem>
@@ -472,29 +490,34 @@ const CustomersList: FC = () => {
 								)}
 								{isFormOpen && (
 									<AddLeadsForm
-										isOpen={isFormOpen}
-										setIsOpen={setIsFormOpen}
-										onSubmit={handleAddLead} // This should update your leads array
+										onSubmit={(updatedLead) => {
+											handleSubmit(updatedLead); 
+										}}
+										onClose={() => {
+											setIsFormOpen(false); // Close the form
+											setLeadToEdit(null); // Reset the leadToEdit state
+											setEditIndex(null); // Reset the editIndex state
+										}}
 										leadToEdit={leadToEdit || undefined} // Pass the lead to edit
+										isOpen={isFormOpen} // Pass the isOpen state
+										setIsOpen={setIsFormOpen} // Pass the setIsOpen function
+										onAddLead={handleAddLead} // Pass the onAddLead function
 										isCreateDeal={false} // Add the required isCreateDeal property
 										mode='lead' // Add the required 'mode' property
-										onAddLead={handleAddLead} // Add the missing onAddLead prop
-										onClose={() => setIsFormOpen(false)} // Add the missing onClose prop
 									/>
 								)}
 							</CardBody>
-	
+							<PaginationButtons
+								data={filteredData}
+								label='Expenses'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>
-				<PaginationButtons
-    data={filteredData}
-    label="Employees"
-    setCurrentPage={setCurrentPage}
-    currentPage={currentPage}
-    perPage={perPage}
-    setPerPage={setPerPage}
-/>
 			</Page>
 		</PageWrapper>
 	);

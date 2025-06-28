@@ -20,7 +20,7 @@ import Board from '../project-management/component/Board';
 import Columns from '../project-management/component/Columns';
 import AddDealStageModal from './AddDealStageModal';
 import CreateProposalModal from './CreateProposalModal';
-import AddSatgeData from './AddSatge.json'; // adjust path if needed
+import AddSatgeData from './AddStage.json'; // adjust path if needed
 
 const StagePage = () => {
     const { darkModeStatus } = useDarkMode();
@@ -85,7 +85,7 @@ const StagePage = () => {
             }));
 
             // Update on JSON server
-            await fetch(`http://localhost:3000/AddStage/${editStageData.id}`, {
+            await fetch(`http://localhost:4001/AddStage/${editStageData.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -120,7 +120,7 @@ const StagePage = () => {
                 [newStage.id]: [],
             }));
             // Then send to server (don't await if you don't need to handle errors immediately)
-            fetch('http://localhost:3000/AddStage', {
+            fetch('http://localhost:4001/AddStage', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newStage),
@@ -141,7 +141,7 @@ const StagePage = () => {
         });
         // Also delete from JSON server
         if (columnData.id) {
-            await fetch(`http://localhost:3000/AddStage/${columnData.id}`, {
+            await fetch(`http://localhost:4001/AddStage/${columnData.id}`, {
                 method: 'DELETE',
             });
         }

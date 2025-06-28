@@ -195,6 +195,7 @@
       "about": "",
       "loginAllowed": true,
       "emailNotifications": false,
+      
       "hourlyRate": 0,
       "slackMemberId": "",
       "skills": "",

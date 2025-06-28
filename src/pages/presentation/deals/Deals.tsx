@@ -15,7 +15,7 @@ import CreateProposalModal from './CreateProposalModal';
 import ViewProposalModal from './ViewProposalModal';
 import FollowupModal from './FollowupModal';
 import Button from '../../../components/bootstrap/Button';
-import AddSatgeData from './AddSatge.json';
+import AddSatgeData from './AddStage.json';
 import PaginationButtons, { dataPagination, PER_COUNT } from '../../../components/PaginationButtons';
 import Select from 'react-select';
 

@@ -447,7 +447,7 @@ const presentation: RouteProps[] = [
 	element: <APP.LEAD.LEAD_CONTACTS />,
 },
 {
-  path : 'leads/view/:email',
+  path : 'leads/view/:id',
   element:<LeadViewPage />
 },
 {

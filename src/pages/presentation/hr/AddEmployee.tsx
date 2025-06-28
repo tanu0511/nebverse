@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader } from '../../../components/bootstrap/Modal';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
@@ -41,6 +41,9 @@ const AddEmployee: FC<IAddEmployeeModalProps> = ({
     'IT',
     'Finance',
   ]);
+
+  // State to manage deal agents
+  const [dealAgents, setDealAgents] = useState<{ employeeId: string; name: string }[]>([]);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -109,6 +112,21 @@ const AddEmployee: FC<IAddEmployeeModalProps> = ({
       }
     },
   });
+
+  useEffect(() => {
+    fetch('http://localhost:4000/AddEmployee')
+      .then(res => res.json())
+      .then(data => {
+        // If your API returns { AddEmployee: [...] }
+        const employees = Array.isArray(data) ? data : data.AddEmployee;
+        setDealAgents(
+          employees.map((emp: any) => ({
+            employeeId: emp.employeeId,
+            name: emp.name || emp.employeeName // adjust if your field is employeeName
+          }))
+        );
+      });
+  }, []);
 
   if (!isOpen) return null;
 

@@ -1,0 +1,32 @@
+{
+  "leads": [
+    {
+      "id": "26b4",
+      "salutation": "",
+      "name": "Nisha Jasnani",
+      "email": "nishujaswani@gmail.com",
+      "leadSource": "Facebook",
+      "addedBy": "ramu",
+      "leadOwner": "atharvraj singh rana",
+      "createDeal": false,
+      "dealName": "",
+      "pipeline": "Sales Pipeline",
+      "dealStage": "Generated",
+      "dealValue": 0,
+      "closeDate": "",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "atharvraj singh rana",
+      "companyName": "",
+      "website": "",
+      "mobile": "",
+      "officePhone": "",
+      "country": "",
+      "state": "",
+      "city": "",
+      "postalCode": "",
+      "address": ""
+    }
+  ]
+}

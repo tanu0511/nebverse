@@ -107,7 +107,7 @@
       "password": "TkT#9Ygf%V"
     },
     {
-      "id": 1750150996157,
+      "id": "1750150996157",
       "employeeId": "",
       "salutation": "Mr",
       "name": "tertrtrtt",
@@ -142,7 +142,7 @@
       "password": "t#uqyo%R9N"
     },
     {
-      "id": 3,
+      "id": "3",
       "salutation": "Mrs",
       "name": "monu",
       "email": "",
@@ -176,7 +176,7 @@
       "employeeId": "3"
     },
     {
-      "id": 24,
+      "id": "24",
       "salutation": "Ms",
       "name": "yolo",
       "email": "",
@@ -210,7 +210,7 @@
       "employeeId": "24"
     },
     {
-      "id": 40,
+      "id": "40",
       "employeeId": "40",
       "salutation": "Ms",
       "employeeName": "kamla",
@@ -246,7 +246,7 @@
       "email": ""
     },
     {
-      "id": 1750317089393,
+      "id": "1750317089393",
       "employeeId": "4",
       "salutation": "Ms",
       "name": "werewr",
@@ -279,6 +279,41 @@
       "employmentType": "N/A",
       "probationPeriod": "",
       "password": "a2nmFyOZd9"
+    },
+    {
+      "id": 1751353157440,
+      "employeeId": "67",
+      "salutation": "",
+      "name": "john",
+      "email": "john@gmail.com",
+      "profilePicture": null,
+      "dateOfBirth": "2025-07-01",
+      "designation": "",
+      "department": "",
+      "country": "",
+      "mobile": "",
+      "gender": "",
+      "joiningDate": "2025-07-17",
+      "reportingTo": "",
+      "language": "English",
+      "userRole": "Employee",
+      "address": "",
+      "about": "",
+      "loginAllowed": true,
+      "emailNotifications": false,
+      "hourlyRate": 0,
+      "slackMemberId": "",
+      "skills": "",
+      "probationEndDate": "",
+      "noticePeriodStartDate": "",
+      "noticePeriodEndDate": "",
+      "maritalStatus": "",
+      "businessAddress": "",
+      "status": "Active",
+      "exitDate": "",
+      "employmentType": "N/A",
+      "probationPeriod": "",
+      "password": "ch%edA830g"
     }
   ]
 }

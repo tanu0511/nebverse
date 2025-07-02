@@ -69,6 +69,7 @@ const AddClientModal: FC<IAddClientModalProps> = ({
     { name: string; category: string }[]
   >([]);
 
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -105,11 +106,27 @@ const AddClientModal: FC<IAddClientModalProps> = ({
       additionalField: selectedEmployee?.additionalField || "",
       electronicAddressScheme: selectedEmployee?.electronicAddressScheme || "",
     },
-    onSubmit: (values) => {
-      console.log("Form Values:", values);
-      onAddEmployee(values as client);
-      formik.resetForm();
-      setIsOpen(false);
+    onSubmit: async (values) => {
+      try {
+        const response = await fetch("http://localhost:4000/AddClientModal", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          onAddEmployee(data as client);
+          formik.resetForm();
+          setIsOpen(false);
+        } else {
+          alert("Failed to save data!");
+        }
+      } catch (error) {
+        alert("Error saving data!");
+        console.error(error);
+      }
     },
   });
 

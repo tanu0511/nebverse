@@ -9,19 +9,18 @@ import Card, { CardBody } from '../../../components/bootstrap/Card';
 import Button from '../../../components/bootstrap/Button';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
-import CustomerEditModal from './CustomerEditModal';
+import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
 import PaginationButtons from '../../../components/PaginationButtons';
+import CustomerEditModal from './CustomerEditModal';
 import ImportModal from './ImportModal'; // Import the new ImportModal component
 import CopyProjectModal from './CopyProjectModal'; // Import the CopyProjectModal component
 import ConfirmationModal from './ConfirmationModal';
-import ProjectViewModal from './ProjectViewModal';
 import { useProjects, Project } from './ProjectsContext';
 import TaskBoardModal from './TaskBoardModal'; // Add this import
 import PublicGanttChartModal from './PublicGanttChartModal';
 import GanttChartModal from './GanttChartModal';
 
 const ProjectPage: React.FC = () => {
-    const [viewModalOpen, setViewModalOpen] = useState(false);
     const { projects, setProjects } = useProjects();
     const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -99,8 +98,7 @@ const ProjectPage: React.FC = () => {
     }
 
     const handleView = (index: number) => {
-        setSelectedProject(projects[index]);
-        setViewModalOpen(true);
+        navigate('/projects/view', { state: { project: projects[index] } });
     };
 
     const handleEdit = (index: number) => {
@@ -121,10 +119,6 @@ const ProjectPage: React.FC = () => {
     const handlePublicTaskBoard = (index: number) => {
         setTaskBoardProject(projects[index]);
         setTaskBoardOpen(true);
-    };
-
-    const handleArchive = (index: number) => {
-        console.log(`Archive project at index ${index}`);
     };
 
     const handleDelete: (index: number) => void = (index: number) => {
@@ -249,138 +243,70 @@ const ProjectPage: React.FC = () => {
                                                             </option>
                                                         </select>
                                                     </td>
-                                                    <td className="position-static">
-                                                        <div className='dropdown'>
-                                                            <Button
-                                                                color='primary'
-                                                                isLight
-                                                                className='dropdown-toggle'
-                                                                data-bs-toggle='dropdown'
-                                                                aria-expanded='false'>
-                                                                <Icon icon='MoreVert' />
-                                                            </Button>
-                                                            <ul className='dropdown-menu'>
-                                                                <li>
-                                                                    <button
-                                                                        className='dropdown-item'
-                                                                        onClick={() =>
-                                                                            handleView(index)
-                                                                        }>
-                                                                        <Icon
-                                                                            icon='Visibility'
-                                                                            className='me-2'
-                                                                        />
-                                                                        View
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className='dropdown-item'
-                                                                        onClick={() =>
-                                                                            handleEdit(index)
-                                                                        }>
-                                                                        <Icon
-                                                                            icon='Edit'
-                                                                            className='me-2'
-                                                                        />
-                                                                        Edit
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className='dropdown-item'
-                                                                        onClick={() =>
-                                                                            handleDuplicate(index)
-                                                                        }>
-                                                                        <Icon
-                                                                            icon='ContentCopy'
-                                                                            className='me-2'
-                                                                        />
-                                                                        Duplicate
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className='dropdown-item'
-                                                                        onClick={() =>
-                                                                            handleGanttChart(index)
-                                                                        }>
-                                                                        <Icon
-                                                                            icon='Timeline'
-                                                                            className='me-2'
-                                                                        />
-                                                                        Gantt Chart
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className='dropdown-item'
-                                                                        onClick={() =>
-                                                                            handlePublicGanttChart(index)
-                                                                        }>
-                                                                        <Icon
-                                                                            icon='Public'
-                                                                            className='me-2'
-                                                                        />
-                                                                        Public Gantt Chart
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className='dropdown-item'
-                                                                        onClick={() =>
-                                                                            handlePublicTaskBoard(
-                                                                                index,
-                                                                            )
-                                                                        }>
-                                                                        <Icon
-                                                                            icon='Dashboard'
-                                                                            className='me-2'
-                                                                        />
-                                                                        Public Task Board
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className='dropdown-item'
-                                                                        onClick={() =>
-                                                                            handlePinProject(index)
-                                                                        }>
-                                                                        <Icon
-                                                                            icon='PushPin'
-                                                                            className='me-2'
-                                                                        />
-                                                                        Pin Project
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className='dropdown-item'
-                                                                        onClick={() =>
-                                                                            handleArchive(index)
-                                                                        }>
-                                                                        <Icon
-                                                                            icon='Archive'
-                                                                            className='me-2'
-                                                                        />
-                                                                        Archive
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className='dropdown-item'
-                                                                        onClick={() =>
-                                                                            handleDelete(index)
-                                                                        }>
-                                                                        <Icon
-                                                                            icon='Delete'
-                                                                            className='me-2'
-                                                                        />
-                                                                        Delete
-                                                                    </button>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
+                                                    <td>
+                                                      <Dropdown>
+                                                        <DropdownToggle hasIcon={false}>
+                                                          <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
+                                                        </DropdownToggle>
+                                                        <DropdownMenu isAlignmentEnd>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item"
+                                                            onClick={() => handleView(index)}
+                                                          >
+                                                            <Icon icon="Visibility" className="me-2" /> View
+                                                          </Button>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item"
+                                                            onClick={() => handleEdit(index)}
+                                                          >
+                                                            <Icon icon="Edit" className="me-2" /> Edit
+                                                          </Button>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item"
+                                                            onClick={() => handleDuplicate(index)}
+                                                          >
+                                                            <Icon icon="ContentCopy" className="me-2" /> Duplicate
+                                                          </Button>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item"
+                                                            onClick={() => handleGanttChart(index)}
+                                                          >
+                                                            <Icon icon="Timeline" className="me-2" /> Gantt Chart
+                                                          </Button>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item"
+                                                            onClick={() => handlePublicGanttChart(index)}
+                                                          >
+                                                            <Icon icon="Public" className="me-2" /> Public Gantt Chart
+                                                          </Button>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item"
+                                                            onClick={() => handlePublicTaskBoard(index)}
+                                                          >
+                                                            <Icon icon="Dashboard" className="me-2" /> Public Task Board
+                                                          </Button>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item"
+                                                            onClick={() => handlePinProject(index)}
+                                                          >
+                                                            <Icon icon="PushPin" className="me-2" /> Pin Project
+                                                          </Button>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item text-danger"
+                                                            onClick={() => handleDelete(index)}
+                                                          >
+                                                            <Icon icon="Delete" className="me-2" /> Delete
+                                                          </Button>
+                                                        </DropdownMenu>
+                                                      </Dropdown>
                                                     </td>
                                                 </tr>
                                             ))
@@ -424,11 +350,6 @@ const ProjectPage: React.FC = () => {
                 title='Are you sure?'
                 message='Do you want to pin this project?'
                 onConfirm={confirmPinProject}
-            />
-            <ProjectViewModal
-                isOpen={viewModalOpen}
-                setIsOpen={setViewModalOpen}
-                project={selectedProject}
             />
             <TaskBoardModal
                 isOpen={taskBoardOpen}

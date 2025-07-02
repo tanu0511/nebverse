@@ -9,6 +9,7 @@ export interface Project {
   client: string;
   status: string;
   pinned?: boolean;
+  id: number; 
 }
 
 interface ProjectsContextType {

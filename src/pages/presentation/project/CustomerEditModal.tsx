@@ -216,22 +216,24 @@ const CustomerEditModal: FC<CustomerEditModalProps> = ({
 
                             {/* Project Summary */}
                             <div className="col-md-6">
-                                <label className="form-label">
+                                <label className="form-label" htmlFor="projectSummary">
                                     Project Summary
                                 </label>
                                 <ReactQuill
+                                    id="projectSummary"
                                     theme="snow"
                                     value={formik.values.projectSummary}
                                     onChange={(value) => formik.setFieldValue('projectSummary', value)}
                                 />
                             </div>
-
+                            
                             {/* Notes */}
                             <div className="col-md-6">
-                                <label className="form-label">
+                                <label className="form-label" htmlFor="notes">
                                     Notes
                                 </label>
                                 <ReactQuill
+                                    id="notes"
                                     theme="snow"
                                     value={formik.values.notes}
                                     onChange={(value) => formik.setFieldValue('notes', value)}
@@ -489,7 +491,7 @@ const CustomerEditModal: FC<CustomerEditModalProps> = ({
                     </form>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="secondary" onClick={() => setIsOpen(false)}>
+                    <Button color="light" isOutline onClick={() => setIsOpen(false)}>
                         Cancel
                     </Button>
                     <Button color="primary" onClick={handleSubmit}>

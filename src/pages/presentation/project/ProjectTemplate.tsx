@@ -1,5 +1,6 @@
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
 import Page from '../../../layout/Page/Page';
@@ -8,10 +9,12 @@ import Card, { CardBody } from '../../../components/bootstrap/Card';
 import Button from '../../../components/bootstrap/Button';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
+import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
 import PaginationButtons from '../../../components/PaginationButtons';
 import AddProjectTemplateModal from './AddProjectTemplateModal';
 import CustomerEditModal from './CustomerEditModal';
-import ViewModal from './ViewModal'; 
+// import ViewModal from './ViewModal'; 
+import { useProjectData } from './ProjectDataContext';
 
 const PER_COUNT: { [key: string]: number } = { '5': 5, '10': 10, '20': 20 }; // Add or adjust as needed
 
@@ -29,10 +32,9 @@ const ProjectTemplate: React.FC = () => {
     const [isCustomerEditModalOpen, setIsCustomerEditModalOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editData, setEditData] = useState<Project | null>(null);
-    const [projectData, setProjectData] = useState<Project[]>([]);
-    const [viewProject, setViewProject] = useState<Project | null>(null);
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const { projectData, setProjectData } = useProjectData();
     const [searchTerm, setSearchTerm] = useState<string>(''); // <-- Add searchTerm state
+    const navigate = useNavigate();
 
     // Dynamic search filter for all relevant fields
     const filteredData = projectData.filter((item) =>
@@ -164,61 +166,43 @@ const ProjectTemplate: React.FC = () => {
                                                     <td>{item.members}</td>
                                                     <td>{item.projectCategory}</td>
                                                     <td>
-                                                        <div className="dropdown">
-                                                            <button
-                                                                className="btn btn-light dropdown-toggle"
-                                                                type="button"
-                                                                id={`dropdownMenuButton-${item.projectName}`}
-                                                                data-bs-toggle="dropdown"
-                                                                aria-expanded="false"
-                                                            >
-                                                                <Icon icon="MoreVert" />
-                                                            </button>
-                                                            <ul
-                                                                className="dropdown-menu"
-                                                                aria-labelledby={`dropdownMenuButton-${item.projectName}`}
-                                                            >
-                                                                <li>
-                                                                    <button
-                                                                        className="dropdown-item"
-                                                                        onClick={() => {
-                                                                            setViewProject(item);
-                                                                            setIsViewModalOpen(true);
-                                                                        }}
-                                                                    >
-                                                                        <Icon icon="Visibility" className="me-2" />
-                                                                        View
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className="dropdown-item"
-                                                                        onClick={() => handleAction('Create Project', item.projectName)}
-                                                                    >
-                                                                        <Icon icon="Add" className="me-2" />
-                                                                        Create Project
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className="dropdown-item"
-                                                                        onClick={() => handleAction('Edit', item.projectName)}
-                                                                    >
-                                                                        <Icon icon="Edit" className="me-2" />
-                                                                        Edit
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button
-                                                                        className="dropdown-item text-danger"
-                                                                        onClick={() => handleAction('Delete', item.projectName)}
-                                                                    >
-                                                                        <Icon icon="Delete" className="me-2" />
-                                                                        Delete
-                                                                    </button>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
+                                                      <Dropdown>
+                                                        <DropdownToggle hasIcon={false}>
+                                                          <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
+                                                        </DropdownToggle>
+                                                        <DropdownMenu isAlignmentEnd>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item"
+                                                            onClick={() => {
+                                                              navigate(`/project-template/view/${encodeURIComponent(item.projectName)}`, { state: { project: item } });
+                                                            }}
+                                                          >
+                                                            <Icon icon="Visibility" className="me-2" /> View
+                                                          </Button>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item"
+                                                            onClick={() => handleAction('Create Project', item.projectName)}
+                                                          >
+                                                            <Icon icon="Add" className="me-2" /> Create Project
+                                                          </Button>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item"
+                                                            onClick={() => handleAction('Edit', item.projectName)}
+                                                          >
+                                                            <Icon icon="Edit" className="me-2" /> Edit
+                                                          </Button>
+                                                          <Button
+                                                            color="link"
+                                                            className="dropdown-item text-danger"
+                                                            onClick={() => handleAction('Delete', item.projectName)}
+                                                          >
+                                                            <Icon icon="Delete" className="me-2" /> Delete
+                                                          </Button>
+                                                        </DropdownMenu>
+                                                      </Dropdown>
                                                     </td>
                                                 </tr>
                                             ))
@@ -253,11 +237,11 @@ const ProjectTemplate: React.FC = () => {
                 isOpen={isCustomerEditModalOpen}
                 onAddProject={handleAddProject}
             />
-            <ViewModal
+            {/* <ViewModal
                 isOpen={isViewModalOpen}
                 onClose={() => setIsViewModalOpen(false)}
                 project={viewProject}
-            />
+            /> */}
         </PageWrapper>
     );
 };

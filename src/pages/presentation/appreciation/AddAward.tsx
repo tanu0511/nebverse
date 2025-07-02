@@ -133,8 +133,8 @@ const AddAward: FC<IAddAwardModalProps> = ({ isOpen, setIsOpen, onAddAward, sele
                 <DropdownToggle hasIcon={false}>
                   <Button
                     color="light"
-                    className="d-flex align-items-center w-100"
-                    style={{ minWidth: 180, justifyContent: 'flex-start' }}
+                    className="d-flex align-items-center"
+                    style={{ minWidth: 250, justifyContent: 'flex-start' }}
                     onClick={() => setAwardDropdownOpen(!awardDropdownOpen)}
                     type="button"
                   >
@@ -145,7 +145,7 @@ const AddAward: FC<IAddAwardModalProps> = ({ isOpen, setIsOpen, onAddAward, sele
                           style={{
                             marginRight: 8,
                             fontSize: 20,
-                            width: 20,
+                            width: 50,
                             height: 20,
                             verticalAlign: 'middle',
                             color: selectedAwardOption.color || '#A259E6' // Use saved color
@@ -163,7 +163,7 @@ const AddAward: FC<IAddAwardModalProps> = ({ isOpen, setIsOpen, onAddAward, sele
                       key={opt.value}
                       color="link"
                       className="dropdown-item d-flex align-items-center"
-                      style={{ minWidth: 180 }}
+                      style={{ minWidth: 250 }}
                       onClick={() => {
                         formik.setFieldValue('name', opt.value);
                         formik.setFieldValue('icon', opt.icon); // Set icon in form

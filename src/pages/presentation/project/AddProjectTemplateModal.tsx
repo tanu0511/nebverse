@@ -81,8 +81,9 @@ const AddProjectTemplateModal: FC<AddProjectTemplateModalProps> = ({
                     <div className="row g-3">
                         {/* Project Name */}
                         <div className="col-md-6">
-                            <label className="form-label">Project Name <span className="text-danger">*</span></label>
+                            <label className="form-label" htmlFor="project-name-input">Project Name <span className="text-danger">*</span></label>
                             <Input
+                                id="project-name-input"
                                 type="text"
                                 placeholder="Write a project name"
                                 value={projectName}
@@ -92,16 +93,17 @@ const AddProjectTemplateModal: FC<AddProjectTemplateModalProps> = ({
 
                         {/* Project Category */}
                         <div className="col-md-6">
-                            <label className="form-label">Project Category</label>
+                            <label className="form-label" htmlFor="project-category-select">Project Category</label>
                             <div className="input-group">
                                     <Select
+                                        id="project-category-select"
                                         name="projectCategory"
                                         value={projectCategory}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setProjectCategory(e.target.value)}
                                         ariaLabel="Project Category"
                                     >
                                         <option value="">--</option>
-										{categories.map((category, index) => (
+                                        {categories.map((category, index) => (
                                             <option key={index} value={category}>
                                                 {category}
                                             </option>
@@ -119,8 +121,9 @@ const AddProjectTemplateModal: FC<AddProjectTemplateModalProps> = ({
 
                         {/* Allow Manual Time Logs */}
                         <div className="col-md-12">
-                            <label className="form-label">Allow manual time logs</label>
+                            <label className="form-label" htmlFor="allow-manual-logs-checkbox">Allow manual time logs</label>
                             <input
+                                id="allow-manual-logs-checkbox"
                                 type="checkbox"
                                 checked={allowManualLogs}
                                 onChange={(e) => setAllowManualLogs(e.target.checked)}
@@ -130,8 +133,9 @@ const AddProjectTemplateModal: FC<AddProjectTemplateModalProps> = ({
 
                         {/* Project Summary */}
                         <div className="col-md-6">
-                            <label className="form-label">Project Summary</label>
+                            <label className="form-label" htmlFor="project-summary-editor">Project Summary</label>
                             <ReactQuill
+                                id="project-summary-editor"
                                 theme="snow"
                                 value={summary}
                                 onChange={(val) => setSummary(val)}
@@ -140,8 +144,9 @@ const AddProjectTemplateModal: FC<AddProjectTemplateModalProps> = ({
 
                         {/* Notes */}
                         <div className="col-md-6">
-                            <label className="form-label">Notes</label>
+                            <label className="form-label" htmlFor="project-notes-editor">Notes</label>
                             <ReactQuill
+                                id="project-notes-editor"
                                 theme="snow"
                                 value={notes}
                                 onChange={(val) => setNotes(val)}
@@ -150,7 +155,7 @@ const AddProjectTemplateModal: FC<AddProjectTemplateModalProps> = ({
                     </div>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="secondary" onClick={onClose}>
+                    <Button color="light" isOutline onClick={onClose}>
                         Cancel
                     </Button>
                     <Button color="primary" onClick={handleSave}>

@@ -260,7 +260,6 @@ const CustomersList: FC = () => {
 						placeholder='Search employee...'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
 					  />
-					  <Button>hell</Button>
 					</SubHeaderLeft>
 					<SubHeaderRight>
 					<Button
@@ -287,10 +286,6 @@ const CustomersList: FC = () => {
             color='primary'
             icon='CloudDownload'
             isLight
-            tag='a'
-            to='/somefile.txt'
-            target='_blank'
-            download
           >
            Lead Form
           </Button>

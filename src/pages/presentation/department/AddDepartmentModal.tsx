@@ -31,15 +31,13 @@ const AddDepartmentModal: FC<IAddDepartmentModalProps> = ({ isOpen, setIsOpen, o
     onSubmit: async (values) => {
       try {
         const response = await axios.post(
-          'http://localhost:8000/api/v1/departments/departments',
+          'http://localhost:4001/departments', // <-- changed port and endpoint
           {
             name: values.name,
-            parent: values.parentDepartment || null,
+            parentDepartment: values.parentDepartment || "",
           },
           {
             headers: {
-              'Authorization': 'Bearer 91|tjNgM2tl2RSRG0SfXztWt0qtgOK3bxefy5ZK4GK',
-              'X-Requested-With': 'XMLHttpRequest',
               'Content-Type': 'application/json',
             },
           }
@@ -53,7 +51,7 @@ const AddDepartmentModal: FC<IAddDepartmentModalProps> = ({ isOpen, setIsOpen, o
           `Department "${values.name}" added successfully!`
         );
 
-        onAddDepartment(values); // if needed for parent state
+        onAddDepartment(values);
         formik.resetForm();
         setIsOpen(false);
       } catch (error: any) {

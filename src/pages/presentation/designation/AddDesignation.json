@@ -1,0 +1,29 @@
+{
+  "designations": [
+    {
+      "id": "1",
+      "name": "Team Lead",
+      "parentDepartment": "HR Manager"
+    },
+    {
+      "id": "2",
+      "name": "Accountant",
+      "parentDepartment": "Finance"
+    },
+    {
+      "id": "3",
+      "name": "Supervisor",
+      "parentDepartment": "Operations"
+    },
+    {
+      "id": "ea54",
+      "name": "Ayushi Solanki",
+      "parentDepartment": "HR Manager"
+    },
+    {
+      "id": "4624",
+      "name": "Ayushi Solanki",
+      "parentDepartment": "Operations"
+    }
+  ]
+}

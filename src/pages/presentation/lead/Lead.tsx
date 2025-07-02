@@ -264,31 +264,36 @@ const CustomersList: FC = () => {
 						placeholder='Search'
 						value={searchTerm}
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
-					/>
-				</SubHeaderLeft>
-				<SubHeaderRight>
+					  />
+					</SubHeaderLeft>
+					<SubHeaderRight>
 					<Button
-						icon='PersonAdd'
-						color='primary'
-						isLight
-						onClick={() => {
-							setIsFormOpen(true)
-						}
-						}
-					>
-						Add Lead Contact
-					</Button>
+            icon='FilterAlt'
+            color='primary'
+            isLight
+            aria-label='Filter'
+            onClick={() => setFilterModalStatus(true)} // Open the Filter Modal
+          >
+            Filter
+          </Button>
+
 					<Button
-						color='info'
-						icon='CloudDownload'
-						isLight
-						tag='a'
-						to='/somefile.txt'
-						target='_blank'
-						download
-					>
-						Lead Form
-					</Button>
+            icon='PersonAdd'
+            color='primary'
+            isLight
+            onClick={() => {
+				setIsFormOpen(true)}
+			}
+        >
+           Add Lead Contact
+          </Button>
+		  <Button
+            color='primary'
+            icon='CloudDownload'
+            isLight
+          >
+           Lead Form
+          </Button>
 					<Button
 						color='info'
 						icon='CloudDownload'

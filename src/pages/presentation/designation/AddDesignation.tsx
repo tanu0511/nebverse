@@ -27,25 +27,44 @@ const AddDesignation: FC<IAddDepartmentModalProps> = ({
   onAddDesignation,
   selectedDesignation,
 }) => {
-  const formik = useFormik({
-    initialValues: {
-      name: selectedDesignation?.name || '',
-      parentDepartment: selectedDesignation?.parentDepartment || '',
-    },
-    enableReinitialize: true,
-    onSubmit: (values) => {
-      onAddDesignation(values);
-      showNotification(
-        <span className='d-flex align-items-center'>
-          <Icon icon='Info' size='lg' className='me-1' />
-          <span>Added Successfully</span>
-        </span>,
-        `Designation "${values.name}" saved successfully!`
-      );
-      formik.resetForm();
-      setIsOpen(false);
-    },
-  });
+  // ...existing code...
+const formik = useFormik({
+  initialValues: {
+    name: selectedDesignation?.name || '',
+    parentDepartment: selectedDesignation?.parentDepartment || '',
+  },
+  enableReinitialize: true,
+  onSubmit: async (values) => {
+    try {
+      const response = await fetch('http://localhost:4000/designations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        onAddDesignation(data);
+        showNotification(
+          <span className='d-flex align-items-center'>
+            <Icon icon='Info' size='lg' className='me-1' />
+            <span>Added Successfully</span>
+          </span>,
+          `Designation "${values.name}" saved successfully!`
+        );
+        formik.resetForm();
+        setIsOpen(false);
+      } else {
+        alert('Failed to save designation!');
+      }
+    } catch (error) {
+      alert('Error saving designation!');
+      console.error(error);
+    }
+  },
+});
+// ...existing code...
 
   if (!isOpen) return null;
 

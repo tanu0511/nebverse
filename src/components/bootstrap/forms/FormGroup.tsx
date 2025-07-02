@@ -12,7 +12,7 @@ interface IFormGroupProps extends HTMLAttributes<HTMLElement> {
 	tag?: 'div' | 'section';
 	isFloating?: boolean;
 	id?: string;
-	label?: string;
+	label?: ReactNode;
 	size?: 'lg' | 'sm' | null;
 	isHiddenLabel?: boolean;
 	isColForLabel?: boolean;

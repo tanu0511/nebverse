@@ -20,11 +20,13 @@ import LeadViewPage from '../pages/presentation/lead/LeadViewPage';
 import ContractViewPage from '../pages/presentation/contract/ContractViewPage';
 import DealViewPage from '../pages/presentation/deals/DealViewPage'; // adjust path as needed
 import ViewEmployeePage from '../pages/presentation/hr/ViewEmployeePage';
-import TaskManagementPage from '../pages/presentation/task/TaskMangmentPage';
-import CalenderPage from '../pages/presentation/task/CalenderPage';
+import ProjectViewPage from '../pages/presentation/project/ProjectViewPage';
+import {ProjectDataProvider} from '../pages/presentation/project/ProjectDataContext';
+import ViewPageWrapper from '../pages/presentation/project/ViewPageWrapper';
 // import EmloyeeViewPage from '../pages/presentation/hr/EmployeeViewPage';
+import CalenderPage from '../pages/presentation/task/CalenderPage';
 
-// import TaskManagementPage from '../pages/presentation/task/TaskMangmentPage';
+import TaskManagementPage from '../pages/presentation/task/TaskMangmentPage';
 
 
 // import Task from '../pages/presentation/task/Task';
@@ -144,7 +146,8 @@ const APP = {
 		ATTENDANCE: lazy(() => import('../pages/presentation/attendance/Attendance'))
 	},
 	WORK:{
-		PROJECT: lazy(() => import('../pages/presentation/project/ProjectPage')),		
+		PROJECT: lazy(() => import('../pages/presentation/project/ProjectPage')),
+		// PROJECT_VIEW: lazy(()=> import('../pages/presentation/project/ProjectViewPage')),		
 		TIMESHEET: lazy(() => import('../pages/presentation/timesheet/TimeSheet')),
 		CONTRACT: lazy(() => import('../pages/presentation/contract/Contract')),
 		PROJECTROADMAP: lazy(()=>import('../pages/presentation/project/ProjectRoad')),
@@ -479,12 +482,28 @@ const presentation: RouteProps[] = [
   ),
 },
 	{
-		path: '/project-template',
-		element: <ProjectTemplate />, // Replace with the actual component
-	},
+  path: '/project-template',
+  element: (
+    <ProjectDataProvider>
+      <ProjectTemplate />
+    </ProjectDataProvider>
+  ),
+},
+{
+  path: '/project-template/view/:projectName',
+  element: (
+    <ProjectDataProvider>
+      <ViewPageWrapper />
+    </ProjectDataProvider>
+  ),
+},
+	// {
+    //   path: dashboardPagesMenu.Work.subMenu.Task.path,
+	//   element: <APP.WORK.TASKPAGE/>
+	// },
 	{
-      path: dashboardPagesMenu.Work.subMenu.Task.path,
-	  element: <APP.WORK.TASKPAGE/>
+          path: '/projects/view',
+          element:<ProjectViewPage/>,
 	},
 	
 	{
@@ -497,7 +516,7 @@ const presentation: RouteProps[] = [
 	},
 	{
         path:'calendar',
-		element:<CalenderPage/>
+	   element:<CalenderPage/>
 	},
 	// {
     //    path:'/calendar',

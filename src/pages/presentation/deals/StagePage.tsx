@@ -13,6 +13,7 @@ import Page from '../../../layout/Page/Page';
 import Icon from '../../../components/icon/Icon';
 import COLORS from '../../../common/data/enumColors';
 import Button from '../../../components/bootstrap/Button';
+import {ButtonGroup} from '../../../components/bootstrap/Button';
 import useDarkMode from '../../../hooks/useDarkMode';
 import { TCards, TColumnsData } from '../project-management/type/types';
 import { move, reorder } from '../project-management/helper/helper';
@@ -173,20 +174,27 @@ const StagePage = () => {
                     >
                         Add Stage
                     </Button>
-                    <Button
-                        color="primary"
-                        isLight
-                        onClick={() => navigate('/leads/deals')}
-                    >
-                        <Icon icon="List" size='lg'/>
-                    </Button>
-                    <Button
-                        color="primary"
-                        isLight
-                        onClick={() => navigate('/deals/stage')}
-                    >
-                        <Icon icon="Assessment" size='lg'/>
-                    </Button>
+                     <ButtonGroup>
+                  <Button
+                    color="info" isLight
+                    // isLight
+                    // icon="ViewList"
+                    onClick={() => navigate('/leads/deals')}
+                  >
+                    <Icon icon="List"/>
+                  </Button>
+
+          <Button
+            color="info"
+            isLight
+            // icon="ViewModule"
+            onClick={() => navigate('/deals/stage')}
+          >
+            <Icon icon="Assessment"/>
+          </Button>
+              
+            </ButtonGroup>
+  
                 </SubHeaderRight>
             </SubHeader>
             <Page container='fluid'>

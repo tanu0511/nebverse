@@ -15,6 +15,7 @@ import CreateProposalModal from './CreateProposalModal';
 import ViewProposalModal from './ViewProposalModal';
 import FollowupModal from './FollowupModal';
 import Button from '../../../components/bootstrap/Button';
+import { ButtonGroup } from '../../../components/bootstrap/Button';
 import AddSatgeData from './AddStage.json';
 import PaginationButtons, { dataPagination, PER_COUNT } from '../../../components/PaginationButtons';
 import Select from 'react-select';
@@ -61,6 +62,7 @@ const Deals = () => {
   });
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(PER_COUNT['10']);
+  const [dealStageDropdownOpen, setDealStageDropdownOpen] = useState<number | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -199,24 +201,26 @@ const Deals = () => {
                     
                       </Button>
                     ))} */}
+                    <ButtonGroup>
                   <Button
-                    color="primary"
-                    isLight
+                    color="info" isLight
+                    // isLight
                     // icon="ViewList"
                     onClick={() => navigate('/leads/deals')}
                   >
-                    <Icon icon="List" size='lg'/>
+                    <Icon icon="List"/>
                   </Button>
+
           <Button
-            color="primary"
+            color="info"
             isLight
             // icon="ViewModule"
             onClick={() => navigate('/deals/stage')}
           >
-            <Icon icon="Assessment" size='lg'/>
+            <Icon icon="Assessment"/>
           </Button>
               
-            
+            </ButtonGroup>
         </SubHeaderRight>
       </SubHeader>
 
@@ -224,192 +228,181 @@ const Deals = () => {
         <div className="row h-100">
           <div className="col-12">
             <Card stretch>
-              <CardBody isScrollable className="table-responsive">
-                <table className="table table-modern table-hover">
-                  <thead>
-                    <tr>
-                      <th>
-                        <input type="checkbox" />
-                      </th>
-                      <th>Deal Name</th>
-                      <th>Lead Name</th>
-                      <th>Contact Details (Email)</th>
-                      <th>Value</th>
-                      <th>Close Date</th>
-                      <th>Next Follow Up</th>
-                      <th>Deal Agent</th>
-                      <th>Deal Watcher</th>
-                      <th>Deal Stage</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-  {dataPagination(tableData, currentPage, perPage).length > 0 ? (
-    dataPagination(tableData, currentPage, perPage).map((row, index) => {
-      const globalIndex = (currentPage - 1) * perPage + index;
-      return (
-        <tr key={globalIndex}>
-          <td>
-            <input type="checkbox" />
-          </td>
-          <td>{row.deals}</td>
-          <td>{row.contactName}</td>
-          <td>{row.proposalData?.email || '--'}</td>
-          <td>{row.dealValue ? `${row.dealValue}` : '--'}</td>
-          <td>{row.validTill}</td>
-          <td>
-            {row.followupDate && row.followupTime
-              ? `${row.followupDate} ${row.followupTime}`
-              : '--'}
-          </td>
-          <td>{row.dealAgent || '--'}</td>
-          <td>
-            <div className="d-flex align-items-center gap-2">
-              <img
-                src="/path/to/avatar.jpg"
-                alt="Watcher Avatar"
-                className="rounded-circle"
-                style={{ width: '30px', height: '30px' }}
-              />
-              <span>{row.dealWatcher || '--'}</span>
-            </div>
-          </td>
-          <td>
-            <Select
-              value={DEAL_STAGE_OPTIONS.find(opt => opt.value === row.dealStages) || null}
-              onChange={option => {
-                const newStage = option?.value || '';
-                setTableData(prev =>
-                  prev.map((r, idx) =>
-                    idx === globalIndex ? { ...r, dealStages: newStage } : r
-                  )
-                );
-              }}
-              options={DEAL_STAGE_OPTIONS}
-              isSearchable={false}
-              menuPlacement="auto"
-              styles={{
-                control: (provided) => ({
-                  ...provided,
-                  minHeight: '32px',
-                  borderColor: '#ced4da',
-                  borderRadius: '8px',
-                  boxShadow: 'none',
-                  fontSize: '1rem',
-                }),
-                option: (provided) => ({
-                  ...provided,
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontSize: '1rem',
-                }),
-                singleValue: (provided) => ({
-                  ...provided,
-                  display: 'flex',
-                  alignItems: 'center',
-                }),
-                menu: (provided) => ({
-                  ...provided,
-                  zIndex: 9999,
-                }),
-                dropdownIndicator: (provided) => ({
-                  ...provided,
-                  padding: 4,
-                }),
-                clearIndicator: (provided) => ({
-                  ...provided,
-                  padding: 4,
-                }),
-                valueContainer: (provided) => ({
-                  ...provided,
-                  padding: '0 6px',
-                }),
-                input: (provided) => ({
-                  ...provided,
-                  margin: 0,
-                  padding: 0,
-                }),
-              }}
-              formatOptionLabel={option => (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      width: 14,
-                      height: 14,
-                      borderRadius: '50%',
-                      background: option.color,
-                      marginRight: 8,
-                      border: '1px solid #888',
-                    }}
-                  />
-                  {option.label}
-                </div>
-              )}
-              placeholder="Select Stage"
-            />
-          </td>
-          <td>
-            <Dropdown>
-              <DropdownToggle hasIcon={false}>
-                <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
-              </DropdownToggle>
-              <DropdownMenu isAlignmentEnd>
-                <Button
-                  color="link"
-                  className="dropdown-item"
-                  onClick={() => handleView(row)}
-                >
-                  <Icon icon="RemoveRedEye" className="me-2" /> View
-                </Button>
-                <Button
-                  color="link"
-                  className="dropdown-item" 
-                  onClick={() => handleEdit(row, globalIndex)}
-                >
-                  <Icon icon="Edit" className="me-2" /> Update
-                </Button>
-                <Button
-                  color="link"
-                  className="dropdown-item text-danger"
-                  onClick={() => handleDelete(globalIndex)}
-                >
-                  <Icon icon="Delete" className="me-2" /> Delete
-                </Button>
-                {row.dealStages !== "Won" && (
-                  <Button
-                    color="link"
-                    className="dropdown-item"
-                    onClick={() => handleFollowUp(row)}
-                  >
-                    <Icon icon="EventNote" className="me-2" /> Follow Up
-                  </Button>
-                )}
-              </DropdownMenu>
-            </Dropdown>
+              <CardBody className='table-responsive' style={{ overflow: 'visible' }}>
+  <table className="table table-modern table-hover">
+    <thead>
+      <tr>
+        <th>
+          <input
+            type="checkbox"
+            // Implement select all logic if needed
+            // checked={selectAll}
+            // onChange={(e) => handleSelectAll(e.target.checked)}
+          />
+        </th>
+        <th>Deal Name</th>
+        <th>Lead Name</th>
+        <th>Contact Details (Email)</th>
+        <th>Value</th>
+        <th>Close Date</th>
+        <th>Next Follow Up</th>
+        <th>Deal Agent</th>
+        <th>Deal Watcher</th>
+        <th>Deal Stage</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {dataPagination(tableData, currentPage, perPage).length === 0 ? (
+        <tr>
+          <td colSpan={11} className="text-center">
+            No deals found.
           </td>
         </tr>
-      );
-    })
-  ) : (
-    <tr>
-      <td colSpan={12} className="text-center">
-        No data available in table
-      </td>
-    </tr>
-  )}
-</tbody>
-                </table>
-  
-              </CardBody>
-                  <PaginationButtons
-  data={tableData}
-  label="Deals"
-  setCurrentPage={setCurrentPage}
-  currentPage={currentPage}
-  perPage={perPage}
-  setPerPage={setPerPage}
-/>
+      ) : (
+        dataPagination(tableData, currentPage, perPage).map((row, index) => {
+          const globalIndex = (currentPage - 1) * perPage + index;
+          return (
+            <tr key={globalIndex}>
+              <td>
+                <input type="checkbox" />
+              </td>
+              <td>{row.deals}</td>
+              <td>{row.contactName}</td>
+              <td>{row.proposalData?.email || '--'}</td>
+              <td>{row.dealValue ? `${row.dealValue}` : '--'}</td>
+              <td>{row.validTill}</td>
+              <td>
+                {row.followupDate && row.followupTime
+                  ? `${row.followupDate} ${row.followupTime}`
+                  : '--'}
+              </td>
+              <td>{row.dealAgent || '--'}</td>
+              <td>
+                <div className="d-flex align-items-center gap-2">
+                  <img
+                    src="/path/to/avatar.jpg"
+                    alt="Watcher Avatar"
+                    className="rounded-circle"
+                    style={{ width: '30px', height: '30px' }}
+                  />
+                  <span>{row.dealWatcher || '--'}</span>
+                </div>
+              </td>
+              <td>
+  <div className="position-relative" style={{ minWidth: 160 }}>
+    <div
+      className="form-control d-flex align-items-center"
+      style={{ cursor: 'pointer', minHeight: 38 }}
+      onClick={() => setDealStageDropdownOpen(index)}
+    >
+      {row.dealStages ? (
+        <>
+          <span
+            style={{
+              display: 'inline-block',
+              width: 16,
+              height: 16,
+              borderRadius: '50%',
+              background: DEAL_STAGE_OPTIONS.find(s => s.value === row.dealStages)?.color || '#ccc',
+              marginRight: 8,
+            }}
+          />
+          {row.dealStages}
+        </>
+      ) : (
+        <span className="text-muted">Select Stage</span>
+      )}
+      <span className="ms-auto">&#9662;</span>
+    </div>
+    {dealStageDropdownOpen === index && (
+      <ul className="list-group position-absolute w-100" style={{ zIndex: 10, maxHeight: 200, overflowY: 'auto' }}>
+        {DEAL_STAGE_OPTIONS.map(stage => (
+          <li
+            key={stage.value}
+            className="list-group-item d-flex align-items-center"
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              setTableData(prev =>
+                prev.map((r, idx) =>
+                  idx === globalIndex ? { ...r, dealStages: stage.value } : r
+                )
+              );
+              setDealStageDropdownOpen(null);
+            }}
+          >
+            <span
+              style={{
+                display: 'inline-block',
+                width: 16,
+                height: 16,
+                borderRadius: '50%',
+                background: stage.color,
+                marginRight: 8,
+              }}
+            />
+            {stage.label}
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</td>
+              <td>
+                <Dropdown>
+                  <DropdownToggle hasIcon={false}>
+                    <Button icon="MoreVert" color="primary" isLight className="btn-icon" />
+                  </DropdownToggle>
+                  <DropdownMenu isAlignmentEnd>
+                    <Button
+                      color="link"
+                      className="dropdown-item"
+                      onClick={() => handleView(row)}
+                    >
+                      <Icon icon="RemoveRedEye" className="me-2" /> View
+                    </Button>
+                    <Button
+                      color="link"
+                      className="dropdown-item"
+                      onClick={() => handleEdit(row, globalIndex)}
+                    >
+                      <Icon icon="Edit" className="me-2" /> Update
+                    </Button>
+                    <Button
+                      color="link"
+                      className="dropdown-item text-danger"
+                      onClick={() => handleDelete(globalIndex)}
+                    >
+                      <Icon icon="Delete" className="me-2" /> Delete
+                    </Button>
+                    {row.dealStages !== "Won" && (
+                      <Button
+                        color="link"
+                        className="dropdown-item"
+                        onClick={() => handleFollowUp(row)}
+                      >
+                        <Icon icon="EventNote" className="me-2" /> Follow Up
+                      </Button>
+                    )}
+                  </DropdownMenu>
+                </Dropdown>
+              </td>
+            </tr>
+          );
+        })
+      )}
+    </tbody>
+  </table>
+ 
+</CardBody>
+ <PaginationButtons
+    data={tableData}
+    label="Deals"
+    setCurrentPage={setCurrentPage}
+    currentPage={currentPage}
+    perPage={perPage}
+    setPerPage={setPerPage}
+  />
             </Card>
           </div>
         </div>

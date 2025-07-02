@@ -992,6 +992,64 @@
           "amount": 0
         }
       ]
+    },
+    {
+      "id": "f68e",
+      "leadContacts": "Contact1",
+      "deal": "bn,m",
+      "validTill": "2025-07-17",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Marketing Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "",
+      "products": "",
+      "dealWatcher": "",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
+    },
+    {
+      "id": "1ce5",
+      "leadContacts": "Contact1",
+      "deal": "cfv",
+      "validTill": "2025-07-02",
+      "currency": "INR (₹)",
+      "calculateTax": "After Discount",
+      "description": "",
+      "requireSignature": false,
+      "discount": 0,
+      "discountType": "%",
+      "dealValue": 0,
+      "pipeline": "Sales Pipeline",
+      "dealStages": "Generated",
+      "dealCategory": "",
+      "dealAgent": "Agent2",
+      "products": "",
+      "dealWatcher": "yolo",
+      "email": "",
+      "items": [
+        {
+          "description": "",
+          "quantity": 1,
+          "unitPrice": 0,
+          "tax": "",
+          "amount": 0
+        }
+      ]
     }
   ]
 }

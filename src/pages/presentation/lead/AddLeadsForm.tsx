@@ -179,6 +179,17 @@ const AddLeadsForm: FC<IAddLeadsModalProps> = ({
 		}
 	}, [isOpen]);
 
+	const [dealAgents, setDealAgents] = useState<{ employeeId: string; employeeName: string }[]>([]);
+
+	useEffect(() => {
+		fetch('http://localhost:4000/AddEmployee')
+			.then(res => res.json())
+			.then(data => {
+				setDealAgents(Array.isArray(data) ? data : (data.AddEmployee || []));
+			})
+			.catch(() => setDealAgents([]));
+	}, []);
+
 	if (!isOpen) return null;
 	// Example static options
 	const agentOptions = ['John Doe', 'Jane Smith', 'Amit Verma'];

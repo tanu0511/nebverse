@@ -35,6 +35,7 @@ const Contract = () => {
 	const [isPublicModalOpen, setIsPublicModalOpen] = useState(false);
 	const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
 	const [editContract, setEditContract] = useState<any | null>(null);
+	const [selectedContract, setSelectedContract] = useState<any | null>(null);
 
 
 	
@@ -90,11 +91,26 @@ const Contract = () => {
 
 	function handleDeleteContract(id: number) {
 		setTableData((prevData) => prevData.filter((contract) => contract.id !== id));
-		alert('Contract deleted successfully!');
+		// alert('Contract deleted successfully!');
 	}
 
 	const handleSignatureSave = (signatureDataUrl: string) => {
-		console.log('Saved signature:', signatureDataUrl);
+		if (!selectedContract) return;
+		setTableData(prev =>
+			prev.map(contract =>
+				contract.id === selectedContract.id
+					? {
+							...contract,
+							signature: {
+								image: signatureDataUrl,
+								date: new Date().toISOString(),
+								signer: "nisha", // Replace with actual user if needed
+							},
+						}
+					: contract
+			)
+		);
+		setSelectedContract(null);
 	};
 
 	function togglePublicModal(): void {
@@ -140,13 +156,17 @@ const Contract = () => {
 						Contract Template
 					</Button>
 
-					<Button
-						icon='Export'
-						color='primary'
-						isLight
-						onClick={() => setContractModalStatus(true)}>
-						Export
-					</Button>
+					 <Button
+            color="info"
+            icon="CloudDownload"
+            isLight
+            tag="a"
+            to="/somefile.txt"
+            target="_blank"
+            download
+          >
+            Export
+          </Button>
 				</SubHeaderRight>
 			</SubHeader>
 
@@ -202,16 +222,12 @@ const Contract = () => {
 																	<Button
 																		color='link'
 																		className='dropdown-item'
-																		onClick={() =>
-																			setOpenSignatureModal(
-																				true,
-																			)
-																		}>
-																		<Icon
-																			icon='Check'
-																			className='me-2'
-																		/>{' '}
-																		Company Signature
+																		onClick={() => {
+																			setSelectedContract(i); // set the contract to sign
+																			setOpenSignatureModal(true);
+																		}}
+																	>
+																		<Icon icon='Check' className='me-2' /> Company Signature
 																	</Button>
 
 																	<Button

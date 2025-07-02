@@ -1,179 +1,155 @@
 import React, { useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import Invoices from '../invoices/Invoices'
-import ProjectPage from '../project/ProjectPage'; // Import Projects component if needed
-import { ProjectsProvider } from '../project/ProjectsContext'; // Adjust path as needed
-import CreditNotePage from '../Finance/CreditNote';
-import Payment from '../payment/Payment';
-import TicketPage from '../ticket/TicketPage';
-import Order from '../orders/Order';
-import ContactPage from '../contact/ContactPage'; // Import ContactPage if needed
+import { useNavigate, useLocation } from 'react-router-dom';
+import Button from '../../../components/bootstrap/Button';
 import Document from '../document/Document';
-import NotePage from '../document/NotePage';
-// Define the Customer interface
-interface Customer {
-    salutation: string;
-    name: string;
-    email: string;
-    country: string;
-    mobile: string;
-    createdAt: string;
-    gender: string;
-    language: string;
-    clientCategory: string;
-    clientSubCategory: string;
-    loginAllowed: boolean;
-    status: string;
-    electronicAddress: string;
-    gstNumber?: string;
-    phoneNumber?: string;
-    city?: string;
-    state?: string;
-    postalCode?: string;
-    companyName?: string;
-    website?: string;
-    taxName?: string;
-    receiveEmailNotifications?: boolean;
-    addedBy?: string;
-    companyAddress?: string;
-    shippingAddress?: string;
-    note?: string;
-    additionalField?: any;
-}
-
+import Discussion from '../document/Discussion';
+import ContractRenew from './ContractRenew';
 const TABS = [
-    'Profile', 'Projects', 'Invoices', 'Estimates', 'Credit Note',
-    'Payments', 'Contacts', 'Documents', 'Notes', 'Tickets', 'Orders',
+    'Summary', 'Discussion', 'Contract Files', 'Contract Renewal History', 
 ];
 
 const ContractViewPage: React.FC = () => {
-    const { email } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
     const [activeTab, setActiveTab] = useState('Profile');
-
-    // Fetch customers from localStorage (or replace with your data source)
-    const customers: Customer[] = JSON.parse(localStorage.getItem('customers') || '[]');
-    const customer = customers.find((c) => c.email === email);
     const contract = location.state?.contract;
 
-    if (!customer) {
+    if (!contract) {
         return (
             <div className="container mt-4">
                 <h4>No contract data found.</h4>
-                <button className="btn btn-primary" onClick={() => navigate(-1)}>Back</button>
+                <Button color="primary" onClick={() => navigate(-1)}>Back</Button>
             </div>
         );
     }
-                                                                                                  
-    
-    
+
     return (
         <div className="container mt-4">
-            <button className="btn btn-primary" onClick={() => navigate(-1)}>Back</button>
-            <h2 className="mb-4">Client Details</h2>
+            <h2 className="mb-4">Contract Details</h2>
+            {/* Tab Navigation */}
+            <ul className="nav nav-tabs mb-4">
+                {TABS.map((tab) => (
+                    <li className="nav-item" key={tab}>
+                        <button
+                            className={`nav-link${activeTab === tab ? ' active' : ''}`}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => setActiveTab(tab)}
+                        >
+                            {tab}
+                        </button>
+                    </li>
+                ))}
+            </ul>
 
-            {customer ? (
-                <>
-                    {/* Tab Navigation */}
-                    <ul className="nav nav-tabs mb-4">
-                        {TABS.map((tab) => (
-                            <li className="nav-item" key={tab}>
-                                <button
-                                    className={`nav-link${activeTab === tab ? ' active' : ''}`}
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => setActiveTab(tab)}
-                                >
-                                    {tab}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-
-                    {/* Tab Content */}
-                    {activeTab === 'Profile' && (
-                        <div className="card">
-                            <div className="card-header fw-bold">Profile Info</div>
-                            <div className="card-body">
-                                {[
-                                    ['Full Name', `${customer.salutation} ${customer.name}`],
-                                    ['Email', customer.email],
-                                    ['Company Name', customer.companyName],
-                                    ['Mobile', customer.mobile],
-                                    ['Gender', customer.gender ? `♂ ${customer.gender}` : '--'],
-                                    ['Office Phone Number', customer.phoneNumber],
-                                    ['Official Website', customer.website],
-                                    ['GST/VAT Number', customer.gstNumber],
-                                    ['Address', customer.companyAddress],
-                                    ['State', customer.state],
-                                    ['City', customer.city],
-                                    ['Postal Code', customer.postalCode],
-                                    ['Status', customer.status],
-                                    ['Created At', customer.createdAt],
-                                    ['Country', customer.country],
-                                    ['Electronic Address', customer.electronicAddress],
-                                    ['Note', customer.note],
-                                ].map(([label, value], index) => (
-                                    <div className="row mb-2" key={index}>
-                                        <div className="col-5 text-muted">{label}</div>
-                                        <div className="col-7">{value || '--'}</div>
-                                    </div>
-                                ))}
+            {/* Profile Tab Styled Like Screenshot */}
+            {activeTab === 'Profile' && (
+                <div className="card shadow-sm">
+                    <div className="card-body">
+                        <div className="row">
+                            {/* Left: Logo and Client Info */}
+                            <div className="col-md-8 d-flex flex-column align-items-start">
+                                <img
+                                    src={contract.logoUrl || "/logo192.png"}
+                                    alt="Logo"
+                                    style={{ width: 80, borderRadius: '50%', marginBottom: 16 }}
+                                />
+                                <div className="mb-2">
+                                    <div>{contract.firstName || 'nisha'}</div>
+                                    <div>{contract.lastName || 'rana'}</div>
+                                    <div>{contract.phone || contract.clientPhone || '8770099047'}</div>
+                                </div>
+                                <div className="mt-3 mb-2">
+                                    <div className="text-muted">Client</div>
+                                    <div>{contract.clientName || contract.client || '--'}</div>
+                                    <div>{contract.companyName || contract.clientCompany || '--'}</div>
+                                </div>
+                                <div className="mt-4">
+                                    <div className="fw-bold mb-1">Subject</div>
+                                    <div>{contract.subject || '--'}</div>
+                                </div>
+                                <div className="mt-3">
+                                    <div className="fw-bold mb-1">Notes</div>
+                                    <div>{contract.notes || '--'}</div>
+                                </div>
+                                <div className="mt-3">
+                                    <div className="fw-bold mb-1">Description</div>
+                                    <div>{contract.description || '--'}</div>
+                                </div>
+                            </div>
+                            {/* Right: Contract Info Table */}
+                            <div className="col-md-4 d-flex flex-column align-items-end">
+                                <h3 className="fw-bold mb-4">CONTRACT</h3>
+                                <table className="table table-bordered w-auto">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Contract Number</strong></td>
+                                            <td>{contract.contractNumber || '--'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Start Date</strong></td>
+                                            <td>
+                                                {contract.startDate
+                                                    ? new Date(contract.startDate).toDateString()
+                                                    : '--'}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>End Date</strong></td>
+                                            <td>
+                                                {contract.endDate
+                                                    ? new Date(contract.endDate).toDateString()
+                                                    : '--'}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Contract Type</strong></td>
+                                            <td>{contract.contractType || '--'}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                    )}
-                    {activeTab === 'Projects' && (
-    <ProjectsProvider>
-        <ProjectPage />
-    </ProjectsProvider>
-)}
-                    {activeTab === 'Invoices' && (
-                        <>
-                            {/* <Invoice customer={customer} /> // Uncomment and use your actual Invoice component */}
-                            <Invoices/>
-                          
-                        </>
-                    )}
-                      {activeTab === 'Credit Note' && (
-                        <CreditNotePage/>
-                      )}
-
-                    {activeTab === 'Payments' && (
-                        <Payment/>
-                    )}
-                    {activeTab === 'Tickets' && (
-                        <TicketPage/>
-                    )}
-                   {
-                    activeTab === 'Orders' && (
-                        <Order/>
-                   )}
-                   {
-                    activeTab === 'Contacts' &&(
-                        <ContactPage/>
-                    )
-                   }
-                  {
-                    activeTab === 'Documents' &&(
-                        <Document/>
-                    )
-                  }
-                  {
-                    activeTab === 'Notes' &&(
-                        <NotePage/>
-                    )
-                  }
-                    {/* Add similar blocks for other tabs if needed */}
-                </>
-            ) : (
-                <p>No customer details available.</p>
+                        {/* Signature Section */}
+                        {contract.signature && (
+                            <div className="mt-4">
+                                <h5>Company Signature</h5>
+                                <img
+                                    src={contract.signature.image}
+                                    alt="Signature"
+                                    style={{ width: 150, border: '1px solid #eee', background: '#fff', display: 'block' }}
+                                />
+                                <div className="text-muted mt-2">
+                                    Date: {contract.signature.date ? new Date(contract.signature.date).toLocaleString() : '--'}
+                                </div>
+                                <div className="text-muted">
+                                    Sign By: {contract.signature.signer || '--'}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
             )}
 
-            {/* <div className="mt-4">
-                <Button color="secondary"isOutline onClick={() => navigate(-1)}>
+            {/* Other Tabs */}
+            {activeTab === 'Contract Files' && (
+                  <Document/>
+            )}
+            {
+                activeTab=== 'Discussion' && (
+                 <Discussion />
+                )
+            }
+            {
+                activeTab === 'Contract Renewal History' && (
+                    <ContractRenew/>
+                )
+            }
+
+            <div className="mt-4">
+                <Button color="secondary" isOutline onClick={() => navigate(-1)}>
                     Back
                 </Button>
-            </div> */}
+            </div>
         </div>
     );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react/function-component-definition */
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 

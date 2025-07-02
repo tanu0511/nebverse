@@ -1,115 +1,155 @@
-// /* eslint-disable @typescript-eslint/no-unused-vars */
-// import React, { useMemo, useState } from 'react';
-// import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar';
-// import dayjs from 'dayjs';
-// import 'react-big-calendar/lib/css/react-big-calendar.css';
-// import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
-// import Button from '../../../components/bootstrap/Button';
-// import { useNavigate } from 'react-router-dom';
-// import ProjectEditModal from './ProjectEditModal';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useMemo, useState } from 'react';
+import { Calendar, dayjsLocalizer, Views, View } from 'react-big-calendar';
+import dayjs from 'dayjs';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
+import Button, { ButtonGroup } from '../../../components/bootstrap/Button';
+import { useNavigate } from 'react-router-dom';
+import ProjectEditModal from './ProjectEditModal';
+import events from '../../../common/data/events';
 
-// const localizer = dayjsLocalizer(dayjs);
+const localizer = dayjsLocalizer(dayjs);
 
+function getRandomColor() {
+    // Generates a random pastel color
+    const hue = Math.floor(Math.random() * 360);
+    return `hsl(${hue}, 70%, 80%)`;
+}
 
+const getEmployeeColors = (events: any[]) => {
+    let colorMap: { [employee: string]: string } = {};
+    try {
+        colorMap = JSON.parse(localStorage.getItem('employeeColorMap') || '{}');
+    } catch {
+        colorMap = {};
+    }
+    let changed = false;
+    events.forEach(event => {
+        if (event.employee && !colorMap[event.employee]) {
+            colorMap[event.employee] = getRandomColor();
+            changed = true;
+        }
+    });
+    if (changed) {
+        localStorage.setItem('employeeColorMap', JSON.stringify(colorMap));
+    }
+    return colorMap;
+};
 
-// const getEmployeeColors = (events: any[]) => {
-//     let colorMap: { [employee: string]: string } = {};
-//     try {
-//         colorMap = JSON.parse(localStorage.getItem('employeeColorMap') || '{}');
-//     } catch {
-//         colorMap = {};
-//     }
-//     let changed = false;
-//     events.forEach(event => {
-//         if (event.employee && !colorMap[event.employee]) {
-//             colorMap[event.employee] = getRandomColor();
-//             changed = true;
-//         }
-//     });
-//     if (changed) {
-//         localStorage.setItem('employeeColorMap', JSON.stringify(colorMap));
-//     }
-//     return colorMap;
-// };
+interface CalendarEvent {
+    title: string;
+    employee: string;
+    start: Date;
+    end: Date;
+    allDay: boolean;
+}
 
-// interface CalendarEvent {
-//     title: string;
-//     employee: string;
-//     start: Date;
-//     end: Date;
-//     allDay: boolean;
-// }
+const CalenderPage: React.FC = () => {
+    const navigate = useNavigate();
+    const [currentView, setCurrentView] = useState<View>(Views.MONTH);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<any>(null);
+    const [columns] = useState<any[]>([]); // Add your columns if needed
 
-// const CalenderPage: React.FC = () => {
+    // Ensure events is an array
+    const calendarEvents: CalendarEvent[] = Array.isArray(events)
+        ? events.map((event: any) => ({
+            title: event.title || '',
+            employee: event.employee || '',
+            start: event.start ? new Date(event.start) : new Date(),
+            end: event.end ? new Date(event.end) : new Date(),
+            allDay: event.allDay ?? false,
+        }))
+        : [];
 
-//     // Read table data from localStorage and convert to calendar events
+    const employeeColors = useMemo(() => getEmployeeColors(calendarEvents), [calendarEvents]);
 
+    const handleAddTask = () => {
+        setSelectedTask(null);
+        setIsModalOpen(true);
+    };
 
-//     const employeeColors = useMemo(() => getEmployeeColors(events), [events]);
-//     const [currentView, setCurrentView] = useState<string>(Views.MONTH); // Track the current view
-//     const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
-//     const [selectedTask, setSelectedTask] = useState<any>(null); // State to track the selected task
+    const handleModalSubmit = (data: any) => {
+        // Implement your logic to add/update event
+        setIsModalOpen(false);
+    };
 
+    return (
+        <div className="container">
+            <SubHeader>
+                <SubHeaderLeft>
+                    <Button
+                        icon="Add"
+                        color="primary"
+                        isLight
+                        className="btn-icon-only"
+                        onClick={handleAddTask}
+                    >
+                        Add Tasks
+                    </Button>
+                </SubHeaderLeft>
+                <SubHeaderRight>
+                    <ButtonGroup>
+                    <Button
+                        icon="list"
+                        color="info"
+                    
+                        isLight
+                        onClick={() => navigate('/work/task')}
+                    />
+                    <Button
+                       icon="Assessment"
+                                color="info"
+                                isLight
+                                onClick={() => navigate('/task-management')}
+                    />
+                    <Button
+                        icon="CalendarToday"
+                        color="info"
+                        isLight
+                        onClick={() => navigate('/calendar')}
+                    />
+                    <Button
+                        icon="AssignmentLate"
+                        color="info"
+                        isLight
+                    />
+                    </ButtonGroup>
+                </SubHeaderRight>
+                
+            </SubHeader>
 
+            <div className="bg-white rounded shadow p-3 mt-3">
+                <Calendar
+                    localizer={localizer}
+                    events={calendarEvents}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={{ height: 600 }}
+                    views={['month', 'week', 'day']}
+                    view={currentView}
+                    onView={setCurrentView}
+                    eventPropGetter={event => ({
+                        style: {
+                            backgroundColor: employeeColors[event.employee] || '#b3c6ff',
+                            color: '#222',
+                        }
+                    })}
+                />
+            </div>
 
-   
+            <ProjectEditModal
+                isOpen={isModalOpen}
+                setIsOpen={setIsModalOpen}
+                onSubmit={handleModalSubmit}
+                defaultValues={selectedTask || {}}
+                defaultStatus={selectedTask?.status || 'Pending'}
+                columns={columns}
+            />
+        </div>
+    );
+};
 
-//     return (
-//         <div className="container mt-4">
-//             <SubHeader>
-//                 <SubHeaderLeft>
-//                     <Button
-//                         icon="Add"
-//                         color="primary"
-//                         isLight
-//                         className="btn-icon-only"
-//                         onClick={handleAddTask}
-//                     >
-//                         Add Tasks
-//                     </Button>
-//                 </SubHeaderLeft>
-//                 <SubHeaderRight>
-//                     <Button
-//                         icon="list"
-//                         color="primary"
-//                         isLight
-//                         className="me-2"
-//                         onClick={() => navigate('/hr-dashboard')}
-//                     />
-//                     <Button
-//                         icon="Assessment"
-//                         color="primary"
-//                         isLight
-//                         className="me-2"
-//                         onClick={() => navigate('/TaskManagementPage')}
-//                     />
-//                     <Button
-//                         icon="CalendarToday"
-//                         color="primary"
-//                         isLight
-//                         className="me-2"
-//                         onClick={() => navigate('/calendar')}
-//                     />
-//                     <Button
-//                         icon="AssignmentLate"
-//                         color="primary"
-//                         isLight
-//                         className="me-2"
-//                         onClick={() => navigate('/some-other-page')}
-//                     />
-//                 </SubHeaderRight>
-//             </SubHeader>
-          
-//             {/* <ProjectEditModal
-//                 isOpen={isModalOpen}
-//                 setIsOpen={setIsModalOpen}
-//                 onSubmit={handleModalSubmit}
-//                 defaultValues={selectedTask || {}}
-//                 defaultStatus={selectedTask?.status || 'Pending'}
-//                 columns={columns}
-//             /> */}
-//         </div>
-//     );
-// };
-
-// export default CalenderPage;
+export default CalenderPage;

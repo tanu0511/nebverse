@@ -4,6 +4,7 @@ import { FC, useEffect, useState } from 'react';
 import Card, {
     CardBody,
 } from '../../../components/bootstrap/Card';
+import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import Button from '../../../components/bootstrap/Button';
 import Dropdown, {
     DropdownItem,
@@ -22,6 +23,9 @@ import SubHeader, {
 } from '../../../layout/SubHeader/SubHeader';
 import { useNavigate } from 'react-router-dom';
 import TaskDetailsModal from './TaskDetailsModal';
+import { ButtonGroup } from '../../../components/bootstrap/Button';
+import Page from '../../../layout/Page/Page';
+import PaginationButtons, { dataPagination } from '../../../components/PaginationButtons'; // Import the PaginationButtons component
 interface ICommonUpcomingEventsProps {
     isFluid?: boolean;
 }
@@ -87,6 +91,8 @@ const CommonUpcomingEvents: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
     const [defaultValues, setDefaultValues] = useState(null);
     const [isPinModalOpen, setIsPinModalOpen] = useState(false); // Track if the pin confirmation modal is open
     const [pinningIndex, setPinningIndex] = useState<number | null>(null); // Track the row being pinned
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [perPage, setPerPage] = useState<number>(10); // or PER_COUNT['10'] if you use that constant
 
     const handlePinTask = (index: number) => {
         setTableData((prevData) => {
@@ -158,9 +164,8 @@ const CommonUpcomingEvents: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
     // const defaultStatus = { name: 'Pending', color: 'warning' }; // Define defaultStatus
 
     return (
-        <>
-            <div className="container-fluid p-0">
-                <Card className="w-100" style={{ borderRadius: 20, boxShadow: '0 2px 16px #0001' }}>
+        
+        <PageWrapper>
                     <SubHeader>
                         <SubHeaderLeft>
                             <Button
@@ -188,37 +193,40 @@ const CommonUpcomingEvents: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
 
                         </SubHeaderLeft>
                         <SubHeaderRight>
+                            <ButtonGroup>
+
+                        
                             <Button
                                 icon="List"
-                                color="primary"
+                                color="info"
                                 isLight
-                                className="me-2"
-                            />
+                                                        />
                             <Button
                                 icon="Assessment"
-                                color="primary"
+                                color="info"
                                 isLight
-                                className="me-2"
                                 onClick={() => navigate('/task-management')}
                             />
                             <Button
                                 icon="CalendarToday"
-                                color="primary"
+                                color="info"
                                 isLight
-                                className="me-2"
                                 onClick={() => navigate('/calendar')}
                             />
                             <Button
                                 icon="AssignmentLate"
-                                color="primary"
+                                color="info"
                                 isLight
-                                className="me-2"
                                 onClick={() => navigate(`${demoPagesMenu.listPages.subMenu.listBoxed.path}`)}
                             />
+                                </ButtonGroup>
                         </SubHeaderRight>
                     </SubHeader>
-
-                    <CardBody isScrollable className='table-responsive' style={{ overflow: 'visible' }}>
+<Page>         
+    <div className='row h-100'>
+        <div className='col-12'>
+            <Card stretch>
+               <CardBody isScrollable className='table-responsive' style={{ overflow: 'visible' }}>
                         <table className="table table-modern">
                             <thead>
                                 <tr>
@@ -236,8 +244,8 @@ const CommonUpcomingEvents: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
 
                             </thead>
                             <tbody>
-                                {tableData.length > 0 ? (
-                                    tableData.map((task, index) => (
+                                {dataPagination(tableData, currentPage, perPage).length > 0 ? (
+    dataPagination(tableData, currentPage, perPage).map((task, index) => (
                                         <tr key={index}>
                                             <td>--</td>
                                             <td>
@@ -381,9 +389,21 @@ const CommonUpcomingEvents: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
                                 )}
                             </tbody>
                         </table>
+                        
                     </CardBody>
-                </Card>
-            </div>
+                      <PaginationButtons
+    data={tableData}
+    label="Tasks"
+    setCurrentPage={setCurrentPage}
+    currentPage={currentPage}
+    perPage={perPage}
+    setPerPage={setPerPage}
+            />
+                    </Card>
+                    </div>
+    </div>
+              </Page>
+
             <ProjectEditModal
                 isOpen={isModalOpen}
                 setIsOpen={setIsModalOpen}
@@ -413,8 +433,9 @@ const CommonUpcomingEvents: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+          
 
-        </>
+        </PageWrapper>
     );
 };
 

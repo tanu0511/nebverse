@@ -156,9 +156,9 @@ const ContractModal: FC<IContractModalPropsExtended & { onSave: () => void }> = 
                         </FormGroup>
 
                         <FormGroup id="contractType" label="Contract Type *" className="col-md-4">
-                            <div className="d-flex align-items-center">
+                            <div className="input-group">
                                 <select
-                                    className="form-select me-2"
+                                    className="form-select"
                                     name="contractType"
                                     value={formData.contractType}
                                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -176,7 +176,13 @@ const ContractModal: FC<IContractModalPropsExtended & { onSave: () => void }> = 
                                         </option>
                                     ))}
                                 </select>
-                                <Button color="primary" onClick={() => setIsContractTypeModalOpen(true)}>
+                                {/* <Button type="button" color="light"   className="input-group-text" onClick={() => setIsContractTypeModalOpen(true)}>
+                                    Add
+                                </Button> */}
+                                <Button type="button"
+                                  color="light"
+                                  className="input-group-text"
+                                >
                                     Add
                                 </Button>
                             </div>
@@ -220,7 +226,7 @@ const ContractModal: FC<IContractModalPropsExtended & { onSave: () => void }> = 
                     <Button icon="Check" color="primary" className="me-3" onClick={onSave}>
                         Save
                     </Button>
-                    <Button color="link" onClick={() => setIsOpen(false)}>
+                    <Button color="light" onClick={() => setIsOpen(false)}>
                         Cancel
                     </Button>
                 </ModalFooter>

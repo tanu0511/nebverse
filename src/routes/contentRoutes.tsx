@@ -20,7 +20,8 @@ import LeadViewPage from '../pages/presentation/lead/LeadViewPage';
 import ContractViewPage from '../pages/presentation/contract/ContractViewPage';
 import DealViewPage from '../pages/presentation/deals/DealViewPage'; // adjust path as needed
 import ViewEmployeePage from '../pages/presentation/hr/ViewEmployeePage';
-
+import TaskManagementPage from '../pages/presentation/task/TaskMangmentPage';
+import CalenderPage from '../pages/presentation/task/CalenderPage';
 // import EmloyeeViewPage from '../pages/presentation/hr/EmployeeViewPage';
 
 // import TaskManagementPage from '../pages/presentation/task/TaskMangmentPage';
@@ -147,7 +148,7 @@ const APP = {
 		TIMESHEET: lazy(() => import('../pages/presentation/timesheet/TimeSheet')),
 		CONTRACT: lazy(() => import('../pages/presentation/contract/Contract')),
 		PROJECTROADMAP: lazy(()=>import('../pages/presentation/project/ProjectRoad')),
-        // TASKPAGE : lazy(()=>import('../pages/presentation/task/CommanUpcomingEvents')),
+        TASKPAGE : lazy(()=>import('../pages/presentation/task/CommanUpcomingEvents')),
 		// TASKMANGMENTPAGE: lazy(()=>import('../pages/presentation/task/TaskMangmentPage')),
 		// CALENDER: lazy(()=>import('../pages/presentation/task/CalenderPage')),
 		
@@ -481,14 +482,22 @@ const presentation: RouteProps[] = [
 		path: '/project-template',
 		element: <ProjectTemplate />, // Replace with the actual component
 	},
-	// {
-    //   path: dashboardPagesMenu.Work.subMenu.Task.path,
-	//   element: <APP.WORK.TASKPAGE/>
-	// },
+	{
+      path: dashboardPagesMenu.Work.subMenu.Task.path,
+	  element: <APP.WORK.TASKPAGE/>
+	},
 	
 	{
 		path: dashboardPagesMenu.Work.subMenu.Contract.path,
 		element: <APP.WORK.CONTRACT />,
+	},
+	{
+		path:'/task-management',
+		element:<TaskManagementPage/>
+	},
+	{
+        path:'calendar',
+		element:<CalenderPage/>
 	},
 	// {
     //    path:'/calendar',

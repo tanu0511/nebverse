@@ -14,6 +14,7 @@ import TimesheetLifecycleModal from './TimesheetLifecycleModal';
 import TimesheetSummaryPage from './TimeSheetSummryPage';
 import CalendarModal from './CalendarModal';
 import WeeklyTimesheetModal from './WeeklyTimesheetModal';
+import { ButtonGroup } from '../../../components/bootstrap/Button';
 
 const defaultForm = {
     project: '',
@@ -168,12 +169,15 @@ const TimeSheet = () => {
                     </Button>
                     <Button color="info" isLight className="px-4">
                         <Icon icon="CloudDownload" className="me-2" />Export
+                        
                     </Button>
-                    <Button color="primary" icon="List" isLight />
-                    <Button color="primary" icon="CalendarViewWeek" isLight onClick={() => setShowWeeklyTimesheet(true)} />
-                    <Button color="primary" icon="CalendarToday" isLight onClick={() => setShowCalendar(true)} />
-                    <Button color="primary" icon="Person" isLight onClick={() => setShowSummary(true)} />
-                    <Button color="primary" icon="Help" isLight onClick={() => setShowLifecycle(true)} />
+                    <ButtonGroup>
+                    <Button color="info" icon="List" isLight />
+                    <Button color="info" icon="CalendarViewWeek" isLight onClick={() => setShowWeeklyTimesheet(true)} />
+                    <Button color="info" icon="CalendarToday" isLight onClick={() => setShowCalendar(true)} />
+                    <Button color="info" icon="Person" isLight onClick={() => setShowSummary(true)} />
+                    <Button color="info" icon="Help" isLight onClick={() => setShowLifecycle(true)} />
+                </ButtonGroup>
                 </SubHeaderRight>
             </SubHeader>
             <Page container="fluid">

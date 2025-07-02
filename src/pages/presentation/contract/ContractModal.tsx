@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { FC, useEffect, useState } from 'react';
 import Modal, {
     ModalBody,
@@ -12,6 +13,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Clientpage from './Clientpage';
 import ContractType from './ContractType';
+import Select from '../../../components/bootstrap/forms/Select';
 
 interface IContractModalProps {
     id: string;
@@ -201,21 +203,21 @@ const ContractModal: FC<IContractModalProps> = ({ id, isOpen, setIsOpen, handleS
                         </FormGroup>
 
                         <FormGroup id="contractType" label="Contract Type *" className="col-md-4">
-                            <div className="d-flex align-items-center">
-                                <select
-                                    className="form-select me-2"
+                            <div className="input-group">
+                                <Select
+                                    className="form-select"
                                     name="contractType"
                                     value={formData.contractType}
-                                    onChange={handleChange}
-                                >
+                                    onChange={handleChange} ariaLabel="Contract-Type"  
+                                                                  >
                                     <option value="">-- Select Contract Type --</option>
                                     {contractTypes.map((type) => (
                                         <option key={type.id} value={type.name}>
                                             {type.name}
                                         </option>
                                     ))}
-                                </select>
-                                <Button color="primary" onClick={() => setIsContractTypeModalOpen(true)}>
+                                </Select>
+                                <Button type='button'className='input-group-text' color="light" onClick={() => setIsContractTypeModalOpen(true)}>
                                     Add
                                 </Button>
                             </div>
@@ -251,9 +253,9 @@ const ContractModal: FC<IContractModalProps> = ({ id, isOpen, setIsOpen, handleS
 
                     <div className="row g-4">
                         <FormGroup id="client" label="Client *" className="col-md-4 mb-3">
-                            <div className="d-flex align-items-center">
+                            <div className="input-group">
                                 <select
-                                    className="form-select me-2"
+                                    className="form-select"
                                     name="client"
                                     value={formData.client}
                                     onChange={handleChange}
@@ -265,7 +267,7 @@ const ContractModal: FC<IContractModalProps> = ({ id, isOpen, setIsOpen, handleS
                                         </option>
                                     ))}
                                 </select>
-                                <Button color="primary" onClick={() => setIsClientModalOpen(true)}>
+                                <Button color="light" className='input-group-text' onClick={() => setIsClientModalOpen(true)}>
                                     Add
                                 </Button>
                             </div>
@@ -349,10 +351,31 @@ const ContractModal: FC<IContractModalProps> = ({ id, isOpen, setIsOpen, handleS
                 </ModalBody>
 
                 <ModalFooter className="px-4 pb-4">
-                    <Button icon="Check" color="primary" className="me-3" onClick={() => handleSave(formData)}>
-                        Save
-                    </Button>
-                    <Button color="secondary" onClick={() => setIsOpen(false)}>
+                    <Button
+  icon="Check"
+  color="primary"
+  className="me-3"
+  onClick={async () => {
+    try {
+      const response = await fetch('http://localhost:4002/AddContract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        handleSave({ ...formData, id: Date.now() });
+        setIsOpen(false);
+      } else {
+        alert('Failed to save contract');
+      }
+    } catch (error) {
+      alert('Error saving contract');
+    }
+  }}
+>
+  Save
+</Button>
+                    <Button color="light" onClick={() => setIsOpen(false)}>
                         Cancel
                     </Button>
                 </ModalFooter>

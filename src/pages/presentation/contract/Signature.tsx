@@ -175,6 +175,7 @@ const Signature: React.FC<SignatureProps> = ({ open, onClose, onSign }) => {
                   />
                 </div>
                 <div className="d-flex gap-2 mb-3">
+                                  <button type="button" className="btn btn-warning" onClick={handleUndo}>Undo</button>
                   <button type="button" className="btn btn-secondary" onClick={handleClear}>Clear</button>
                   <label className="btn btn-secondary mb-0">
                     Upload Signature
@@ -183,7 +184,7 @@ const Signature: React.FC<SignatureProps> = ({ open, onClose, onSign }) => {
                 </div>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-warning" onClick={handleUndo}>Undo</button>
+
                 <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
                 <button type="button" className="btn btn-primary" onClick={handleSave}>Sign</button>
               </div>

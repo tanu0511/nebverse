@@ -217,7 +217,7 @@ const CommonUpcomingEvents: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
                                 icon="AssignmentLate"
                                 color="info"
                                 isLight
-                                onClick={() => navigate(`${demoPagesMenu.listPages.subMenu.listBoxed.path}`)}
+                                onClick={() => navigate(`/waiting`)}
                             />
                                 </ButtonGroup>
                         </SubHeaderRight>

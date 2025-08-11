@@ -26,7 +26,7 @@ const CommonDashboardDesignTeam = () => {
 			<CardHeader className='bg-transparent'>
 				<CardLabel>
 					<CardTitle tag='div' className='h5'>
-						Projects
+						Active Companies
 					</CardTitle>
 				</CardLabel>
 				<CardActions>

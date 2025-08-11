@@ -25,9 +25,9 @@ import {ProjectDataProvider} from '../pages/presentation/project/ProjectDataCont
 import ViewPageWrapper from '../pages/presentation/project/ViewPageWrapper';
 // import EmloyeeViewPage from '../pages/presentation/hr/EmployeeViewPage';
 import CalenderPage from '../pages/presentation/task/CalenderPage';
-
+import WaitingPage from '../pages/presentation/task/WaitingPage';
 import TaskManagementPage from '../pages/presentation/task/TaskMangmentPage';
-
+import EstimateTemplate from '../pages/presentation/estimate/EstimateTemplate';
 
 // import Task from '../pages/presentation/task/Task';
 
@@ -56,8 +56,11 @@ const FINANCE = {
 	INVOICES: lazy(() => import('../pages/presentation/invoices/Invoices')),
 	EXPENSES: lazy(() => import('../pages/presentation/expenses/Expenses')),
 	RECURRINGEXPENSES: lazy(() => import('../pages/presentation/expenses/RecurringExpense')),
-	ESTIMATES: lazy(() => import('../pages/presentation/Finance/Estimates')),
+	ESTIMATES: lazy(() => import('../pages/presentation/estimate/EstimatePage')),
 	PAYMENT: lazy(() => import('../pages/presentation/payment/Payment'))
+};
+const SUPERADMIN={
+	SUPERADMINDASHBOARD: lazy(() => import('../pages/presentation/superadmin/Superadmin')),
 };
 const NOTICEBOARD = {
 	NoticeBoard: lazy(() => import('../pages/presentation/NoticeBoard/NoticeBoard')),
@@ -202,6 +205,9 @@ const APP = {
        TICKET: lazy(()=>import('../pages/presentation/ticket/TicketPage')),
 	//    TICKETPREVIEWPAGE: lazy(()=>import('../pages/presentation/ticket/TicketPreviewForm'))
    },
+   SETTINGS:{
+	SETTINGMAIN: lazy(() => import('../pages/presentation/settings/SettingMain')),
+   }
 };
 const PAGE_LAYOUTS = {
 	HEADER_SUBHEADER: lazy(() => import('../pages/presentation/page-layouts/HeaderAndSubheader')),
@@ -325,8 +331,11 @@ const presentation: RouteProps[] = [
 		path: dashboardPagesMenu.dashboard.path,
 		element: <LANDING.DASHBOARD />,
 	},
-
-	{
+{
+    path: dashboardPagesMenu.superadmin.subMenu.superdashboard.path, // '/superadmin/dashboard'
+    element: <SUPERADMIN.SUPERADMINDASHBOARD />,
+},
+{
 		path: dashboardPagesMenu.hr.path,
 		element: <LANDING.HR />,
 	},
@@ -442,6 +451,10 @@ const presentation: RouteProps[] = [
 		element: <FINANCE.ESTIMATES />,
 	},
 	{
+       path: '/estimate-template',
+	   element: <EstimateTemplate />
+	},
+	{
 		path: dashboardPagesMenu.Finance.subMenu.Payments.path,
 		element: <FINANCE.PAYMENT />,
 	},
@@ -497,10 +510,10 @@ const presentation: RouteProps[] = [
     </ProjectDataProvider>
   ),
 },
-	// {
-    //   path: dashboardPagesMenu.Work.subMenu.Task.path,
-	//   element: <APP.WORK.TASKPAGE/>
-	// },
+	{
+      path: dashboardPagesMenu.Work.subMenu.Task.path,
+	  element: <APP.WORK.TASKPAGE/>
+	},
 	{
           path: '/projects/view',
           element:<ProjectViewPage/>,
@@ -517,6 +530,10 @@ const presentation: RouteProps[] = [
 	{
         path:'calendar',
 	   element:<CalenderPage/>
+	},
+	{
+        path:'waiting',
+		element:<WaitingPage/>
 	},
 	// {
     //    path:'/calendar',
@@ -666,7 +683,11 @@ const presentation: RouteProps[] = [
 		path: dashboardPagesMenu.Event.path,
 		element: <EVENT.EVENT/>
 	},
-
+//   SETTINGS
+    {
+		path: dashboardPagesMenu.Settings.path,
+		element: <APP.SETTINGS.SETTINGMAIN />,
+	},
 	/**
 	 * Single Pages
 	 */

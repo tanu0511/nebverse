@@ -61,7 +61,7 @@ const CommonDashboardSalesByStore = () => {
 
 	const salesByStoreOptions: ApexOptions = {
 		chart: {
-			height: 370,
+			height: 220, // reduced from 350 to 220
 			type: 'line',
 			stacked: false,
 			toolbar: { show: false },
@@ -376,7 +376,7 @@ const CommonDashboardSalesByStore = () => {
 			<CardHeader>
 				<CardLabel icon='ReceiptLong'>
 					<CardTitle tag='div' className='h5'>
-						Sales by Stores
+						Companies Registration
 					</CardTitle>
 					<CardSubTitle tag='div' className='h6'>
 						Reports
@@ -406,7 +406,7 @@ const CommonDashboardSalesByStore = () => {
 					</ButtonGroup>
 				</CardActions>
 			</CardHeader>
-			<CardBody>
+			<CardBody className="py-1">
 				<div className='row'>
 					<div className='col-xl-3 col-xxl-2'>
 						<div className='row g-3'>

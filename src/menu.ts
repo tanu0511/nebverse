@@ -30,11 +30,85 @@ export const summaryPageTopMenu = {
 		text: 'Apex Charts',
 		path: '#apex',
 		icon: 'AreaChart',
-		subMenu: null,
+		
 	},
 };
 
 export const dashboardPagesMenu = {
+	superadmin: {
+		id: 'superadmin',
+		text: 'Superadmin',
+		path: '/superadmin',
+		icon: 'DashboardCustomize',
+		subMenu: {
+			superdashboard: {
+				id: 'superdashboard',
+				text: 'Dashboard',
+				path: '/superadmin/dashboard',
+				icon:'Dashboard',
+			},
+			packages: {
+				id: 'packages',
+				text: 'Packages',
+				path: '/superadmin/packages',
+				icon:'BusinessCenter',
+			},
+			company: {
+				id: 'companies',
+				text: 'Companies',
+				path: '/superadmin/companies',
+				icon:'Apartment'
+			},
+			billigs: {
+				id: 'billigs',
+				text: 'Billings',
+				path: '/superadmin/billings',
+				icon:'Payments'
+			},
+			faq: {
+				id: 'faq',
+				text: 'Admin FAQ',
+				path: '/superadmin/faq',
+				icon:'ContentCopy'
+			},
+			superadmin:{
+                   id: 'superadmin',
+				   text: 'Super Admin',
+				   path: '/superadmin/super-admin',
+				   icon:'AdminPanelSettings'
+			},
+			offlineReq: {
+				id: 'offlineReq',
+				text: 'Offline Request',
+				path: '/superadmin/offline-request',
+				icon:'OfflineShare'
+			},
+			supportTicket: {
+				id: 'supportTicket',
+				text: 'Support Ticket',
+				path: '/superadmin/support-ticket',
+				icon:'SupportAgent'
+			},
+			frontendsetting: {
+				id: 'frontendsetting',
+				text: 'Frontend Setting',
+				path: '/superadmin/frontend-setting',
+				icon:'SettingsApplications'
+			},
+            affilateManagment:{
+				id: 'affilateManagment',	
+				text: 'Affiliate Management',
+				path: '/superadmin/affiliate-management',
+				icon:'Groups'
+			},
+			setting:{
+				id: 'setting',
+				text: 'Settings',
+				path: '/superadmin/setting',
+				icon:'Settings'
+			}
+		},
+	},
 	dashboard: {
 		id: 'dashboard',
 		text: 'Dashboard',
@@ -416,6 +490,11 @@ export const dashboardPagesMenu = {
 		icon:'EventNote',
 		subMenu:null,
 	},
+	Settings:{
+		id: 'settings',
+		text: 'Settings',
+		path: '/settings',
+	}
 	
 };
 

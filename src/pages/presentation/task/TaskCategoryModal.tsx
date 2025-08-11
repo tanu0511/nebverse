@@ -50,7 +50,7 @@ const TaskCategoryModal: React.FC<TaskCategoryModalProps> = ({
                   <td>{category}</td>
                   <td>
                     <Button
-                      variant="outline-light"
+                      variant="danger"
                       size="sm"
                       onClick={() =>
                         setCategories((prev) =>
@@ -83,10 +83,10 @@ const TaskCategoryModal: React.FC<TaskCategoryModalProps> = ({
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-light" onClick={() => setIsOpen(false)}>
+        <Button variant="secondary" onClick={() => setIsOpen(false)}>
           Close
         </Button>
-        <Button color="primary" onClick={handleAddCategory}>
+        <Button variant="primary" onClick={handleAddCategory}>
           Save
         </Button>
       </Modal.Footer>

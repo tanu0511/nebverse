@@ -9,6 +9,7 @@ import Button, { ButtonGroup } from '../../../components/bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
 import ProjectEditModal from './ProjectEditModal';
 import events from '../../../common/data/events';
+import PageWrapper from '../../../layout/PageWrapper/PageWrapper'; // <-- Add this import
 
 const localizer = dayjsLocalizer(dayjs);
 
@@ -77,7 +78,7 @@ const CalenderPage: React.FC = () => {
     };
 
     return (
-        <div className="container">
+        <PageWrapper title="Calendar">
             <SubHeader>
                 <SubHeaderLeft>
                     <Button
@@ -92,63 +93,64 @@ const CalenderPage: React.FC = () => {
                 </SubHeaderLeft>
                 <SubHeaderRight>
                     <ButtonGroup>
-                    <Button
-                        icon="list"
-                        color="info"
-                    
-                        isLight
-                        onClick={() => navigate('/work/task')}
-                    />
-                    <Button
-                       icon="Assessment"
-                                color="info"
-                                isLight
-                                onClick={() => navigate('/task-management')}
-                    />
-                    <Button
-                        icon="CalendarToday"
-                        color="info"
-                        isLight
-                        onClick={() => navigate('/calendar')}
-                    />
-                    <Button
-                        icon="AssignmentLate"
-                        color="info"
-                        isLight
-                    />
+                        <Button
+                            icon="list"
+                            color="info"
+                            isLight
+                            onClick={() => navigate('/work/task')}
+                        />
+                        <Button
+                            icon="Assessment"
+                            color="info"
+                            isLight
+                            onClick={() => navigate('/task-management')}
+                        />
+                        <Button
+                            icon="CalendarToday"
+                            color="info"
+                            isLight
+                            onClick={() => navigate('/calendar')}
+                        />
+                        <Button
+                            icon="AssignmentLate"
+                            color="info"
+                            isLight
+                            onClick={() => navigate('/waiting')}
+                        />
                     </ButtonGroup>
                 </SubHeaderRight>
-                
             </SubHeader>
 
-            <div className="bg-white rounded shadow p-3 mt-3">
-                <Calendar
-                    localizer={localizer}
-                    events={calendarEvents}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: 600 }}
-                    views={['month', 'week', 'day']}
-                    view={currentView}
-                    onView={setCurrentView}
-                    eventPropGetter={event => ({
-                        style: {
-                            backgroundColor: employeeColors[event.employee] || '#b3c6ff',
-                            color: '#222',
-                        }
-                    })}
+            <div className="container">
+                <div className="bg-white rounded shadow p-3 mt-3">
+                    <Calendar
+                        localizer={localizer}
+                        events={calendarEvents}
+                        startAccessor="start"
+                        endAccessor="end"
+                        style={{ height: 600 }}
+                        views={['month', 'week', 'day']}
+                        view={currentView}
+                        onView={setCurrentView}
+                        eventPropGetter={event => ({
+                            style: {
+                                backgroundColor: employeeColors[event.employee] || '#b3c6ff',
+                                color: '#222',
+                            }
+                        })}
+                    />
+                </div>
+
+                <ProjectEditModal
+                    isOpen={isModalOpen}
+                    setIsOpen={setIsModalOpen}
+                    onSubmit={handleModalSubmit}
+                    defaultValues={selectedTask || {}}
+                    defaultStatus={selectedTask?.status || 'Pending'}
+                    columns={columns}
                 />
             </div>
-
-            <ProjectEditModal
-                isOpen={isModalOpen}
-                setIsOpen={setIsModalOpen}
-                onSubmit={handleModalSubmit}
-                defaultValues={selectedTask || {}}
-                defaultStatus={selectedTask?.status || 'Pending'}
-                columns={columns}
-            />
-        </div>
+        </PageWrapper>
     );
 };
 

@@ -1,13 +1,12 @@
 import React, { FC } from 'react';
 import Card, {
-	CardActions,
 	CardBody,
 	CardHeader,
 	CardLabel,
 	CardSubTitle,
 	CardTitle,
 } from '../../../../components/bootstrap/Card';
-import useDarkMode from '../../../../hooks/useDarkMode';
+// import useDarkMode from '../../../../hooks/useDarkMode';
 import USERS from '../../../../common/data/usernishadummydata';
 import addEmployeeData from '../../hr/AddEmployee.json';
 import signupData from '../../auth/signup.json';
@@ -17,7 +16,7 @@ interface ICommonDashboardIncomeProps {
 }
 
 const CommonDashboardIncome: FC<ICommonDashboardIncomeProps> = ({ activeTab }) => {
-	const darkModeStatus = useDarkMode();
+	// const darkModeStatus = useDarkMode();
 
 	const usersArray = Object.values(USERS);
 	const addEmployeeArray = addEmployeeData.AddEmployee || [];
@@ -26,7 +25,7 @@ const CommonDashboardIncome: FC<ICommonDashboardIncomeProps> = ({ activeTab }) =
 	const totalEmployees = usersArray.length + addEmployeeArray.length + signupArray.length;
 
 	return (
-		<div className='col-md-2'>
+		<div className='col-md-9'>
 			<Card>
 				<CardHeader>
 					<CardLabel icon='PersonPin' iconColor='success'>

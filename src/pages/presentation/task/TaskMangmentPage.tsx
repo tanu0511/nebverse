@@ -13,6 +13,9 @@ import { demoPagesMenu } from '../../../menu';
 import './TaskMangmentPage.css'; 
 import Dropdown from 'react-bootstrap/Dropdown';
 import { ButtonGroup } from '../../../components/bootstrap/Button';
+import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
+import Page from '../../../layout/Page/Page';
+
 
 const TaskManagementPage: React.FC = () => {
     const navigate = useNavigate();
@@ -128,7 +131,7 @@ const TaskManagementPage: React.FC = () => {
     }, [tasks]);
 
     return (
-        <div className="container  md-5">
+        <PageWrapper title="Task Management">
             <SubHeader>
                 <SubHeaderLeft>
                     <div className="d-flex justify-content-between align-items-center p-2">
@@ -174,203 +177,206 @@ const TaskManagementPage: React.FC = () => {
                         icon="AssignmentLate"
                         color="info"
                         isLight
-                        onClick={() => navigate(demoPagesMenu.listPages.subMenu.listBoxed.path)}
+                        onClick={() => navigate('/waiting')}
                     />
                     </ButtonGroup>
                 </SubHeaderRight>
             </SubHeader>
+            <Page>
+                <div className="container md-5">
+                    <div
+                        className="d-flex overflow-auto task-scroll-thin"
+                        style={{
+                            whiteSpace: 'nowrap',
+                            gap: '16px',
+                            paddingBottom: '16px',
+                        }}
+                    >
+                        {columns.map((column, index) => {
+                            const colName = typeof column === 'object' ? column.name : column;
+                            const colColor = typeof column === 'object' ? column.color : '#ffe4ec';
 
-            <div
-                className="d-flex overflow-auto task-scroll-thin"
-                style={{
-                    whiteSpace: 'nowrap',
-                    gap: '16px',
-                    paddingBottom: '16px',
-                }}
-            >
-                {columns.map((column, index) => {
-                    const colName = typeof column === 'object' ? column.name : column;
-                    const colColor = typeof column === 'object' ? column.color : '#ffe4ec';
+                            const tasksForColumn = tasks.filter((task: any) => {
+                                const status = typeof task.status === 'object' ? task.status.name : task.status;
+                                return status === colName;
+                            });
 
-                    const tasksForColumn = tasks.filter((task: any) => {
-                        const status = typeof task.status === 'object' ? task.status.name : task.status;
-                        return status === colName;
-                    });
-
-                    return (
-                        <div
-                            key={colName}
-                            className="flex-shrink-0"
-                            style={{
-                                width: '300px',
-                            }}
-                        >
-                            <Card
-                                borderColor="primary"
-                                className="mt-5 mb-5"
-                                borderSize={1}
-                                shadow="sm"
-                                stretch={true}
-                                style={{ backgroundColor: colColor }}
-                            >
-                                <CardHeader className="d-flex justify-content-between align-items-center" size='lg' style={{ backgroundColor: colColor }}>
-                                    <span>{colName}</span>
-                                    <span className="badge bg-secondary">
-                                        {tasks.filter((task: any) => task.status === colName).length}
-                                    </span>
-                                    <Dropdown align="end">
-                                        <Dropdown.Toggle variant="light" size="sm" style={{ border: 'none', background: 'transparent' }}>
-                                            <span style={{ fontSize: 16, fontWeight: 'bold' }}>⋮</span>
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu>
-                                            <Dropdown.Item onClick={() => openModalWithStatus(colName)}>Add Task</Dropdown.Item>
-                                            <Dropdown.Item
-                                              onClick={() => {
-                                                setEditingColumnIndex(index);
-                                                const col = columns[index];
-                                                setNewColumnName(typeof col === 'object' ? col.name : col);
-                                                setNewColumnColor(typeof col === 'object' ? col.color : '#ffe4ec');
-                                                setIsStatusModalOpen(true);
-                                              }}
-                                            >
-                                              Edit
-                                            </Dropdown.Item>
-                                            <Dropdown.Item onClick={() => handleDeleteColumn(index)}>Delete</Dropdown.Item>
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </CardHeader>
-                                <CardBody style={{ backgroundColor: colColor }}>
-                                    {tasksForColumn.map((task: any) => (
-                                            <Card key={task.id} className="mb-2">
-                                                <CardBody>
-                                                    <h6>{task.title}</h6>
-                                                    <p className="text-muted">{task.description}</p>
-                                                    <div className="d-flex justify-content-between align-items-center">
-                                                        <span className="badge bg-light text-dark">Task</span>
-                                                        <span className="text-muted">{task.dueDate}</span>
-                                                    </div>
-                                                </CardBody>
-                                            </Card>
-                                        ))}
-                                </CardBody>
-                                <CardFooter style={{ backgroundColor: colColor }}>
-                                    <Button
-                                        color="primary"
-                                        isOutline
-                                        className="w-100 mt-2"
-                                        onClick={() => openModalWithStatus(colName)}
-                                        style={{ backgroundColor: "#fcf5f7" }}
-                                    >
-                                        + Add Task
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        </div>
-                    );
-                })}
-            </div>
-            {isStatusModalOpen && (
-                <div className="modal show d-block" tabIndex={-1} role="dialog">
-                    <div className="modal-dialog" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Add Status Column</h5>
-                                <button
-                                    type="button"
-                                    className="btn-close"
-                                    onClick={() => setIsStatusModalOpen(false)}
-                                />
-                            </div>
-                            <div className="modal-body">
-                                <form>
-                                    <div className="mb-3">
-                                        <label htmlFor="columnName" className="form-label">
-                                            Column Name <span className="text-danger">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="columnName"
-                                            className="form-control"
-                                            value={newColumnName}
-                                            onChange={(e) => setNewColumnName(e.target.value)}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="columnPosition" className="form-label">
-                                            Board Column Position
-                                        </label>
-                                        <select
-                                            id="columnPosition"
-                                            className="form-select"
-                                            value={newColumnPosition}
-                                            onChange={(e) => setNewColumnPosition(e.target.value)}
-                                        >
-                                            <option value="Before To Do">Before To Do</option>
-                                            {columns.map((column) => {
-                                                const colName = typeof column === 'object' ? column.name : column;
-                                                return (
-                                                    <option key={`After ${colName}`} value={`After ${colName}`}>
-                                                        After {colName}
-                                                    </option>
-                                                );
-                                            })}
-                                        </select>
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="columnColor" className="form-label">
-                                            Label Color <span className="text-danger">*</span>
-                                        </label>
-                                        <div className="d-flex align-items-center">
-                                            <input
-                                                type="text"
-                                                id="columnColor"
-                                                className="form-control"
-                                                value={newColumnColor}
-                                                onChange={e => setNewColumnColor(e.target.value)}
-                                                style={{ maxWidth: 120, marginRight: 8 }}
-                                                required
-                                            />
-                                            <input
-                                                type="color"
-                                                value={newColumnColor}
-                                                onChange={e => setNewColumnColor(e.target.value)}
-                                                style={{ width: 40, height: 40, border: 'none', background: 'none' }}
-                                            />
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div className="modal-footer">
-                                <Button
-                                    color="light"
-                                    onClick={() => {
-                                        setIsStatusModalOpen(false);
-                                        setEditingColumnIndex(null);
+                            return (
+                                <div
+                                    key={colName}
+                                    className="flex-shrink-0"
+                                    style={{
+                                        width: '300px',
                                     }}
                                 >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    color="primary"
-                                    onClick={handleAddColumn}
-                                >
-                                    Save
-                                </Button>
+                                    <Card
+                                        borderColor="primary"
+                                        className="mt-5 mb-5"
+                                        borderSize={1}
+                                        shadow="sm"
+                                        stretch={true}
+                                        style={{ backgroundColor: colColor }}
+                                    >
+                                        <CardHeader className="d-flex justify-content-between align-items-center" size='lg' style={{ backgroundColor: colColor }}>
+                                            <span>{colName}</span>
+                                            <span className="badge bg-secondary">
+                                                {tasks.filter((task: any) => task.status === colName).length}
+                                            </span>
+                                            <Dropdown align="end">
+                                                <Dropdown.Toggle variant="light" size="sm" style={{ border: 'none', background: 'transparent' }}>
+                                                    <span style={{ fontSize: 16, fontWeight: 'bold' }}>⋮</span>
+                                                </Dropdown.Toggle>
+                                                <Dropdown.Menu>
+                                                    <Dropdown.Item onClick={() => openModalWithStatus(colName)}>Add Task</Dropdown.Item>
+                                                    <Dropdown.Item
+                                                      onClick={() => {
+                                                        setEditingColumnIndex(index);
+                                                        const col = columns[index];
+                                                        setNewColumnName(typeof col === 'object' ? col.name : col);
+                                                        setNewColumnColor(typeof col === 'object' ? col.color : '#ffe4ec');
+                                                        setIsStatusModalOpen(true);
+                                                      }}
+                                                    >
+                                                      Edit
+                                                    </Dropdown.Item>
+                                                    <Dropdown.Item onClick={() => handleDeleteColumn(index)}>Delete</Dropdown.Item>
+                                                </Dropdown.Menu>
+                                            </Dropdown>
+                                        </CardHeader>
+                                        <CardBody style={{ backgroundColor: colColor }}>
+                                            {tasksForColumn.map((task: any) => (
+                                                    <Card key={task.id} className="mb-2">
+                                                        <CardBody>
+                                                            <h6>{task.title}</h6>
+                                                            <p className="text-muted">{task.description}</p>
+                                                            <div className="d-flex justify-content-between align-items-center">
+                                                                <span className="badge bg-light text-dark">Task</span>
+                                                                <span className="text-muted">{task.dueDate}</span>
+                                                            </div>
+                                                        </CardBody>
+                                                    </Card>
+                                                ))}
+                                        </CardBody>
+                                        <CardFooter style={{ backgroundColor: colColor }}>
+                                            <Button
+                                                color="primary"
+                                                isOutline
+                                                className="w-100 mt-2"
+                                                onClick={() => openModalWithStatus(colName)}
+                                                style={{ backgroundColor: "#fcf5f7" }}
+                                            >
+                                                + Add Task
+                                            </Button>
+                                        </CardFooter>
+                                    </Card>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {isStatusModalOpen && (
+                        <div className="modal show d-block" tabIndex={-1} role="dialog">
+                            <div className="modal-dialog" role="document">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title">Add Status Column</h5>
+                                        <button
+                                            type="button"
+                                            className="btn-close"
+                                            onClick={() => setIsStatusModalOpen(false)}
+                                        />
+                                    </div>
+                                    <div className="modal-body">
+                                        <form>
+                                            <div className="mb-3">
+                                                <label htmlFor="columnName" className="form-label">
+                                                    Column Name <span className="text-danger">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="columnName"
+                                                    className="form-control"
+                                                    value={newColumnName}
+                                                    onChange={(e) => setNewColumnName(e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="mb-3">
+                                                <label htmlFor="columnPosition" className="form-label">
+                                                    Board Column Position
+                                                </label>
+                                                <select
+                                                    id="columnPosition"
+                                                    className="form-select"
+                                                    value={newColumnPosition}
+                                                    onChange={(e) => setNewColumnPosition(e.target.value)}
+                                                >
+                                                    <option value="Before To Do">Before To Do</option>
+                                                    {columns.map((column) => {
+                                                        const colName = typeof column === 'object' ? column.name : column;
+                                                        return (
+                                                            <option key={`After ${colName}`} value={`After ${colName}`}>
+                                                                After {colName}
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </select>
+                                            </div>
+                                            <div className="mb-3">
+                                                <label htmlFor="columnColor" className="form-label">
+                                                    Label Color <span className="text-danger">*</span>
+                                                </label>
+                                                <div className="d-flex align-items-center">
+                                                    <input
+                                                        type="text"
+                                                        id="columnColor"
+                                                        className="form-control"
+                                                        value={newColumnColor}
+                                                        onChange={e => setNewColumnColor(e.target.value)}
+                                                        style={{ maxWidth: 120, marginRight: 8 }}
+                                                        required
+                                                    />
+                                                    <input
+                                                        type="color"
+                                                        value={newColumnColor}
+                                                        onChange={e => setNewColumnColor(e.target.value)}
+                                                        style={{ width: 40, height: 40, border: 'none', background: 'none' }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <Button
+                                            color="light"
+                                            onClick={() => {
+                                                setIsStatusModalOpen(false);
+                                                setEditingColumnIndex(null);
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            color="primary"
+                                            onClick={handleAddColumn}
+                                        >
+                                            Save
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    )}
 
-            <ProjectEditModal
-                isOpen={isModalOpen}
-                setIsOpen={setIsModalOpen}
-                onSubmit={handleAddTask}
-                defaultStatus={defaultStatus}
-                columns={columns.map(col => typeof col === 'object' ? col.name : col)}
-            />
-        </div>
+                    <ProjectEditModal
+                        isOpen={isModalOpen}
+                        setIsOpen={setIsModalOpen}
+                        onSubmit={handleAddTask}
+                        defaultStatus={defaultStatus}
+                        columns={columns.map(col => typeof col === 'object' ? col.name : col)}
+                    />
+                </div>
+            </Page>
+        </PageWrapper>
     );
 };
 
